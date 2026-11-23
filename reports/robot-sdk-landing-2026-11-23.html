@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>robot-sdk Landing Page</title><style>
+:root{--bg:#fbfaf7;--fg:#1f2328;--mut:#5f6670;--line:#e3dfd6;--card:#fff;--acc:#2f7d55;--warn:#9a5b00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16181b;--fg:#e6e8eb;--mut:#a3a9b2;--line:#33373d;--card:#1d2024;--acc:#7cc39b;--warn:#f0b35a}}
+body{background:var(--bg);color:var(--fg);font:15.5px/1.6 system-ui,sans-serif;max-width:1100px;margin:28px auto;padding:0 16px}
+a{color:var(--acc)}h1{margin:0 0 6px}h2{margin:36px 0 8px}.lead{font-size:17px}.mut{color:var(--mut)}
+video,img{width:100%;height:auto;border:1px solid var(--line);border-radius:12px;display:block}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;align-items:start}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+figure{margin:14px 0}figcaption{color:var(--mut);font-size:14px;margin-top:6px}code{background:rgba(127,127,127,.15);padding:1px 5px;border-radius:5px}
+li{margin:4px 0}</style></head><body>
+<h1>robot-sdk landing page</h1>
+<p class="lead"><b>Live at <a href="https://zacharyyamaoka.github.io/robot_sdk/">zacharyyamaoka.github.io/robot_sdk</a></b>: the domain diagram is the hero (every arrow is a cited public signature, zero crossings), then a real pick-and-place assembled from six packages on a simulated UR5e, with its plots. Built from <code>site/build.py</code> on robot_sdk <code>main</code>; served from the <code>gh-pages</code> branch.</p>
+
+<figure><video src="media/landing-hover.mp4" autoplay muted loop playsinline controls poster="media/landing-diagram.png"><img src="media/landing-hover.gif" alt="Hovering through the domain diagram"></video>
+<figcaption>The live page (16 s): hovering a package lights its inputs (blue) and outputs (green); hovering a type lights every package that makes or reads it; then the pick-and-place section. <a href="media/landing-hover.gif">GIF</a></figcaption></figure>
+
+<h2>The two things you asked for</h2>
+<div class="grid">
+<figure><img src="media/landing-hover-controllers.png" alt="robot_controllers focused"><figcaption><b>Domain model.</b> robot_msgs types are the band in the middle; packages above and below; an arrow into a type = produces, out of a type = consumes. Order found by exhaustive search (0 crossings). 19 citations, each linking to its file and line. Dashed boxes (robot_thermal, robot_diagnostics) have no robot_msgs type in their public API yet — drawn as such, not invented.</figcaption></figure>
+<figure><img src="media/landing-phone.png" alt="Phone layout"><figcaption>Phone: the page reflows; the diagram scrolls sideways in its card.</figcaption></figure>
+</div>
+<figure><img src="media/landing-pipeline.png" alt="Pick-and-place pipeline"><figcaption><b>Pick-and-place pipeline.</b> robot_reach (UR5e arm, all 4 tool points reachable) → robot_trajectories <code>pick_and_place</code> (5.35 s, 1.08 m tool path) → robot_controllers trajectory controller ⇄ simulated UR5e (MuJoCo, 500 Hz) → robot_metrics (tool error 9.15 mm RMS) and robot_diagnostics. The check <b>fails</b> honestly: shoulder_lift sags 0.81° at the stops vs a 0.21° limit because the run has no gravity feed-forward — the page says so.</figcaption></figure>
+
+<h2>Done and proved</h2>
+<ul>
+<li>Page live (HTTP 200, page and images), hover tracing driven in the browser pane on the live URL, desktop + 390 px phone + dark mode rendered and looked at.</li>
+<li><code>examples/pick_and_place.py</code> runs in 1.6 s: <code>uv run --project /home/bam/robot_sdk --group examples python /home/bam/robot_sdk/examples/pick_and_place.py</code>; its numbers and plots feed the page (<code>site/data/pick_and_place.json</code>), recorded on a clean robot_sdk tree.</li>
+<li>Domain facts in <code>site/data/domain.json</code>, each edge with <code>file:line</code>.</li>
+</ul>
+<h2>Decided for you</h2>
+<ul>
+<li>Hosted on GitHub Pages (like robot_metrics / robot_activity), not a custom domain. Undo: <code>gh api -X DELETE repos/zacharyyamaoka/robot_sdk/pages</code>.</li>
+<li>Showed the FAIL rather than tuning it away — it demonstrates what robot_diagnostics is for. A gravity-compensated second run would make a before/after.</li>
+<li>Angles in degrees everywhere (the example's metrics, verdict and plots; robot_msgs' stock pose plot is converted after plotting).</li>
+<li>Optional-extra imports between packages (diagnostics→metrics/sim2real, sim2real→trajectories) appear only on hover, to keep the hero readable.</li>
+</ul>
+<h2>Gaps the example exposed (not patched)</h2>
+<ul>
+<li><b>robot_reach → robot_trajectories</b>: Arm returns all IK branches; JointSpace wants one near a seed — a 20-line adapter in the example. An <code>Arm.as_kinematics()</code> would remove it.</li>
+<li><b>No reusable simulated plant</b>: nothing takes a <code>ServoCommand</code> and returns a <code>JointState</code> for a UR5e; the example re-creates robot_metrics' MuJoCo lookup.</li>
+<li><b>robot_diagnostics is per-joint</b> and uses its own Trajectory type, not robot_msgs.</li>
+<li><b>robot_msgs' stock PoseTrajectory.plot()</b> labels orientation in rad.</li>
+<li>robot_thermal has no robot_msgs type in its API; no UR5e drive ratings exist for its burst budget.</li>
+</ul>
+</body></html>
