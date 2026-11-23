@@ -1,0 +1,98 @@
+{
+  "types": [
+    {"name": "JointTrajectory", "module": "robot_msgs.trajectory", "what": "Timed joint positions/velocities; the join type"},
+    {"name": "JointLimits", "module": "robot_msgs.trajectory", "what": "Per-joint velocity/acceleration/jerk/effort bounds"},
+    {"name": "PoseTrajectory", "module": "robot_msgs.trajectory", "what": "Timed Cartesian poses (position, xyzw orientation)"},
+    {"name": "JointState", "module": "robot_msgs.sensor", "what": "Measured joint position, velocity, effort by name"},
+    {"name": "ServoCommand", "module": "robot_msgs.control", "what": "Per-servo position/velocity/effort targets, SI"},
+    {"name": "JointCommandSequence", "module": "robot_msgs.control", "what": "Stepwise joint commands with end conditions (homing)"},
+    {"name": "NamedPose", "module": "robot_msgs.manipulation", "what": "Saved joint-group pose looked up by name"},
+    {"name": "Header", "module": "robot_msgs.std", "what": "Float-second stamp and frame_id"},
+    {"name": "DiagnosticRecord", "module": "robot_msgs.std", "what": "One periodic health evaluation of a component"},
+    {"name": "Metrics", "module": "robot_msgs.std", "what": "Named float metric values for a component path"}
+  ],
+  "packages": [
+    {"repo": "robot_msgs", "layer": "vocabulary", "one_line": "Frozen numpy-backed message dataclasses every package joins on",
+     "consumes": [], "produces": [],
+     "declared_deps": ["numpy", "dataclass-values"],
+     "extras": {"viz": ["matplotlib", "imageio-ffmpeg"], "ros": ["rosbags"], "rerun": ["robot-msgs[viz]", "rerun-sdk"], "viser": ["viser"]}},
+
+    {"repo": "robot_models", "layer": "models", "one_line": "Generic models by type: actuators, arms, sensors, homing procedures",
+     "consumes": [
+       {"type": "JointState", "via": "homing simulator protocol: reset() -> JointState, tick() -> JointState (returned; imported for the protocol)", "evidence": "src/robot_models/homing/protocols.py:31-33"},
+       {"type": "ServoCommand", "via": "homing simulator tick(command: ServoCommand, dt, defines)", "evidence": "src/robot_models/homing/protocols.py:33"}],
+     "produces": [
+       {"type": "JointCommandSequence", "via": "HomingProcedure.plan(prior, so_far) -> JointCommandSequence | None", "evidence": "src/robot_models/homing/protocols.py:67"}],
+     "declared_deps": ["robot-msgs", "numpy"], "extras": {"contact": ["coal", "trimesh"]}},
+
+    {"repo": "robot_trajectories", "layer": "leaf", "one_line": "Trajectory kinds from limits and tasks, one JointTrajectory out",
+     "consumes": [
+       {"type": "JointLimits", "via": "JointSpace.from_limits(limits, ...)", "evidence": "src/robot_trajectories/space.py:346"},
+       {"type": "JointLimits", "via": "WaypointTrajectoryGenerator.__call__(points, limits, rate_hz)", "evidence": "src/robot_trajectories/waypoint_trajectory_generator.py:323"}],
+     "produces": [
+       {"type": "JointTrajectory", "via": "every kind (burn_in_wiggle, pick_and_place, ...); README: 'Every kind returns a robot_msgs JointTrajectory'", "evidence": "README.md:23"},
+       {"type": "JointTrajectory", "via": "kernels.to_trajectory(...) -> JointTrajectory", "evidence": "src/robot_trajectories/kernels.py:377"},
+       {"type": "JointTrajectory", "via": "recipe.rebuild(...) -> JointTrajectory", "evidence": "src/robot_trajectories/recipe.py:47"}],
+     "declared_deps": ["robot-msgs", "numpy"], "extras": {}},
+
+    {"repo": "robot_reach", "layer": "leaf", "one_line": "Workspace and IK-branch reach of any arm, FK/IK passed in",
+     "consumes": [],
+     "produces": [
+       {"type": "NamedPose", "via": "goals.to_named_pose(rec, joints) turns a solved rest-pose record into a NamedPose", "evidence": "src/robot_reach/goals.py:849"}],
+     "declared_deps": ["numpy", "robot-msgs"], "extras": {"plot": ["matplotlib"], "viz": ["viser", "matplotlib", "trimesh"]}},
+
+    {"repo": "robot_controllers", "layer": "leaf", "one_line": "Feed-forward/feedback controllers as black boxes plus a Layout",
+     "consumes": [
+       {"type": "JointTrajectory", "via": "LayoutController(trajectory, LayoutConfig) and JointTrajectory controllers; replace_input(message: JointTrajectory)", "evidence": "src/robot_controllers/controllers/layout.py:181"},
+       {"type": "JointState", "via": "Controller.tick(state: JointState, dt)", "evidence": "src/robot_controllers/core.py:62"}],
+     "produces": [
+       {"type": "ServoCommand", "via": "Controller.tick -> (ServoCommand, defines mapping)", "evidence": "src/robot_controllers/core.py:62"}],
+     "declared_deps": ["numpy", "robot-msgs"], "extras": {"bench": ["mujoco"], "tracking": ["wandb", "wandb-workspaces", "weave"], "site": ["matplotlib", "pillow"]}},
+
+    {"repo": "robot_thermal", "layer": "leaf", "one_line": "Motor and board heat tracking with burst-limit decisions",
+     "consumes": [],
+     "produces": [],
+     "declared_deps": [], "extras": {"msgs": ["robot-msgs"], "report": ["numpy", "scipy", "matplotlib", "pytest"]}},
+
+    {"repo": "robot_metrics", "layer": "leaf", "one_line": "Tracking, stop, lag, repeatability metrics over message streams",
+     "consumes": [
+       {"type": "JointTrajectory", "via": "stops(target, measured, ...) -> tuple[Stop, ...]", "evidence": "src/robot_metrics/stops.py:154"},
+       {"type": "JointTrajectory", "via": "alignment.align(reference, measured, rule=...)", "evidence": "src/robot_metrics/alignment.py:94"}],
+     "produces": [],
+     "declared_deps": ["robot-msgs", "numpy"], "extras": {"viz": ["matplotlib"], "wandb": ["wandb"], "rerun": ["rerun-sdk"]}},
+
+    {"repo": "robot_activity", "layer": "leaf", "one_line": "Per-robot and fleet activity, work queue, stalemate flags",
+     "consumes": [
+       {"type": "JointState", "via": "Observation.joints: JointState or Mapping[str, float] (duck-typed name + position)", "evidence": "src/robot_activity/motion.py:16"}],
+     "produces": [],
+     "declared_deps": ["robot-msgs"], "extras": {"wandb": ["wandb"]}},
+
+    {"repo": "robot_autonomy", "layer": "leaf", "one_line": "Counts human interventions per working hour; ranks causes",
+     "consumes": [
+       {"type": "DiagnosticRecord", "via": "sources.diagnostics.read_diagnostics: JSONL -> DiagnosticRecord.from_dict (only module importing robot_msgs)", "evidence": "src/robot_autonomy/sources/diagnostics.py:35"}],
+     "produces": [],
+     "declared_deps": ["robot-msgs"], "extras": {"wandb": ["wandb"], "oracle": ["reliability"]}},
+
+    {"repo": "like_keras", "layer": "comms", "one_line": "Components, ports and systems over dora; robot_msgs on the wire",
+     "consumes": [
+       {"type": "any robot_msgs Msg", "via": "ports carry only robot_msgs types across a process/language boundary (error text: 'only robot_msgs types cross')", "evidence": "src/like_keras/system.py:58"}],
+     "produces": [
+       {"type": "Header, DiagnosticRecord, Metrics", "via": "in-process backend's built-in record types", "evidence": "src/like_keras/backends/inproc.py:717"}],
+     "declared_deps": ["robot-msgs"], "extras": {"dora": ["dora-rs", "dora-rs-cli", "pyarrow"]}},
+
+    {"repo": "sim2real", "layer": "outer", "one_line": "RobotTwin, calibrate() and fit/replay over real or simulated runs",
+     "consumes": [
+       {"type": "JointTrajectory", "via": "real-run ingest: every run read as a JointTrajectory at one door", "evidence": "src/sim2real/real.py:26"},
+       {"type": "NamedPose", "via": "named_poses(robot) / named_pose(name, group) return NamedPose", "evidence": "src/sim2real/named_poses/__init__.py:36"},
+       {"type": "robot_trajectories (library)", "via": "preflight imports robot_trajectories.burn_in_wiggle at runtime via importlib", "evidence": "src/sim2real/preflight.py:712"}],
+     "produces": [
+       {"type": "JointTrajectory", "via": "twin builds JointTrajectory(t, joint_names, positions, velocities)", "evidence": "src/sim2real/twin.py:699"}],
+     "declared_deps": ["numpy", "robot-msgs"], "extras": {"sim": ["mujoco", "scipy"], "vision": ["opencv-python-headless"], "tracking": ["wandb", "wandb-workspaces", "weave"], "homing": ["robot-models-lib[contact]", "scipy", "pillow"], "trajectories": ["robot-trajectories"]}},
+
+    {"repo": "robot_diagnostics", "layer": "checks", "one_line": "Diagnostics as pure functions: diagnose(config, data) -> Result",
+     "consumes": [],
+     "produces": [],
+     "declared_deps": [], "extras": {"stock": ["numpy", "Pillow", "robot-metrics", "sim2real"]}}
+  ],
+  "edges_note": "An edge exists only where a public signature, return annotation, README/docstring statement, or import-with-use names the type; evidence is file:line in that repo. Empty consumes/produces means no robot_msgs type appears in the public API (verified by grepping src for robot_msgs imports): robot_thermal has no robot_msgs import at all (stdlib core with its own BurstState/ThermalEstimate; the 'msgs' extra is declared but unused in src); robot_diagnostics uses its own data.Trajectory (arrays, src/robot_diagnostics/data.py:36) and reaches robot_metrics and sim2real only lazily via the stock extra; robot_metrics outputs its own records (records.py:7 says a robot_msgs message comes later). robot_msgs and robot_models are not drawn as consumers of anything beyond the listed items; no tests were run."
+}

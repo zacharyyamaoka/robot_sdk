@@ -179,13 +179,14 @@ tool_measured = PoseTrajectory.from_matrices(tick_times, kinematics.arm.fk(measu
 run = Run("ur5e-pick-and-place-sim", streams={"target": target, "state": measured, "tool/target": tool_target,
                                                "tool/state": tool_measured}, provenance="sim",
           labels={"deployment": "ur5e (simulated, MuJoCo)", "controller": "joint_trajectory_controller"})
-MRAD = 1e3
+# WHY degrees: angles shown to a person are in degrees (Zach's rule); the maths and the data stay SI (rad)
+DEG = 180.0 / np.pi
 aliases = [Alias("tool error RMS", ErrorStat(statistic="rms"), signal=("tool/target", "tool/state"), unit="mm", scale=1e3),
            Alias("tool error max", ErrorStat(statistic="max_abs"), signal=("tool/target", "tool/state"), unit="mm", scale=1e3)]
 for index, joint in enumerate(kinematics.joint_names):
-    aliases += [Alias(f"{joint} tracking RMS", ErrorStat(statistic="rms", joint=index), unit="mrad", scale=MRAD),
-                Alias(f"{joint} tracking max", ErrorStat(statistic="max_abs", joint=index), unit="mrad", scale=MRAD),
-                Alias(f"{joint} stop error max", StopStat(of="error", statistic="max", joint=index), unit="mrad", scale=MRAD)]
+    aliases += [Alias(f"{joint} tracking RMS", ErrorStat(statistic="rms", joint=index), unit="deg", scale=DEG),
+                Alias(f"{joint} tracking max", ErrorStat(statistic="max_abs", joint=index), unit="deg", scale=DEG),
+                Alias(f"{joint} stop error max", StopStat(of="error", statistic="max", joint=index), unit="deg", scale=DEG)]
 metrics = Collection(aliases)
 values = metrics.values(metrics.fold(run))
 worst_tracking = max(kinematics.joint_names, key=lambda joint: values[f"{joint} tracking max"])
@@ -193,8 +194,8 @@ worst_stop = max(kinematics.joint_names, key=lambda joint: values[f"{joint} stop
 record("robot_metrics", "robot_metrics.Collection([Alias(ErrorStat), Alias(StopStat), ...]).fold(Run)",
        "Run{target, state: JointTrajectory; tool/target, tool/state: PoseTrajectory}", "dict of values with units",
        f"tool error RMS {values['tool error RMS']:.2f} mm, max {values['tool error max']:.2f} mm; worst joint tracking "
-       f"{worst_tracking} max {values[f'{worst_tracking} tracking max']:.2f} mrad; worst stop error {worst_stop} "
-       f"{values[f'{worst_stop} stop error max']:.3f} mrad")
+       f"{worst_tracking} max {values[f'{worst_tracking} tracking max']:.2f} deg; worst stop error {worst_stop} "
+       f"{values[f'{worst_stop} stop error max']:.3f} deg")
 
 # ---------------------------------------------------------------------------------------------- 6. diagnostics: robot_diagnostics
 # The stock stop-error check at its catalog default (servo.stop_error: p90 of |stop error| <= 3.6 mrad, the strictest
@@ -207,10 +208,11 @@ for index, joint in enumerate(kinematics.joint_names):
     per_joint.append(evaluate("stock.stop_error", stop_check, [joint_run], subject=f"ur5e/{joint}"))
 verdict = worst(result.verdict for result in per_joint)
 worst_result = max(per_joint, key=lambda result: result.value or 0.0)
-limit_mrad = stop_check.limits.error_high
+limit_mrad = stop_check.limits.error_high  # the catalog states it in mrad
+limit_deg = limit_mrad / 1e3 * DEG
 record("robot_diagnostics", 'robot_diagnostics.evaluate("stock.stop_error", DEFAULTS["servo.stop_error"], [Trajectory])',
        "robot_diagnostics Trajectory per joint", "robot_diagnostics Result (DiagnosticStatus shape)",
-       f"{verdict.upper()}: worst {worst_result.subject} p90 {worst_result.value:.3f} mrad vs limit {limit_mrad:g} mrad "
+       f"{verdict.upper()}: worst {worst_result.subject} p90 {worst_result.value / 1e3 * DEG:.3f} deg vs limit {limit_deg:.3f} deg "
        f"({sum(r.verdict == 'pass' for r in per_joint)}/6 joints pass)")
 
 # ---------------------------------------------------------------------------------------------- plots (site/media)
@@ -221,6 +223,11 @@ SIM_LABEL = "simulated (MuJoCo UR5e)"
 # (a) the tool path: robot_msgs' stock PoseTrajectory.plot(), with the plan and the pick / place points drawn on its 3-D axes
 figure = tool_measured.plot()
 path_axes = figure.axes[0]
+for axis in figure.axes:  # the stock plot's orientation panel is in rad; show degrees (data stays SI)
+    if axis.get_ylabel() == "orientation (rad)":
+        for line in axis.get_lines():
+            line.set_ydata(np.asarray(line.get_ydata()) * DEG)
+        axis.relim(); axis.autoscale_view(); axis.set_ylabel("orientation (deg)")
 path_axes.plot(*tool_target.positions.T, color="#888888", lw=1.0, ls="--", label="planned")
 for point, name, colour in ((pick_point, "pick", "#2e7d32"), (place_point, "place", "#c62828")):
     path_axes.scatter(*point, s=60, color=colour, depthshade=False, label=name)
@@ -252,23 +259,23 @@ plt.close(figure)
 
 # (c) tracking error over time, the stop windows the diagnostic scored, and its limit
 figure, axis = plt.subplots(figsize=(12, 4.6), dpi=100)
-error_mrad = (measured.positions - target.positions) * MRAD
+error_deg = (measured.positions - target.positions) * DEG
 for index, joint in enumerate(kinematics.joint_names):
-    axis.plot(tick_times, error_mrad[:, index], lw=1.1, label=joint)
+    axis.plot(tick_times, error_deg[:, index], lw=1.1, label=joint)
 worst_index = kinematics.joint_names.index(worst_result.subject.split("/")[-1])
 for stop_number, (_error, dwell_start, dwell_end) in enumerate(stops(
         Trajectory(t=tick_times, q_rad=measured.positions[:, worst_index], q_target_rad=target.positions[:, worst_index],
                    qd_target_rad_s=target.velocities[:, worst_index]), stop_check)):
     axis.axvspan(dwell_start, dwell_end, color="#f0c040", alpha=0.3, lw=0,
                  label=f"{kinematics.joint_names[worst_index]}'s scored stops" if stop_number == 0 else None)
-for bound in (limit_mrad, -limit_mrad):
+for bound in (limit_deg, -limit_deg):
     axis.axhline(bound, color="#c0392b", ls="--", lw=1.2)
-axis.text(tick_times[-1], limit_mrad, f" servo.stop_error limit {limit_mrad:g} mrad", color="#c0392b", va="bottom",
+axis.text(tick_times[-1], limit_deg, f" servo.stop_error limit {limit_deg:.3f} deg", color="#c0392b", va="bottom",
           ha="right", fontsize=8)
 axis.set_xlabel("t (s)")
-axis.set_ylabel("measured - target (mrad)")
+axis.set_ylabel("measured - target (deg)")
 axis.set_title(f"Tracking error per joint, {SIM_LABEL}: stock.stop_error verdict {verdict.upper()}, "
-               f"worst p90 {worst_result.value:.2f} mrad ({worst_result.subject})", fontsize=10)
+               f"worst p90 {worst_result.value / 1e3 * DEG:.3f} deg ({worst_result.subject})", fontsize=10)
 axis.grid(alpha=0.3)
 axis.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
 figure.tight_layout()
