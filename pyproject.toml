@@ -19,8 +19,8 @@ classifiers = [
 # updates only) because every leaf imports them; leaves move fast on 0.x.
 dependencies = [
   # core vocabulary - every package imports these
-  "robot-msgs~=0.3.0",
-  "robot-models-lib~=0.2.0",
+  "robot-msgs~=0.3.1",
+  "robot-models-lib~=0.3.0",
   # leaves - depend on core only, never on each other
   "robot-controllers~=0.1.0",
   "robot-reach~=0.1.0",

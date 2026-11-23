@@ -45,6 +45,7 @@ dependencies = [
 requires-dist = [
     { name = "dora-rs", marker = "extra == 'dora'", specifier = "==0.5.0" },
     { name = "dora-rs", marker = "extra == 'test'", specifier = "==0.5.0" },
+    { name = "dora-rs-cli", marker = "extra == 'dora'", specifier = "==0.5.0" },
     { name = "dora-rs-cli", marker = "extra == 'test'", specifier = "==0.5.0" },
     { name = "import-linter", marker = "extra == 'test'", specifier = ">=2.1" },
     { name = "pyarrow", marker = "extra == 'dora'" },
@@ -345,7 +346,7 @@ provides-extras = ["viz", "wandb", "rerun", "test", "site"]
 
 [[package]]
 name = "robot-models-lib"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "../robot_models" }
 dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -367,8 +368,8 @@ provides-extras = ["contact", "test"]
 
 [[package]]
 name = "robot-msgs"
-version = "0.3.0"
-source = { editable = "../robot_msgs" }
+version = "0.3.1"
+source = { editable = "/home/bam/robot_msgs" }
 dependencies = [
     { name = "dataclass-values" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -413,12 +414,14 @@ requires-dist = [
     { name = "numpy", specifier = ">=1.26" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },
     { name = "robot-msgs", editable = "/home/bam/robot_msgs" },
+    { name = "trimesh", marker = "extra == 'viz'" },
     { name = "viser", marker = "extra == 'test'", specifier = "==1.1.1" },
     { name = "viser", marker = "extra == 'viz'", specifier = "==1.1.1" },
-    { name = "viser-3d-viewer", marker = "extra == 'test'", editable = "/home/bam/viser-3d-viewer" },
-    { name = "viser-3d-viewer", marker = "extra == 'viz'", editable = "/home/bam/viser-3d-viewer" },
 ]
 provides-extras = ["plot", "viz", "test"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "viser-3d-viewer", editable = "/home/bam/viser-3d-viewer" }]
 
 [[package]]
 name = "robot-sdk"
@@ -503,19 +506,24 @@ name = "sim2real"
 version = "0.1.0"
 source = { editable = "../sim2real" }
 dependencies = [
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "robot-msgs" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "mujoco", marker = "extra == 'sim'", specifier = "==3.11.0" },
+    { name = "numpy", specifier = ">=1.26" },
     { name = "opencv-python-headless", marker = "extra == 'vision'", specifier = "==4.11.0.86" },
+    { name = "pillow", marker = "extra == 'homing'" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },
     { name = "robot-models-lib", extras = ["contact"], marker = "extra == 'homing'", editable = "/home/bam/robot_models" },
     { name = "robot-models-lib", extras = ["contact"], marker = "extra == 'test'", editable = "/home/bam/robot_models" },
     { name = "robot-msgs", editable = "/home/bam/robot_msgs" },
     { name = "robot-trajectories", marker = "extra == 'trajectories'", editable = "/home/bam/robot_trajectories" },
     { name = "scipy", marker = "extra == 'homing'", specifier = ">=1.11" },
+    { name = "scipy", marker = "extra == 'sim'", specifier = ">=1.11" },
     { name = "scipy", marker = "extra == 'test'", specifier = ">=1.11" },
     { name = "wandb", marker = "extra == 'tracking'", specifier = "==0.31.0" },
     { name = "wandb-workspaces", marker = "extra == 'tracking'", specifier = "==0.4.13" },
