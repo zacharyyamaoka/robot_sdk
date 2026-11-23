@@ -47,6 +47,9 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = ["pytest"]
+# examples/pick_and_place.py: the simulated UR5e (MuJoCo, pinned as sim2real's and robot_controllers' extras) and its plots.
+# WHY a group, not a dependency: the metapackage pins packages; an example's simulator and plotting stay opt-in.
+examples = ["mujoco==3.11.0", "matplotlib>=3.8"]
 
 # Local development: every package resolves to its sibling checkout, editable,
 # so one `uv sync` here gives a workspace over all of them (vcstool + colcon, ROS-style).
