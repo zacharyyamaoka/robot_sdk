@@ -1,0 +1,48 @@
+[project]
+name = "robot-stack"
+version = "0.1.0"
+description = "One install for the robot-* packages: versions pinned to a set known to work together (a distro, like a ROS release)."
+readme = "README.md"
+requires-python = ">=3.11"
+# WHY (Zach, 2026-11-23): the packages stay separate repos and separate PyPI names;
+# this metapackage only pins which versions go together. Core layers use ~= (patch
+# updates only) because every leaf imports them; leaves move fast on 0.x.
+dependencies = [
+  # core vocabulary - every package imports these
+  "robot-msgs~=0.3.0",
+  "robot-models-lib~=0.2.0",
+  # leaves - depend on core only, never on each other
+  "robot-controllers~=0.1.0",
+  "robot-reach~=0.1.0",
+  "robot-thermal~=0.1.0",
+  "robot-trajectories~=0.1.0",
+  "robot-autonomy~=0.1.0",
+  "robot-metrics~=0.1.0",
+  "robot-activity~=0.1.1",
+  # outer API - may import everything below
+  "sim2real~=0.1.0",
+  # communication
+  "like_keras~=0.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = ["pytest"]
+
+# Local development: every package resolves to its sibling checkout, editable,
+# so one `uv sync` here gives a workspace over all of them (vcstool + colcon, ROS-style).
+[tool.uv.sources]
+robot-msgs = { path = "../robot_msgs", editable = true }
+robot-models-lib = { path = "../robot_models", editable = true }
+robot-controllers = { path = "../robot_controllers", editable = true }
+robot-reach = { path = "../robot_reach", editable = true }
+robot-thermal = { path = "../robot_thermal", editable = true }
+robot-trajectories = { path = "../robot_trajectories", editable = true }
+robot-autonomy = { path = "../robot_autonomy", editable = true }
+robot-metrics = { path = "../robot_metrics", editable = true }
+robot-activity = { path = "../robot_activity", editable = true }
+sim2real = { path = "../sim2real", editable = true }
+like_keras = { path = "../like_keras", editable = true }
