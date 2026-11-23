@@ -22,7 +22,7 @@ robot-sdk pins all of it.   Clank is the workbench that uses it.</pre></div>
 <tr><th>Repo</th><th>PyPI name</th><th>Version</th><th>Layer</th><th>main</th><th>GitHub CI</th><th>Note</th></tr>
 <tr><td><a href='https://github.com/zacharyyamaoka/robot_msgs'>robot_msgs</a></td><td><code>robot-msgs</code></td><td>0.3.1</td><td>vocabulary</td><td><code>cf3709b</code></td><td class='ok'>green</td><td>0.3.0 already on PyPI; 0.3.1 adds AllowedCollisionMatrix + NamedPose.description</td></tr>
 <tr><td><a href='https://github.com/zacharyyamaoka/robot_models'>robot_models</a></td><td><code>robot-models-lib</code></td><td>0.3.0</td><td>models</td><td><code>ad7faf3</code></td><td class='ok'>green</td><td>0.2.0 on PyPI; 0.3.0 adds model_family. PyPI refuses the name robot-models</td></tr>
-<tr><td><a href='https://github.com/zacharyyamaoka/robot_trajectories'>robot_trajectories</a></td><td><code>robot-trajectories</code></td><td>0.1.0</td><td>leaf</td><td><code>e679750</code></td><td class='bad'>flaky by runner CPU (fix in progress)</td><td>bit-exact tests differ on non-AVX-512 runners (numpy SIMD dispatch, ≤7e-12): the Trajectory Tracking Agent is landing a two-tier fix, then the TrajectoryGenerator rename</td></tr>
+<tr><td><a href='https://github.com/zacharyyamaoka/robot_trajectories'>robot_trajectories</a></td><td><code>robot-trajectories</code></td><td>0.1.0</td><td>leaf</td><td><code>aad4cd9</code></td><td class='ok'>green (3.11–3.13: 170 pass + AVX2 tier)</td><td>TrajectoryGenerator / WaypointTrajectoryGenerator rename landed (old names kept as aliases); bit-exact v6 digests on AVX-512 + a tolerance fingerprint on every CPU</td></tr>
 <tr><td><a href='https://github.com/zacharyyamaoka/robot_reach'>robot_reach</a></td><td><code>robot-reach</code></td><td>0.1.0</td><td>leaf</td><td><code>e960193</code></td><td class='warn'>red until robot-msgs 0.3.1 is on PyPI</td><td>needs NamedPose.description; viser-3d-viewer moved to a dev group (viewers fall back to viser)</td></tr>
 <tr><td><a href='https://github.com/zacharyyamaoka/robot_controllers'>robot_controllers</a></td><td><code>robot-controllers</code></td><td>0.1.0</td><td>leaf</td><td><code>20daa37</code></td><td class='ok'>green</td><td>was private; fixed a results/ path that broke from an installed wheel</td></tr>
 <tr><td><a href='https://github.com/zacharyyamaoka/robot_thermal'>robot_thermal</a></td><td><code>robot-thermal</code></td><td>0.1.0</td><td>leaf</td><td><code>1b0ed9e</code></td><td class='ok'>green</td><td>new repo; stdlib-only core, robot-msgs is an extra</td></tr>
@@ -56,7 +56,7 @@ robot-sdk pins all of it.   Clank is the workbench that uses it.</pre></div>
 
 <h2>Not done / deliberately not</h2>
 <ul>
-<li>No PyPI release, no tags — blocked on the publishers, plus robot_trajectories (CPU-dependent test fix, then the TrajectoryGenerator rename).</li>
+<li>No PyPI release, no tags — blocked on the publishers.</li>
 <li>robot_parts / robot_descriptions are not packages yet (robotparts is a site; descriptions live in <code>bam_ws</code>), so they are in the map as planned, not pinned.</li>
 <li>robot_msgs' <code>site</code> workflow is red from a peer's in-flight website work (it was red before today); its package tests are green.</li>
 <li>No audit was run. Worth a <code>/llm-judge</code> only if you want a second read on the secrets judgement calls before PyPI.</li>

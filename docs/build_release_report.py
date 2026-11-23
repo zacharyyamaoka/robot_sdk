@@ -4,7 +4,7 @@ import html, pathlib, sys
 ROWS = [  # repo, pypi name, version, layer, main sha, CI, note
     ("robot_msgs", "robot-msgs", "0.3.1", "vocabulary", "cf3709b", "green", "0.3.0 already on PyPI; 0.3.1 adds AllowedCollisionMatrix + NamedPose.description"),
     ("robot_models", "robot-models-lib", "0.3.0", "models", "ad7faf3", "green", "0.2.0 on PyPI; 0.3.0 adds model_family. PyPI refuses the name robot-models"),
-    ("robot_trajectories", "robot-trajectories", "0.1.0", "leaf", "e679750", "flaky by runner CPU (fix in progress)", "bit-exact tests differ on non-AVX-512 runners (numpy SIMD dispatch, ≤7e-12): the Trajectory Tracking Agent is landing a two-tier fix, then the TrajectoryGenerator rename"),
+    ("robot_trajectories", "robot-trajectories", "0.1.0", "leaf", "aad4cd9", "green (3.11–3.13: 170 pass + AVX2 tier)", "TrajectoryGenerator / WaypointTrajectoryGenerator rename landed (old names kept as aliases); bit-exact v6 digests on AVX-512 + a tolerance fingerprint on every CPU"),
     ("robot_reach", "robot-reach", "0.1.0", "leaf", "e960193", "red until robot-msgs 0.3.1 is on PyPI", "needs NamedPose.description; viser-3d-viewer moved to a dev group (viewers fall back to viser)"),
     ("robot_controllers", "robot-controllers", "0.1.0", "leaf", "20daa37", "green", "was private; fixed a results/ path that broke from an installed wheel"),
     ("robot_thermal", "robot-thermal", "0.1.0", "leaf", "1b0ed9e", "green", "new repo; stdlib-only core, robot-msgs is an extra"),
@@ -70,7 +70,7 @@ robot-sdk pins all of it.   Clank is the workbench that uses it.</pre></div>
 
 <h2>Not done / deliberately not</h2>
 <ul>
-<li>No PyPI release, no tags — blocked on the publishers, plus robot_trajectories (CPU-dependent test fix, then the TrajectoryGenerator rename).</li>
+<li>No PyPI release, no tags — blocked on the publishers.</li>
 <li>robot_parts / robot_descriptions are not packages yet (robotparts is a site; descriptions live in <code>bam_ws</code>), so they are in the map as planned, not pinned.</li>
 <li>robot_msgs' <code>site</code> workflow is red from a peer's in-flight website work (it was red before today); its package tests are green.</li>
 <li>No audit was run. Worth a <code>/llm-judge</code> only if you want a second read on the secrets judgement calls before PyPI.</li>
