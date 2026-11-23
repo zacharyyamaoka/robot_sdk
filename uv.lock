@@ -421,7 +421,7 @@ requires-dist = [
 provides-extras = ["plot", "viz", "test"]
 
 [[package]]
-name = "robot-stack"
+name = "robot-sdk"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

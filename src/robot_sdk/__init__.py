@@ -1,4 +1,4 @@
-"""robot-stack: the pinned set of robot-* packages. Holds no code of its own."""
+"""robot-sdk: the pinned set of robot-* packages. Holds no code of its own."""
 
 # Layer of each package, bottom to top. tools/check_layers.py enforces the rule
 # that a package imports only from layers below it (leaves never import each other).

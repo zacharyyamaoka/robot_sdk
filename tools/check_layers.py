@@ -8,7 +8,7 @@ import sys
 import tomllib
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
-from robot_stack import LAYERS  # noqa: E402
+from robot_sdk import LAYERS  # noqa: E402
 
 RANK = {"vocabulary": 0, "models": 1, "leaf": 2, "comms": 2, "outer": 3}
 ROOT = pathlib.Path(__file__).resolve().parents[2]  # /home/bam

@@ -4,7 +4,7 @@ import pathlib
 
 import pytest
 
-from robot_stack import LAYERS
+from robot_sdk import LAYERS
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "tools"))
 import check_layers  # noqa: E402

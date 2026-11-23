@@ -1,5 +1,5 @@
 [project]
-name = "robot-stack"
+name = "robot-sdk"
 version = "0.1.0"
 description = "One install for the robot-* packages: versions pinned to a set known to work together (a distro, like a ROS release)."
 readme = "README.md"

@@ -1,11 +1,12 @@
-# robot-stack
+# robot-sdk
 
-One install for the `robot-*` packages, with versions pinned to a set known to work together.
+A generic, unbranded robotics backend in plain Python: messages, models, controllers, reach, thermal limits, trajectories and sim-to-real calibration.
+`robot-sdk` is one install for all of the `robot-*` packages, with versions pinned to a set known to work together.
 It's a distribution, like a ROS release (Jazzy) or LAAS's robotpkg, which ships Pinocchio.
 This package holds no code of its own. Each package keeps its own repo, its own PyPI name and its own release schedule.
 
 ```bash
-pip install robot-stack
+pip install robot-sdk
 ```
 
 ## The layers (bottom to top)
@@ -34,7 +35,7 @@ pip install robot-stack
 `uv sync` in this repo installs every package editable from its sibling checkout in `/home/bam/` (see `[tool.uv.sources]`): one environment, one lockfile, any package editable. The same idea as ROS's vcstool + colcon workspace.
 
 ```bash
-uv --directory /home/bam/robot_stack run pytest
+uv --directory /home/bam/robot_sdk run pytest
 ```
 
 ## Releasing a new stack version
