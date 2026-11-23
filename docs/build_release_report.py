@@ -1,0 +1,78 @@
+"""Build reports/robot-sdk-release-2026-11-23.html from the facts below (re-run after updating them)."""
+import html, pathlib, sys
+
+ROWS = [  # repo, pypi name, version, layer, main sha, CI, note
+    ("robot_msgs", "robot-msgs", "0.3.1", "vocabulary", "cf3709b", "green", "0.3.0 already on PyPI; 0.3.1 adds AllowedCollisionMatrix + NamedPose.description"),
+    ("robot_models", "robot-models-lib", "0.3.0", "models", "ad7faf3", "green", "0.2.0 on PyPI; 0.3.0 adds model_family. PyPI refuses the name robot-models"),
+    ("robot_trajectories", "robot-trajectories", "0.1.0", "leaf", "0bfa4b4", "3.11 + 3.12 green, 3.13 red", "4 bit-for-bit v6 tests differ on CPython 3.13: the Trajectory Tracking Agent owns it, after its TimeParameterization rename"),
+    ("robot_reach", "robot-reach", "0.1.0", "leaf", "e960193", "red until robot-msgs 0.3.1 is on PyPI", "needs NamedPose.description; viser-3d-viewer moved to a dev group (viewers fall back to viser)"),
+    ("robot_controllers", "robot-controllers", "0.1.0", "leaf", "20daa37", "green", "was private; fixed a results/ path that broke from an installed wheel"),
+    ("robot_thermal", "robot-thermal", "0.1.0", "leaf", "1b0ed9e", "green", "new repo; stdlib-only core, robot-msgs is an extra"),
+    ("robot_metrics", "robot-metrics", "0.1.0", "leaf", "68e0d3e", "green", ""),
+    ("robot_activity", "robot-activity", "0.1.1", "leaf", "06b6094", "green", ""),
+    ("robot_autonomy", "robot-autonomy", "0.1.0", "leaf", "8c9e83d", "green", "was private; description unbranded"),
+    ("like_keras", "like_keras", "0.1.0", "comms", sys.argv[1] if len(sys.argv) > 1 else "?", sys.argv[2] if len(sys.argv) > 2 else "?", "new public repo; the old GUI-era repo is now private like_keras-legacy"),
+    ("sim2real", "sim2real", "0.1.0", "outer", "986fd52", "red until robot-models-lib 0.3.0 is on PyPI", "CI runs the 29 test files that need no other checkout (333 pass)"),
+    ("robot_sdk", "robot-sdk", "0.1.0", "distro", "see repo", "tested locally (13 pass)", "the metapackage + the agent skill"),
+]
+
+def esc(s): return html.escape(str(s))
+def ci_class(c): return "ok" if c.startswith(("green", "tested")) else ("warn" if "until" in c or "3.13" in c else "bad")
+rows = "\n".join(
+    f"<tr><td><a href='https://github.com/zacharyyamaoka/{r}'>{esc(r)}</a></td><td><code>{esc(n)}</code></td><td>{esc(v)}</td>"
+    f"<td>{esc(l)}</td><td><code>{esc(s)}</code></td><td class='{ci_class(c)}'>{esc(c)}</td><td>{esc(note)}</td></tr>"
+    for r, n, v, l, s, c, note in ROWS)
+
+page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>robot-sdk Release</title><style>
+:root{{--bg:#fff;--fg:#1d1d1f;--mut:#666;--line:#e2e2e2;--ok:#1a7f37;--warn:#9a6700;--bad:#cf222e;--acc:#2a6df4;--card:#f6f7f9}}
+@media (prefers-color-scheme:dark){{:root{{--bg:#16171a;--fg:#e8e8ea;--mut:#9a9aa0;--line:#2e2f35;--ok:#4ac26b;--warn:#d4a72c;--bad:#ff7b72;--acc:#6c9cff;--card:#1e2024}}}}
+body{{background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,sans-serif;max-width:1150px;margin:28px auto;padding:0 16px}}
+h1{{margin:0 0 4px}}.lead{{font-size:17px}}.mut{{color:var(--mut)}}a{{color:var(--acc)}}
+.wrap{{overflow-x:auto}}table{{border-collapse:collapse;width:100%;font-size:14px}}td,th{{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}}
+th{{color:var(--mut);font-weight:600}}.ok{{color:var(--ok)}}.warn{{color:var(--warn)}}.bad{{color:var(--bad)}}
+.card{{background:var(--card);border-radius:10px;padding:12px 16px;margin:14px 0}}pre{{background:var(--card);padding:10px;border-radius:8px;overflow-x:auto}}
+</style></head><body>
+<h1>robot-sdk: 12 public repos, ready for PyPI</h1>
+<p class="lead"><b>Every package in the SDK is public on GitHub, pinned in <code>robot-sdk</code>, scanned and wheel-tested.</b> Nothing is on PyPI yet beyond the two that already were: publishing waits on one sign-in step only you can do (10 PyPI pending publishers), then tags go out in dependency order.</p>
+
+<div class="card"><b>The layers</b> (a package imports only from what comes before it here; leaves never import each other; <code>tools/check_layers.py</code> enforces it, mutation-tested):
+<pre>robot_msgs → robot_models → (robot_parts → robot_descriptions, planned)
+  → robot_trajectories · robot_reach · robot_controllers · robot_thermal · robot_metrics · robot_activity · robot_autonomy · like_keras
+  → sim2real
+robot-sdk pins all of it.   Clank is the workbench that uses it.</pre></div>
+
+<h2>Per package</h2><div class="wrap"><table>
+<tr><th>Repo</th><th>PyPI name</th><th>Version</th><th>Layer</th><th>main</th><th>GitHub CI</th><th>Note</th></tr>
+{rows}</table></div>
+<p class="mut">Every repo: full-history secrets / private-data scan (detect-secrets + regex sweep, each hit judged — none real); MIT licence; PyPI metadata with GitHub URLs; <code>publish.yml</code> (trusted publishing, no tokens) + <code>test.yml</code>; the built wheel installed into a fresh venv and its modules imported and tests run against it.</p>
+
+<h2>The agent skill</h2>
+<p><code>robot_sdk/skill/SKILL.md</code>: one row per package (what it is, when to reach for it, then read its README), the layer rule and three example assemblies. Linked into all 7 Claude accounts and Codex's context; a memory line tells every session to load it before writing robotics code. A fresh headless session asked to "generate UR5e test trajectories and score tracking" named the skill and planned <code>JointSpace.from_description</code> → <code>random_waypoints</code> + Ruckig → robot_reach → JTC <code>tick</code> → robot_metrics without writing code.</p>
+
+<h2>Needs you</h2>
+<ol>
+<li><b>PyPI pending publishers (10).</b> Sign-in is yours. The setup page has a Copy button per field: <code>reports/pypi-publishers-2026-11-23.html</code>. Or sign in to PyPI in the Claude browser pane and say so — the session fills them in. Then: tag msgs → models → leaves → sim2real → robot-sdk, and check <code>pip install robot-sdk</code> from PyPI.</li>
+<li><b>Two names before release</b> (raised by the Trajectory Tracking Agent): robot_trajectories <code>TimeLaw</code> → <code>TimeParameterization</code> (recommended yes: unreleased, so free — that agent is already doing it on a branch); robot_msgs reusing <code>JointCommand</code> for controller output (recommended: ship 0.3.1 now, reuse in 0.4.0 if you want it — 0.3.0 is already public with the old meaning).</li>
+</ol>
+
+<h2>Decided for you (each undoable)</h2>
+<ul>
+<li>Named it <code>robot-sdk</code>; repo <code>/home/bam/robot_sdk</code>, public. Undo: <code>gh repo edit zacharyyamaoka/robot_sdk --visibility private</code>.</li>
+<li>Made robot_controllers, robot_autonomy public; created robot_reach, robot_thermal, robot_trajectories, like_keras, robot_sdk public. Undo: the same <code>--visibility private</code> per repo.</li>
+<li>Renamed the old private <code>like_keras</code> (GUI era, unscanned history) to <code>like_keras-legacy</code> and pointed <code>~/bam_ws/src/core/like_keras</code>'s remote at it, so the new public repo could take the name. Undo: rename both back.</li>
+<li>Version bumps: robot-msgs 0.3.1 (patch: additive), robot-models-lib 0.3.0 (minor: new API). Kept <code>robot-models-lib</code> — PyPI refuses <code>robot-models</code> as too close to <code>robotmodels</code>.</li>
+<li>Fixed CI issues the first public runs exposed: robot_trajectories' self-check iterated a deliberately broken test kind (<code>0bfa4b4</code>); like_keras CI needed GTest, Google Benchmark, the dora extra and the venv's own Python.</li>
+</ul>
+
+<h2>Not done / deliberately not</h2>
+<ul>
+<li>No PyPI release, no tags — blocked only on the publishers.</li>
+<li>robot_parts / robot_descriptions are not packages yet (robotparts is a site; descriptions live in <code>bam_ws</code>), so they are in the map as planned, not pinned.</li>
+<li>robot_msgs' <code>site</code> workflow is red from a peer's in-flight website work (it was red before today); its package tests are green.</li>
+<li>No audit was run. Worth a <code>/llm-judge</code> only if you want a second read on the secrets judgement calls before PyPI.</li>
+</ul>
+</body></html>"""
+out = pathlib.Path("/home/bam/robot_sdk/reports/robot-sdk-release-2026-11-23.html")
+out.write_text(page)
+print(out)
