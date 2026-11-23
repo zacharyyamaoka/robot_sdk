@@ -4,7 +4,7 @@ import html, pathlib, sys
 ROWS = [  # repo, pypi name, version, layer, main sha, CI, note
     ("robot_msgs", "robot-msgs", "0.3.1", "vocabulary", "cf3709b", "green", "0.3.0 already on PyPI; 0.3.1 adds AllowedCollisionMatrix + NamedPose.description"),
     ("robot_models", "robot-models-lib", "0.3.0", "models", "ad7faf3", "green", "0.2.0 on PyPI; 0.3.0 adds model_family. PyPI refuses the name robot-models"),
-    ("robot_trajectories", "robot-trajectories", "0.1.0", "leaf", "0bfa4b4", "flaky by runner CPU (fix in progress)", "bit-exact tests differ on non-AVX-512 runners (numpy SIMD dispatch, ≤7e-12): the Trajectory Tracking Agent is landing a two-tier fix, then the TrajectoryGenerator rename"),
+    ("robot_trajectories", "robot-trajectories", "0.1.0", "leaf", "e679750", "flaky by runner CPU (fix in progress)", "bit-exact tests differ on non-AVX-512 runners (numpy SIMD dispatch, ≤7e-12): the Trajectory Tracking Agent is landing a two-tier fix, then the TrajectoryGenerator rename"),
     ("robot_reach", "robot-reach", "0.1.0", "leaf", "e960193", "red until robot-msgs 0.3.1 is on PyPI", "needs NamedPose.description; viser-3d-viewer moved to a dev group (viewers fall back to viser)"),
     ("robot_controllers", "robot-controllers", "0.1.0", "leaf", "20daa37", "green", "was private; fixed a results/ path that broke from an installed wheel"),
     ("robot_thermal", "robot-thermal", "0.1.0", "leaf", "1b0ed9e", "green", "new repo; stdlib-only core, robot-msgs is an extra"),
@@ -14,7 +14,7 @@ ROWS = [  # repo, pypi name, version, layer, main sha, CI, note
     ("like_keras", "like_keras", "0.1.0", "comms", sys.argv[1] if len(sys.argv) > 1 else "?", sys.argv[2] if len(sys.argv) > 2 else "?", "new public repo; the old GUI-era repo is now private like_keras-legacy"),
     ("sim2real", "sim2real", "0.1.0", "outer", "986fd52", "red until robot-models-lib 0.3.0 is on PyPI", "CI runs the 29 test files that need no other checkout (333 pass)"),
     ("robot_diagnostics", "robot-diagnostics", "0.1.0", "checks", "d4454fe", "green (314 pass; 91 wait for metrics + sim2real on PyPI)", "new: split out of io-diagnostics (robotdx) with history; stdlib core, `stock` extra. io-diagnostics now depends on it (bf1e72c)"),
-    ("robot_sdk", "robot-sdk", "0.1.0", "distro", "see repo", "tested locally (13 pass)", "the metapackage + the agent skill"),
+    ("robot_sdk", "robot-sdk", "0.1.0", "distro", "see repo", "tested locally (14 pass)", "the metapackage + the agent skill"),
 ]
 
 def esc(s): return html.escape(str(s))
