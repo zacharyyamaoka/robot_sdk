@@ -28,15 +28,11 @@ pip install robot-sdk
 
 **Dependency rule:** a package imports only from layers below it. Leaves never import each other: when one needs another's behaviour it declares a Protocol or takes a function as an argument. `tools/check_layers.py` enforces this.
 
-**Not in here:** Clank (`~/clank-workbench`) is the workbench that *uses* this stack, the way RViz uses ROS. robotparts.dev is the catalog site.
+**Not in here:** GUIs and workbenches. They *use* the SDK, the way RViz uses ROS.
 
 ## Develop across all of them
 
-`uv sync` in this repo installs every package editable from its sibling checkout in `/home/bam/` (see `[tool.uv.sources]`): one environment, one lockfile, any package editable. The same idea as ROS's vcstool + colcon workspace.
-
-```bash
-uv --directory /home/bam/robot_sdk run pytest
-```
+Clone each package's repo next to this one (`../robot_msgs`, `../robot_models`, …), then `uv sync` here installs every package editable from those checkouts (see `[tool.uv.sources]`): one environment, one lockfile. The same idea as ROS's vcstool + colcon workspace. `uv sync --no-sources` installs the released versions from PyPI instead.
 
 ## Releasing a new stack version
 

@@ -1,9 +1,19 @@
 [project]
 name = "robot-sdk"
 version = "0.1.0"
-description = "One install for the robot-* packages: versions pinned to a set known to work together (a distro, like a ROS release)."
+description = "A generic robotics backend in Python: one install for the robot-* packages, pinned to versions that work together."
 readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "Zach Yamaoka"}]
+keywords = ["robotics", "robot", "sdk", "sim2real", "kinematics", "control"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering",
+  "Intended Audience :: Science/Research",
+]
 # WHY (Zach, 2026-11-23): the packages stay separate repos and separate PyPI names;
 # this metapackage only pins which versions go together. Core layers use ~= (patch
 # updates only) because every leaf imports them; leaves move fast on 0.x.
@@ -24,6 +34,10 @@ dependencies = [
   # communication
   "like_keras~=0.1.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/zacharyyamaoka/robot_sdk"
+Repository = "https://github.com/zacharyyamaoka/robot_sdk"
 
 [build-system]
 requires = ["hatchling"]
