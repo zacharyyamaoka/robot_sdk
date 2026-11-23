@@ -9,6 +9,10 @@ This package holds no code of its own. Each package keeps its own repo, its own 
 pip install robot-sdk
 ```
 
+## For AI agents
+
+[`skill/SKILL.md`](skill/SKILL.md) is an agent skill (Claude Code / Codex format): an index of every package and what it's for, so a coding agent assembles new robotics work from these packages instead of rewriting it. Link the `skill/` folder into your agent's skills directory as `robot-sdk`.
+
 ## The layers (bottom to top)
 
 | Layer | Package (PyPI) | Repo | Rule |
