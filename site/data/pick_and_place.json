@@ -28,21 +28,21 @@
       "call": "robot_controllers.controller(\"joint_trajectory_controller\").build(trajectory).tick(state, dt)",
       "input_type": "JointTrajectory, then JointState each tick",
       "output_type": "robot_msgs ServoCommand each tick",
-      "one_line_result": "2924 ticks at 500 Hz on the simulated (MuJoCo) UR5e, status 'done'; median tick 11 us; peak servo torque 39.5 N.m (shoulder_lift)"
+      "one_line_result": "2924 ticks at 500 Hz on the simulated (MuJoCo) UR5e, status 'done'; median tick 12 us; peak servo torque 39.5 N.m (shoulder_lift)"
     },
     {
       "package": "robot_metrics",
       "call": "robot_metrics.Collection([Alias(ErrorStat), Alias(StopStat), ...]).fold(Run)",
       "input_type": "Run{target, state: JointTrajectory; tool/target, tool/state: PoseTrajectory}",
       "output_type": "dict of values with units",
-      "one_line_result": "tool error RMS 9.15 mm, max 12.28 mm; worst joint tracking shoulder_lift max 15.63 mrad; worst stop error shoulder_lift 14.648 mrad"
+      "one_line_result": "tool error RMS 9.15 mm, max 12.28 mm; worst joint tracking shoulder_lift max 0.90 deg; worst stop error shoulder_lift 0.839 deg"
     },
     {
       "package": "robot_diagnostics",
       "call": "robot_diagnostics.evaluate(\"stock.stop_error\", DEFAULTS[\"servo.stop_error\"], [Trajectory])",
       "input_type": "robot_diagnostics Trajectory per joint",
       "output_type": "robot_diagnostics Result (DiagnosticStatus shape)",
-      "one_line_result": "FAIL: worst ur5e/shoulder_lift p90 14.202 mrad vs limit 3.6 mrad (3/6 joints pass)"
+      "one_line_result": "FAIL: worst ur5e/shoulder_lift p90 0.814 deg vs limit 0.206 deg (3/6 joints pass)"
     }
   ],
   "skipped": [
@@ -61,11 +61,11 @@
     "media/pick_and_place_tracking_error.png"
   ],
   "run": {
-    "date": "2026-11-23T15:15:37-07:00",
-    "runtime_s": 1.64,
+    "date": "2026-11-23T15:18:44-07:00",
+    "runtime_s": 1.69,
     "mujoco": "3.11.0",
     "git": {
-      "robot_sdk": "c19f631",
+      "robot_sdk": "3a83329-dirty",
       "robot_msgs": "cf3709b-dirty",
       "robot_reach": "72a29f8-dirty",
       "robot_trajectories": "aad4cd9-dirty",
