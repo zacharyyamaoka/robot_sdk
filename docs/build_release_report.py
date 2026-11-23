@@ -62,12 +62,12 @@ robot-sdk pins all of it.   Clank is the workbench that uses it.</pre></div>
 <li>Made robot_controllers, robot_autonomy public; created robot_reach, robot_thermal, robot_trajectories, like_keras, robot_sdk public. Undo: the same <code>--visibility private</code> per repo.</li>
 <li>Renamed the old private <code>like_keras</code> (GUI era, unscanned history) to <code>like_keras-legacy</code> and pointed <code>~/bam_ws/src/core/like_keras</code>'s remote at it, so the new public repo could take the name. Undo: rename both back.</li>
 <li>Version bumps: robot-msgs 0.3.1 (patch: additive), robot-models-lib 0.3.0 (minor: new API). Kept <code>robot-models-lib</code> — PyPI refuses <code>robot-models</code> as too close to <code>robotmodels</code>.</li>
-<li>Fixed CI issues the first public runs exposed: robot_trajectories' self-check iterated a deliberately broken test kind (<code>0bfa4b4</code>); like_keras CI needed GTest, Google Benchmark, the dora extra and the venv's own Python.</li>
+<li>Fixed CI issues the first public runs exposed: robot_trajectories' self-check iterated a deliberately broken test kind (<code>0bfa4b4</code>); like_keras CI needed GTest, Google Benchmark, the dora extra, the venv's own Python, the lk-dora-host build and an unlimited memlock; its publish job now reuses test.yml.</li>
 </ul>
 
 <h2>Not done / deliberately not</h2>
 <ul>
-<li>No PyPI release, no tags — blocked only on the publishers.</li>
+<li>No PyPI release, no tags — blocked on the publishers, plus robot_trajectories going green on Python 3.13 (the Trajectory Tracking Agent).</li>
 <li>robot_parts / robot_descriptions are not packages yet (robotparts is a site; descriptions live in <code>bam_ws</code>), so they are in the map as planned, not pinned.</li>
 <li>robot_msgs' <code>site</code> workflow is red from a peer's in-flight website work (it was red before today); its package tests are green.</li>
 <li>No audit was run. Worth a <code>/llm-judge</code> only if you want a second read on the secrets judgement calls before PyPI.</li>
