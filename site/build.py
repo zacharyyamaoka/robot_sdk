@@ -56,6 +56,15 @@ def spread(count: int, left: float, right: float) -> list[float]:
     return [left + i * step for i in range(count)]
 
 
+def line_anchor(evidence: str) -> str:
+    """'src/x.py:31-33' -> 'src/x.py#L31-L33' (GitHub's line anchors)."""
+    path, _, lines = evidence.partition(":")
+    if not lines:
+        return path
+    first, _, last = lines.partition("-")
+    return f"{path}#L{first}" + (f"-L{last}" if last else "")
+
+
 def domain_svg(domain: dict) -> tuple[str, list[dict]]:
     packages = {p["repo"]: p for p in domain["packages"]}
     types = {t["name"]: t for t in domain["types"]}
@@ -306,6 +315,7 @@ figcaption { color:var(--muted); font-size:14px; margin-top:10px; max-width:900p
 .edge.produces { stroke:var(--accent); } .edge.consumes { stroke:var(--consume); }
 .edge.library { stroke:var(--muted); stroke-dasharray:6 5; stroke-width:1.6; opacity:0; }
 .domain.focus .edge.library.on { opacity:1; }
+.domain.focus .edge.library:not(.on) { opacity:0; }
 .edge.carries { stroke:var(--muted); stroke-width:1.6; stroke-dasharray:2 4; }
 .mk-produce { fill:var(--accent); } .mk-consume { fill:var(--consume); }
 .edge-note { fill:var(--muted); font-size:12px; }
@@ -445,7 +455,7 @@ def main() -> None:
     evidence = "".join(
         f'<tr><td><code>{esc(e["repo"])}</code></td><td>{"produces" if e["direction"] == "produces" else "consumes"}</td>'
         f'<td><code>{esc(e["type"])}</code></td><td>{esc(e["via"])}</td>'
-        f'<td><a href="{REPO_URL}/{esc(e["repo"])}/blob/main/{esc(e["evidence"].split(":")[0])}">{esc(e["evidence"])}</a></td></tr>'
+        f'<td><a href="{REPO_URL}/{esc(e["repo"])}/blob/main/{esc(line_anchor(e["evidence"]))}">{esc(e["evidence"])}</a></td></tr>'
         for e in edges)
 
     cards = "".join(
