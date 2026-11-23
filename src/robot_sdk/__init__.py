@@ -14,4 +14,5 @@ LAYERS = {
     "robot_activity": "leaf",
     "like_keras": "comms",
     "sim2real": "outer",
+    "robot_diagnostics": "checks",
 }

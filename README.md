@@ -29,6 +29,7 @@ pip install robot-sdk
 | leaf | `robot-activity` | `../robot_activity` | |
 | comms | `like_keras` | `../like_keras` | Components and ports over dora |
 | outer | `sim2real` | `../sim2real` | The one-click API (`RobotTwin`, `.calibrate()`). May import everything below |
+| checks | `robot-diagnostics` | `../robot_diagnostics` | Robot Diagnostics (RobotDx): a diagnostic = a metric + a threshold. Stdlib core; numpy, robot-metrics and sim2real via the `stock` extra |
 
 **Dependency rule:** a package imports only from layers below it. Leaves never import each other: when one needs another's behaviour it declares a Protocol or takes a function as an argument. `tools/check_layers.py` enforces this.
 

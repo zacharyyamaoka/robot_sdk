@@ -10,7 +10,7 @@ import tomllib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 from robot_sdk import LAYERS  # noqa: E402
 
-RANK = {"vocabulary": 0, "models": 1, "leaf": 2, "comms": 2, "outer": 3}
+RANK = {"vocabulary": 0, "models": 1, "leaf": 2, "comms": 2, "outer": 3, "checks": 4}
 ROOT = pathlib.Path(__file__).resolve().parents[2]  # /home/bam
 REPO_OF = {"robot_models": "robot_models"}  # import name == repo dir for all today
 

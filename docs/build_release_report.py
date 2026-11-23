@@ -4,7 +4,7 @@ import html, pathlib, sys
 ROWS = [  # repo, pypi name, version, layer, main sha, CI, note
     ("robot_msgs", "robot-msgs", "0.3.1", "vocabulary", "cf3709b", "green", "0.3.0 already on PyPI; 0.3.1 adds AllowedCollisionMatrix + NamedPose.description"),
     ("robot_models", "robot-models-lib", "0.3.0", "models", "ad7faf3", "green", "0.2.0 on PyPI; 0.3.0 adds model_family. PyPI refuses the name robot-models"),
-    ("robot_trajectories", "robot-trajectories", "0.1.0", "leaf", "0bfa4b4", "3.11 + 3.12 green, 3.13 red", "4 bit-for-bit v6 tests differ on CPython 3.13: the Trajectory Tracking Agent owns it, after its TimeParameterization rename"),
+    ("robot_trajectories", "robot-trajectories", "0.1.0", "leaf", "0bfa4b4", "flaky by runner CPU (fix in progress)", "bit-exact tests differ on non-AVX-512 runners (numpy SIMD dispatch, ≤7e-12): the Trajectory Tracking Agent is landing a two-tier fix, then the TrajectoryGenerator rename"),
     ("robot_reach", "robot-reach", "0.1.0", "leaf", "e960193", "red until robot-msgs 0.3.1 is on PyPI", "needs NamedPose.description; viser-3d-viewer moved to a dev group (viewers fall back to viser)"),
     ("robot_controllers", "robot-controllers", "0.1.0", "leaf", "20daa37", "green", "was private; fixed a results/ path that broke from an installed wheel"),
     ("robot_thermal", "robot-thermal", "0.1.0", "leaf", "1b0ed9e", "green", "new repo; stdlib-only core, robot-msgs is an extra"),
@@ -13,6 +13,7 @@ ROWS = [  # repo, pypi name, version, layer, main sha, CI, note
     ("robot_autonomy", "robot-autonomy", "0.1.0", "leaf", "8c9e83d", "green", "was private; description unbranded"),
     ("like_keras", "like_keras", "0.1.0", "comms", sys.argv[1] if len(sys.argv) > 1 else "?", sys.argv[2] if len(sys.argv) > 2 else "?", "new public repo; the old GUI-era repo is now private like_keras-legacy"),
     ("sim2real", "sim2real", "0.1.0", "outer", "986fd52", "red until robot-models-lib 0.3.0 is on PyPI", "CI runs the 29 test files that need no other checkout (333 pass)"),
+    ("robot_diagnostics", "robot-diagnostics", "0.1.0", "checks", "d4454fe", "green (314 pass; 91 wait for metrics + sim2real on PyPI)", "new: split out of io-diagnostics (robotdx) with history; stdlib core, `stock` extra. io-diagnostics now depends on it (bf1e72c)"),
     ("robot_sdk", "robot-sdk", "0.1.0", "distro", "see repo", "tested locally (13 pass)", "the metapackage + the agent skill"),
 ]
 
@@ -33,13 +34,14 @@ h1{{margin:0 0 4px}}.lead{{font-size:17px}}.mut{{color:var(--mut)}}a{{color:var(
 th{{color:var(--mut);font-weight:600}}.ok{{color:var(--ok)}}.warn{{color:var(--warn)}}.bad{{color:var(--bad)}}
 .card{{background:var(--card);border-radius:10px;padding:12px 16px;margin:14px 0}}pre{{background:var(--card);padding:10px;border-radius:8px;overflow-x:auto}}
 </style></head><body>
-<h1>robot-sdk: 12 public repos, ready for PyPI</h1>
-<p class="lead"><b>Every package in the SDK is public on GitHub, pinned in <code>robot-sdk</code>, scanned and wheel-tested.</b> Nothing is on PyPI yet beyond the two that already were: publishing waits on one sign-in step only you can do (10 PyPI pending publishers), then tags go out in dependency order.</p>
+<h1>robot-sdk: 13 public repos, ready for PyPI</h1>
+<p class="lead"><b>Every package in the SDK is public on GitHub, pinned in <code>robot-sdk</code>, scanned and wheel-tested.</b> Nothing is on PyPI yet beyond the two that already were: publishing waits on one sign-in step only you can do (11 PyPI pending publishers), then tags go out in dependency order.</p>
 
 <div class="card"><b>The layers</b> (a package imports only from what comes before it here; leaves never import each other; <code>tools/check_layers.py</code> enforces it, mutation-tested):
 <pre>robot_msgs → robot_models → (robot_parts → robot_descriptions, planned)
   → robot_trajectories · robot_reach · robot_controllers · robot_thermal · robot_metrics · robot_activity · robot_autonomy · like_keras
   → sim2real
+  → robot_diagnostics
 robot-sdk pins all of it.   Clank is the workbench that uses it.</pre></div>
 
 <h2>Per package</h2><div class="wrap"><table>
@@ -52,8 +54,8 @@ robot-sdk pins all of it.   Clank is the workbench that uses it.</pre></div>
 
 <h2>Needs you</h2>
 <ol>
-<li><b>PyPI pending publishers (10).</b> Sign-in is yours. The setup page has a Copy button per field: <code>reports/pypi-publishers-2026-11-23.html</code>. Or sign in to PyPI in the Claude browser pane and say so — the session fills them in. Then: tag msgs → models → leaves → sim2real → robot-sdk, and check <code>pip install robot-sdk</code> from PyPI.</li>
-<li><b>Two names before release</b> (raised by the Trajectory Tracking Agent): robot_trajectories <code>TimeLaw</code> → <code>TimeParameterization</code> (recommended yes: unreleased, so free — that agent is already doing it on a branch); robot_msgs reusing <code>JointCommand</code> for controller output (recommended: ship 0.3.1 now, reuse in 0.4.0 if you want it — 0.3.0 is already public with the old meaning).</li>
+<li><b>PyPI pending publishers (11).</b> Sign-in is yours. The setup page has a Copy button per field: <code>reports/pypi-publishers-2026-11-23.html</code>. Or sign in to PyPI in the Claude browser pane and say so — the session fills them in. Then: tag msgs → models → leaves → sim2real → robot-sdk, and check <code>pip install robot-sdk</code> from PyPI.</li>
+<li><b>Names: settled by you</b> (in the Trajectory Tracking Agent's chat): robot_msgs keeps ServoCommand/ServoState (no JointCommand reuse, ships as 0.3.1); robot_trajectories becomes TrajectoryGenerator / WaypointTrajectoryGenerator before its first release.</li>
 </ol>
 
 <h2>Decided for you (each undoable)</h2>
@@ -61,13 +63,14 @@ robot-sdk pins all of it.   Clank is the workbench that uses it.</pre></div>
 <li>Named it <code>robot-sdk</code>; repo <code>/home/bam/robot_sdk</code>, public. Undo: <code>gh repo edit zacharyyamaoka/robot_sdk --visibility private</code>.</li>
 <li>Made robot_controllers, robot_autonomy public; created robot_reach, robot_thermal, robot_trajectories, like_keras, robot_sdk public. Undo: the same <code>--visibility private</code> per repo.</li>
 <li>Renamed the old private <code>like_keras</code> (GUI era, unscanned history) to <code>like_keras-legacy</code> and pointed <code>~/bam_ws/src/core/like_keras</code>'s remote at it, so the new public repo could take the name. Undo: rename both back.</li>
+<li>Split <code>robotdx</code> out of io-diagnostics as <code>robot_diagnostics</code> (import <code>robot_diagnostics</code>, history kept); io-diagnostics keeps a <code>robotdx</code> alias. Undo: <code>git revert bf1e72c</code> in io-diagnostics. Note: Stable/Preview run system python, so the app loads the live sibling checkout of the library (not pinned) until it installs from PyPI.</li>
 <li>Version bumps: robot-msgs 0.3.1 (patch: additive), robot-models-lib 0.3.0 (minor: new API). Kept <code>robot-models-lib</code> — PyPI refuses <code>robot-models</code> as too close to <code>robotmodels</code>.</li>
 <li>Fixed CI issues the first public runs exposed: robot_trajectories' self-check iterated a deliberately broken test kind (<code>0bfa4b4</code>); like_keras CI needed GTest, Google Benchmark, the dora extra, the venv's own Python, the lk-dora-host build and an unlimited memlock; its publish job now reuses test.yml.</li>
 </ul>
 
 <h2>Not done / deliberately not</h2>
 <ul>
-<li>No PyPI release, no tags — blocked on the publishers, plus robot_trajectories going green on Python 3.13 (the Trajectory Tracking Agent).</li>
+<li>No PyPI release, no tags — blocked on the publishers, plus robot_trajectories (CPU-dependent test fix, then the TrajectoryGenerator rename).</li>
 <li>robot_parts / robot_descriptions are not packages yet (robotparts is a site; descriptions live in <code>bam_ws</code>), so they are in the map as planned, not pinned.</li>
 <li>robot_msgs' <code>site</code> workflow is red from a peer's in-flight website work (it was red before today); its package tests are green.</li>
 <li>No audit was run. Worth a <code>/llm-judge</code> only if you want a second read on the secrets judgement calls before PyPI.</li>

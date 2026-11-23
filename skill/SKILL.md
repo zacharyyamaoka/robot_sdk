@@ -1,6 +1,6 @@
 ---
 name: robot-sdk
-description: Index of the robot-sdk packages (robot_msgs, robot_models, robot_trajectories, robot_reach, robot_controllers, robot_thermal, robot_metrics, robot_activity, robot_autonomy, like_keras, sim2real) — what each one is for and where to read more. Use BEFORE writing any robotics code (trajectories, kinematics/reach, control, PID/tuning, motor heat, metrics, sim-to-real, twins, calibration, robot messages, poses, fleet uptime, robot comms), so a new task is assembled from these stable sub-assemblies instead of rewritten. Not for GUI/workbench work.
+description: Index of the robot-sdk packages (robot_msgs, robot_models, robot_trajectories, robot_reach, robot_controllers, robot_thermal, robot_metrics, robot_activity, robot_autonomy, like_keras, sim2real, robot_diagnostics) — what each one is for and where to read more. Use BEFORE writing any robotics code (trajectories, kinematics/reach, control, PID/tuning, motor heat, metrics, sim-to-real, twins, calibration, robot messages, poses, fleet uptime, robot comms, diagnostics and health checks), so a new task is assembled from these stable sub-assemblies instead of rewritten. Not for GUI/workbench work.
 ---
 
 # robot-sdk: assemble, don't rewrite
@@ -37,6 +37,7 @@ On a development machine the repos are checked out next to this one: if this ski
 | **robot_activity** | The Robot Activity Agent: measures whether each robot is doing useful work (claimed, active, moving), keeps a work queue moving, flags stalemates and gives every idle second a reason. | Fleet or robot utilisation, uptime dashboards, work queues. |
 | **robot_autonomy** | The Robot Autonomy Agent: working hours between human interventions, from every source (chat asks, logs, faults, tickets), with the causes ranked as a to-do list. | Measuring and driving down human interventions; autonomy KPIs. |
 | **like_keras** | The communication API: components with ports, systems that wire them from outside, deployments in one process or across the network. dora-rs is the first transport. (Design in progress: check `docs/CONTRACT.md`.) | Connecting robot components, sensors and processes; dataflows. |
+| **robot_diagnostics** (RobotDx) | Diagnostics as checks: a diagnostic = a metric + a threshold, with a registry, records (ROS `DiagnosticStatus` shape), roll-ups and ~33 stock checks: tracking and stop error, ISO 9283, frequency response, fidelity, coverage, feedback, health, camera, events. Stdlib-only core; the stock maths (numpy, robot_metrics, sim2real) is the `stock` extra, imported lazily. The io-diagnostics app (dashboard, device tree) uses it. | Is this robot, joint or sensor healthy? Pass/fail checks on runs, health dashboards, turning a metric into an alarm. |
 | **sim2real** | The outer API on top of everything: digital twins (`RobotTwin`), one-click `.calibrate()` (configure → fit → tune → measure routines), MuJoCo simulation, and dashboards of how close each twin is to its real hardware. May import every package above. | Twins, calibration, system identification, sim-vs-real comparison, the one-call API over a whole robot. |
 
 ### Close neighbours (not in the pinned SDK yet)
@@ -55,6 +56,7 @@ robot_msgs → robot_models → (robot_parts → robot_descriptions)
    → robot_trajectories · robot_reach · robot_controllers · robot_thermal · robot_metrics
      · robot_activity · robot_autonomy · like_keras
    → sim2real
+   → robot_diagnostics (checks over metrics and twins)
 ```
 
 - A package imports only from layers below it. **Leaves never import each other.** When one leaf needs another's behaviour, it takes a function or a Protocol as an argument, and the caller passes it in. Example: `robot_trajectories` never imports a kinematics library; you inject FK/IK into its `JointSpace`.
