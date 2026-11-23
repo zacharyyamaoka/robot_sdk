@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>robot-sdk</title>
+<meta name="description" content="A generic robotics backend in plain Python: small packages that join on one vocabulary, so a new robot task is mostly assembly.">
+<style>
+:root { --bg:#fbfaf7; --ink:#1f2328; --muted:#5f6670; --line:#e3dfd6; --card:#ffffff; --accent:#2f7d55; --accent-soft:#e8f2ec;
+  --consume:#3567b5; --consume-soft:#e7eef9; --band:#f3f1ec; --code:#f3f1ec; --warn:#9a5b00; --dim:.16; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#16181b; --ink:#e6e8eb; --muted:#a3a9b2; --line:#33373d;
+  --card:#1d2024; --accent:#7cc39b; --accent-soft:#1f3329; --consume:#8db4f0; --consume-soft:#1d2a3d; --band:#1f2226; --code:#24272c; --warn:#f0b35a; --dim:.22; } }
+:root[data-theme="dark"] { --bg:#16181b; --ink:#e6e8eb; --muted:#a3a9b2; --line:#33373d; --card:#1d2024; --accent:#7cc39b;
+  --accent-soft:#1f3329; --consume:#8db4f0; --consume-soft:#1d2a3d; --band:#1f2226; --code:#24272c; --warn:#f0b35a; --dim:.22; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:1200px; margin:0 auto; padding:40px 16px 64px; }
+a { color:var(--accent); }
+code, pre { font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }
+code { background:var(--code); padding:1px 5px; border-radius:5px; }
+.eyebrow { color:var(--muted); font-size:13px; letter-spacing:.03em; margin:0 0 6px; }
+h1 { font-size:44px; line-height:1.1; margin:0 0 10px; letter-spacing:-.02em; }
+h2 { font-size:26px; margin:56px 0 8px; letter-spacing:-.01em; }
+h3 { font-size:17px; margin:24px 0 6px; }
+.lede { font-size:19px; max-width:820px; margin:0 0 18px; }
+.muted { color:var(--muted); }
+.install { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:0 0 8px; }
+.install pre { margin:0; background:var(--code); padding:9px 14px; border-radius:9px; }
+.install button, .chip { font:inherit; font-size:13.5px; border:1px solid var(--line); background:var(--card); color:var(--ink);
+  border-radius:8px; padding:7px 12px; cursor:pointer; text-decoration:none; }
+figure { margin:28px 0 0; }
+.figure-card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:12px; overflow-x:auto; }
+.domain { width:100%; min-width:860px; height:auto; display:block; }
+figcaption { color:var(--muted); font-size:14px; margin-top:10px; max-width:900px; }
+.legend { display:flex; flex-wrap:wrap; gap:18px; font-size:14px; margin:10px 0 0; color:var(--muted); }
+.legend span::before { content:""; display:inline-block; width:22px; height:0; border-top:2.5px solid; vertical-align:middle; margin-right:6px; }
+.legend .lb::before { width:16px; height:12px; border:1px solid var(--line); background:var(--band); border-radius:3px; }
+.legend .lp::before { border-color:var(--accent); } .legend .lc::before { border-color:var(--consume); }
+.legend .ll::before { border-color:var(--muted); border-top-style:dashed; }
+/* diagram */
+.band { fill:var(--band); stroke:var(--line); }
+.band-label { fill:var(--muted); font-size:13px; paint-order:stroke; stroke:var(--band); stroke-width:5px; }
+.type rect { fill:var(--card); stroke:var(--ink); stroke-width:1.2; }
+.type text { fill:var(--ink); font:600 12.5px ui-monospace,Menlo,monospace; }
+.pkg rect { fill:var(--card); stroke:var(--line); stroke-width:1.5; }
+.pkg.layer-outer rect, .pkg.layer-checks rect { stroke:var(--accent); }
+.pkg.own rect { stroke-dasharray:4 3; }
+.pkg-name { fill:var(--ink); font:600 13.5px ui-monospace,Menlo,monospace; }
+.pkg-layer { fill:var(--muted); font-size:12px; }
+.pkg, .type { cursor:pointer; outline:none; }
+.edge { fill:none; stroke-width:2; opacity:.85; transition:opacity .15s; }
+.edge.produces { stroke:var(--accent); } .edge.consumes { stroke:var(--consume); }
+.edge.library { stroke:var(--muted); stroke-dasharray:6 5; stroke-width:1.6; opacity:0; }
+.domain.focus .edge.library.on { opacity:1; }
+.edge.carries { stroke:var(--muted); stroke-width:1.6; stroke-dasharray:2 4; }
+.mk-produce { fill:var(--accent); } .mk-consume { fill:var(--consume); }
+.edge-note { fill:var(--muted); font-size:12px; }
+.domain.focus .edge, .domain.focus .pkg, .domain.focus .type { opacity:var(--dim); }
+.domain.focus .on { opacity:1 !important; }
+.domain.focus .edge.on { stroke-width:3; }
+/* evidence */
+details { margin-top:14px; }
+summary { cursor:pointer; color:var(--muted); font-size:14px; }
+table { border-collapse:collapse; width:100%; font-size:13.5px; margin-top:8px; }
+td, th { border-bottom:1px solid var(--line); padding:5px 8px; text-align:left; vertical-align:top; }
+th { color:var(--muted); font-weight:600; }
+.table-wrap { overflow-x:auto; }
+/* pipeline */
+.pipeline { list-style:none; padding:0; margin:12px 0 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:12px; }
+.flow { width:100%; min-width:860px; height:auto; display:block; }
+.flow-node rect { fill:var(--card); stroke:var(--line); stroke-width:1.5; }
+.flow-node.plant rect { fill:var(--band); stroke-dasharray:5 4; stroke:var(--muted); }
+.flow-node.verdict-fail rect { stroke:var(--warn); stroke-width:2; }
+.flow-name { fill:var(--ink); font:600 14px ui-monospace,Menlo,monospace; }
+.flow-sub { fill:var(--muted); font-size:12.5px; }
+.flow-edge { fill:none; stroke:var(--accent); stroke-width:2; } .mk-flow { fill:var(--accent); }
+.flow-label { fill:var(--ink); font:12.5px ui-monospace,Menlo,monospace; paint-order:stroke; stroke:var(--card); stroke-width:5px; }
+.flow-result { fill:var(--muted); font-size:12.5px; } .flow-result.fail { fill:var(--warn); font-weight:600; }
+.stage { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 14px 12px; position:relative; }
+.stage.fail { border-color:var(--warn); } .stage.fail .stage-result { color:var(--warn); font-weight:600; }
+.run-meta { font-size:13px; margin-top:10px; }
+.stage-n { position:absolute; top:12px; right:14px; color:var(--muted); font-size:13px; }
+.stage-pkg a { font:600 14px ui-monospace,Menlo,monospace; text-decoration:none; }
+.stage-call { display:block; margin:6px 0; background:none; padding:0; font-size:12.5px; color:var(--muted); word-break:break-word; }
+.stage-io { font-size:13px; } .stage-io span { font-family:ui-monospace,Menlo,monospace; }
+.stage-result { font-size:13.5px; margin-top:8px; }
+.plots { display:grid; grid-template-columns:1fr; gap:22px; margin-top:22px; }
+.plots figure { margin:0; } .plots img { width:100%; height:auto; border:1px solid var(--line); border-radius:12px; background:#fff; display:block; }
+pre.code { background:var(--code); padding:14px 16px; border-radius:12px; overflow-x:auto; }
+/* packages */
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:12px; margin-top:16px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; }
+.card h3 { margin:0 0 4px; font:600 15px ui-monospace,Menlo,monospace; } .card h3 a { text-decoration:none; }
+.card p { margin:4px 0 8px; font-size:14.5px; }
+.card .meta { color:var(--muted); font-size:13px; }
+.layers { margin-top:12px; }
+footer { margin-top:64px; color:var(--muted); font-size:14px; border-top:1px solid var(--line); padding-top:16px; }
+.phone-hint { display:none; font-size:13px; margin:0 0 6px; }
+@media (max-width:640px) { .phone-hint { display:block; } h1 { font-size:34px; } .lede { font-size:17px; } h2 { font-size:22px; } }
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Open source · MIT · Python ≥ 3.11</p>
+<h1>robot-sdk</h1>
+<p class="lede">A generic robotics backend in plain Python. Twelve small packages that all speak one vocabulary, so a new robot task is mostly <b>assembly</b>: plug in the parts you already have instead of writing them again.</p>
+<div class="install"><pre>pip install robot-sdk</pre><button type="button" data-copy="pip install robot-sdk">Copy</button>
+<a class="chip" href="https://github.com/zacharyyamaoka/robot_sdk">GitHub</a><a class="chip" href="#pick-and-place">Pick-and-place example</a></div>
+<p class="muted" style="font-size:14px">Each package is also its own install (<code>pip install robot-trajectories</code>, …); <code>robot-sdk</code> pins a set of versions that work together, the way a ROS release does.</p>
+
+<figure id="domain">
+<p class="phone-hint muted">Scroll the diagram sideways →</p><div class="figure-card"><svg viewBox="0 0 1160 640" class="domain" role="img" aria-labelledby="domain-title domain-desc"><title id="domain-title">How the robot-sdk packages relate</title><desc id="domain-desc">Packages above and below a band of robot_msgs types. An arrow from a package into a type means the package produces it; an arrow from a type into a package means the package consumes it.</desc><defs><marker id="arrow-produce" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="mk-produce"/></marker><marker id="arrow-consume" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="mk-consume"/></marker></defs><rect x="20" y="224" width="1120" height="132" rx="16" class="band"/><g class="edges"><path d="M85.0,98.0 C85.0,184.0 95.0,184.0 95.0,270.0" class="edge produces" data-repo="robot_reach" data-type="NamedPose" marker-end="url(#arrow-produce)"><title>robot_reach produces NamedPose — goals.to_named_pose(rec, joints) turns a solved rest-pose record into a NamedPose (src/robot_reach/goals.py:849)</title></path><path d="M256.7,270.0 C256.7,184.0 196.0,184.0 196.0,98.0" class="edge consumes" data-repo="robot_trajectories" data-type="JointLimits" marker-end="url(#arrow-consume)"><title>robot_trajectories consumes JointLimits — JointSpace.from_limits(limits, ...) (src/robot_trajectories/space.py:346)</title></path><path d="M304.0,98.0 C304.0,184.0 358.3,184.0 358.3,270.0" class="edge produces" data-repo="robot_trajectories" data-type="JointTrajectory" marker-end="url(#arrow-produce)"><title>robot_trajectories produces JointTrajectory — every kind (burn_in_wiggle, pick_and_place, ...); README: &#x27;Every kind returns a robot_msgs JointTrajectory&#x27; (README.md:23)</title></path><path d="M95.0,310.0 C95.0,415.0 236.0,415.0 236.0,520.0" class="edge consumes" data-repo="sim2real" data-type="NamedPose" marker-end="url(#arrow-consume)"><title>sim2real consumes NamedPose — named_poses(robot) / named_pose(name, group) return NamedPose (src/sim2real/named_poses/__init__.py:36)</title></path><path d="M358.3,310.0 C358.3,415.0 290.0,415.0 290.0,520.0" class="edge consumes" data-repo="sim2real" data-type="JointTrajectory" marker-end="url(#arrow-consume)"><title>sim2real consumes JointTrajectory — real-run ingest: every run read as a JointTrajectory at one door (src/sim2real/real.py:26)</title></path><path d="M344.0,520.0 C344.0,415.0 478.3,415.0 478.3,310.0" class="edge produces" data-repo="sim2real" data-type="JointTrajectory" marker-end="url(#arrow-produce)"><title>sim2real produces JointTrajectory — twin builds JointTrajectory(t, joint_names, positions, velocities) (src/sim2real/twin.py:699)</title></path><path d="M418.3,270.0 C418.3,184.0 415.0,184.0 415.0,98.0" class="edge consumes" data-repo="robot_metrics" data-type="JointTrajectory" marker-end="url(#arrow-consume)"><title>robot_metrics consumes JointTrajectory — stops(target, measured, ...) -&gt; tuple[Stop, ...] (src/robot_metrics/stops.py:154)</title></path><path d="M478.3,270.0 C478.3,184.0 526.0,184.0 526.0,98.0" class="edge consumes" data-repo="robot_controllers" data-type="JointTrajectory" marker-end="url(#arrow-consume)"><title>robot_controllers consumes JointTrajectory — LayoutController(trajectory, LayoutConfig) and JointTrajectory controllers; replace_input(message: JointTrajectory) (src/robot_controllers/controllers/layout.py:181)</title></path><path d="M580.0,98.0 C580.0,184.0 580.0,184.0 580.0,270.0" class="edge produces" data-repo="robot_controllers" data-type="ServoCommand" marker-end="url(#arrow-produce)"><title>robot_controllers produces ServoCommand — Controller.tick -&gt; (ServoCommand, defines mapping) (src/robot_controllers/core.py:62)</title></path><path d="M681.7,270.0 C681.7,184.0 634.0,184.0 634.0,98.0" class="edge consumes" data-repo="robot_controllers" data-type="JointState" marker-end="url(#arrow-consume)"><title>robot_controllers consumes JointState — Controller.tick(state: JointState, dt) (src/robot_controllers/core.py:62)</title></path><path d="M801.7,270.0 C801.7,184.0 745.0,184.0 745.0,98.0" class="edge consumes" data-repo="robot_activity" data-type="JointState" marker-end="url(#arrow-consume)"><title>robot_activity consumes JointState — Observation.joints: JointState or Mapping[str, float] (duck-typed name + position) (src/robot_activity/motion.py:16)</title></path><path d="M580.0,310.0 C580.0,415.0 746.0,415.0 746.0,520.0" class="edge consumes" data-repo="robot_models" data-type="ServoCommand" marker-end="url(#arrow-consume)"><title>robot_models consumes ServoCommand — homing simulator tick(command: ServoCommand, dt, defines) (src/robot_models/homing/protocols.py:33)</title></path><path d="M741.7,310.0 C741.7,415.0 800.0,415.0 800.0,520.0" class="edge consumes" data-repo="robot_models" data-type="JointState" marker-end="url(#arrow-consume)"><title>robot_models consumes JointState — homing simulator protocol: reset() -&gt; JointState, tick() -&gt; JointState (returned; imported for the protocol) (src/robot_models/homing/protocols.py:31-33)</title></path><path d="M854.0,520.0 C854.0,415.0 903.3,415.0 903.3,310.0" class="edge produces" data-repo="robot_models" data-type="JointCommandSequence" marker-end="url(#arrow-produce)"><title>robot_models produces JointCommandSequence — HomingProcedure.plan(prior, so_far) -&gt; JointCommandSequence | None (src/robot_models/homing/protocols.py:67)</title></path><path d="M1065.0,270.0 C1065.0,184.0 910.0,184.0 910.0,98.0" class="edge consumes" data-repo="robot_autonomy" data-type="DiagnosticRecord" marker-end="url(#arrow-consume)"><title>robot_autonomy consumes DiagnosticRecord — sources.diagnostics.read_diagnostics: JSONL -&gt; DiagnosticRecord.from_dict (only module importing robot_msgs) (src/robot_autonomy/sources/diagnostics.py:35)</title></path><path d="M621.0,549.0 C741.0,399.0 545.0,258.0 485.0,98.0" class="edge library" data-repo="robot_diagnostics" data-repo2="robot_metrics" marker-end="url(#arrow-consume)"><title>robot_diagnostics imports robot_metrics only through its stock extra</title></path><path d="M469.0,549.0 C429.0,609.0 406.0,609.0 366.0,549.0" class="edge library" data-repo="robot_diagnostics" data-repo2="sim2real" marker-end="url(#arrow-consume)"><title>robot_diagnostics imports sim2real only through its stock extra</title></path><path d="M366.0,549.0 C486.0,399.0 380.0,258.0 320.0,98.0" class="edge library" data-repo="sim2real" data-repo2="robot_trajectories" marker-end="url(#arrow-consume)"><title>sim2real imports robot_trajectories only through its trajectories extra</title></path></g><path d="M1060.0,520.0 L1060.0,356.0" class="edge carries" data-repo="like_keras" marker-end="url(#arrow-consume)"><title>like_keras ports carry any robot_msgs type between processes and languages</title></path><text x="1050.0" y="420.0" text-anchor="end" class="edge-note">carries any of these types</text><text x="1050.0" y="436.0" text-anchor="end" class="edge-note">between processes and languages</text><g class="type" data-type="NamedPose" tabindex="0"><title>NamedPose (robot_msgs.manipulation): Saved joint-group pose looked up by name</title><rect x="17.0" y="270" width="156" height="40" rx="9"/><text x="95.0" y="295" text-anchor="middle">NamedPose</text></g><g class="type" data-type="JointLimits" tabindex="0"><title>JointLimits (robot_msgs.trajectory): Per-joint velocity/acceleration/jerk/effort bounds</title><rect x="178.7" y="270" width="156" height="40" rx="9"/><text x="256.7" y="295" text-anchor="middle">JointLimits</text></g><g class="type" data-type="JointTrajectory" tabindex="0"><title>JointTrajectory (robot_msgs.trajectory): Timed joint positions/velocities; the join type</title><rect x="340.3" y="270" width="156" height="40" rx="9"/><text x="418.3" y="295" text-anchor="middle">JointTrajectory</text></g><g class="type" data-type="ServoCommand" tabindex="0"><title>ServoCommand (robot_msgs.control): Per-servo position/velocity/effort targets, SI</title><rect x="502.0" y="270" width="156" height="40" rx="9"/><text x="580.0" y="295" text-anchor="middle">ServoCommand</text></g><g class="type" data-type="JointState" tabindex="0"><title>JointState (robot_msgs.sensor): Measured joint position, velocity, effort by name</title><rect x="663.7" y="270" width="156" height="40" rx="9"/><text x="741.7" y="295" text-anchor="middle">JointState</text></g><g class="type" data-type="JointCommandSequence" tabindex="0"><title>JointCommandSequence (robot_msgs.control): Stepwise joint commands with end conditions (homing)</title><rect x="825.3" y="270" width="156" height="40" rx="9"/><text x="903.3" y="295" text-anchor="middle">JointCommandSequence</text></g><g class="type" data-type="DiagnosticRecord" tabindex="0"><title>DiagnosticRecord (robot_msgs.std): One periodic health evaluation of a component</title><rect x="987.0" y="270" width="156" height="40" rx="9"/><text x="1065.0" y="295" text-anchor="middle">DiagnosticRecord</text></g><g class="pkg layer-leaf" data-repo="robot_reach" tabindex="0"><title>robot_reach: Workspace and IK-branch reach of any arm, FK/IK passed in</title><rect x="9.0" y="40" width="152" height="58" rx="11"/><text x="85.0" y="65" text-anchor="middle" class="pkg-name">robot_reach</text><text x="85.0" y="84" text-anchor="middle" class="pkg-layer">leaf</text></g><g class="pkg layer-leaf" data-repo="robot_trajectories" tabindex="0"><title>robot_trajectories: Trajectory kinds from limits and tasks, one JointTrajectory out</title><rect x="174.0" y="40" width="152" height="58" rx="11"/><text x="250.0" y="65" text-anchor="middle" class="pkg-name">robot_trajectories</text><text x="250.0" y="84" text-anchor="middle" class="pkg-layer">leaf</text></g><g class="pkg layer-leaf" data-repo="robot_metrics" tabindex="0"><title>robot_metrics: Tracking, stop, lag, repeatability metrics over message streams</title><rect x="339.0" y="40" width="152" height="58" rx="11"/><text x="415.0" y="65" text-anchor="middle" class="pkg-name">robot_metrics</text><text x="415.0" y="84" text-anchor="middle" class="pkg-layer">leaf</text></g><g class="pkg layer-leaf" data-repo="robot_controllers" tabindex="0"><title>robot_controllers: Feed-forward/feedback controllers as black boxes plus a Layout</title><rect x="504.0" y="40" width="152" height="58" rx="11"/><text x="580.0" y="65" text-anchor="middle" class="pkg-name">robot_controllers</text><text x="580.0" y="84" text-anchor="middle" class="pkg-layer">leaf</text></g><g class="pkg layer-leaf" data-repo="robot_activity" tabindex="0"><title>robot_activity: Per-robot and fleet activity, work queue, stalemate flags</title><rect x="669.0" y="40" width="152" height="58" rx="11"/><text x="745.0" y="65" text-anchor="middle" class="pkg-name">robot_activity</text><text x="745.0" y="84" text-anchor="middle" class="pkg-layer">leaf</text></g><g class="pkg layer-leaf" data-repo="robot_autonomy" tabindex="0"><title>robot_autonomy: Counts human interventions per working hour; ranks causes</title><rect x="834.0" y="40" width="152" height="58" rx="11"/><text x="910.0" y="65" text-anchor="middle" class="pkg-name">robot_autonomy</text><text x="910.0" y="84" text-anchor="middle" class="pkg-layer">leaf</text></g><g class="pkg layer-leaf own" data-repo="robot_thermal" tabindex="0"><title>robot_thermal: Motor and board heat tracking with burst-limit decisions</title><rect x="999.0" y="40" width="152" height="58" rx="11"/><text x="1075.0" y="65" text-anchor="middle" class="pkg-name">robot_thermal</text><text x="1075.0" y="84" text-anchor="middle" class="pkg-layer">leaf · own types</text></g><g class="pkg layer-outer" data-repo="sim2real" tabindex="0"><title>sim2real: RobotTwin, calibrate() and fit/replay over real or simulated runs</title><rect x="214.0" y="520" width="152" height="58" rx="11"/><text x="290.0" y="545" text-anchor="middle" class="pkg-name">sim2real</text><text x="290.0" y="564" text-anchor="middle" class="pkg-layer">outer API</text></g><g class="pkg layer-checks own" data-repo="robot_diagnostics" tabindex="0"><title>robot_diagnostics: Diagnostics as pure functions: diagnose(config, data) -&gt; Result</title><rect x="469.0" y="520" width="152" height="58" rx="11"/><text x="545.0" y="545" text-anchor="middle" class="pkg-name">robot_diagnostics</text><text x="545.0" y="564" text-anchor="middle" class="pkg-layer">checks · own types</text></g><g class="pkg layer-models" data-repo="robot_models" tabindex="0"><title>robot_models: Generic models by type: actuators, arms, sensors, homing procedures</title><rect x="724.0" y="520" width="152" height="58" rx="11"/><text x="800.0" y="545" text-anchor="middle" class="pkg-name">robot_models</text><text x="800.0" y="564" text-anchor="middle" class="pkg-layer">models</text></g><g class="pkg layer-comms" data-repo="like_keras" tabindex="0"><title>like_keras: Components, ports and systems over dora; robot_msgs on the wire</title><rect x="984.0" y="520" width="152" height="58" rx="11"/><text x="1060.0" y="545" text-anchor="middle" class="pkg-name">like_keras</text><text x="1060.0" y="564" text-anchor="middle" class="pkg-layer">comms</text></g></svg></div>
+<div class="legend"><span class="lb">middle band: robot_msgs types, the shared vocabulary</span><span class="lp">produces (package → type)</span><span class="lc">consumes (type → package)</span><span class="ll">imports another package only via an optional extra (shown on hover)</span></div>
+<figcaption><b>How the packages fit together.</b> They don't import each other: they agree on the <code>robot_msgs</code> types in the middle. A trajectory generator hands a <code>JointTrajectory</code> to a controller, which turns <code>JointState</code> into a <code>ServoCommand</code>; metrics and twins read the same <code>JointTrajectory</code>. Hover or tap a package or a type to trace it. Every arrow is a public function signature — the list below cites each one. Dashed boxes keep their own types (no robot_msgs in their public API yet).</figcaption>
+<details><summary>Every arrow, with its source (19 citations)</summary>
+<div class="table-wrap"><table><tr><th>Package</th><th></th><th>Type</th><th>Through</th><th>Where</th></tr><tr><td><code>robot_activity</code></td><td>consumes</td><td><code>JointState</code></td><td>Observation.joints: JointState or Mapping[str, float] (duck-typed name + position)</td><td><a href="https://github.com/zacharyyamaoka/robot_activity/blob/main/src/robot_activity/motion.py">src/robot_activity/motion.py:16</a></td></tr><tr><td><code>robot_autonomy</code></td><td>consumes</td><td><code>DiagnosticRecord</code></td><td>sources.diagnostics.read_diagnostics: JSONL -&gt; DiagnosticRecord.from_dict (only module importing robot_msgs)</td><td><a href="https://github.com/zacharyyamaoka/robot_autonomy/blob/main/src/robot_autonomy/sources/diagnostics.py">src/robot_autonomy/sources/diagnostics.py:35</a></td></tr><tr><td><code>robot_controllers</code></td><td>consumes</td><td><code>JointState</code></td><td>Controller.tick(state: JointState, dt)</td><td><a href="https://github.com/zacharyyamaoka/robot_controllers/blob/main/src/robot_controllers/core.py">src/robot_controllers/core.py:62</a></td></tr><tr><td><code>robot_controllers</code></td><td>consumes</td><td><code>JointTrajectory</code></td><td>LayoutController(trajectory, LayoutConfig) and JointTrajectory controllers; replace_input(message: JointTrajectory)</td><td><a href="https://github.com/zacharyyamaoka/robot_controllers/blob/main/src/robot_controllers/controllers/layout.py">src/robot_controllers/controllers/layout.py:181</a></td></tr><tr><td><code>robot_controllers</code></td><td>produces</td><td><code>ServoCommand</code></td><td>Controller.tick -&gt; (ServoCommand, defines mapping)</td><td><a href="https://github.com/zacharyyamaoka/robot_controllers/blob/main/src/robot_controllers/core.py">src/robot_controllers/core.py:62</a></td></tr><tr><td><code>robot_metrics</code></td><td>consumes</td><td><code>JointTrajectory</code></td><td>stops(target, measured, ...) -&gt; tuple[Stop, ...]</td><td><a href="https://github.com/zacharyyamaoka/robot_metrics/blob/main/src/robot_metrics/stops.py">src/robot_metrics/stops.py:154</a></td></tr><tr><td><code>robot_metrics</code></td><td>consumes</td><td><code>JointTrajectory</code></td><td>alignment.align(reference, measured, rule=...)</td><td><a href="https://github.com/zacharyyamaoka/robot_metrics/blob/main/src/robot_metrics/alignment.py">src/robot_metrics/alignment.py:94</a></td></tr><tr><td><code>robot_models</code></td><td>consumes</td><td><code>JointState</code></td><td>homing simulator protocol: reset() -&gt; JointState, tick() -&gt; JointState (returned; imported for the protocol)</td><td><a href="https://github.com/zacharyyamaoka/robot_models/blob/main/src/robot_models/homing/protocols.py">src/robot_models/homing/protocols.py:31-33</a></td></tr><tr><td><code>robot_models</code></td><td>consumes</td><td><code>ServoCommand</code></td><td>homing simulator tick(command: ServoCommand, dt, defines)</td><td><a href="https://github.com/zacharyyamaoka/robot_models/blob/main/src/robot_models/homing/protocols.py">src/robot_models/homing/protocols.py:33</a></td></tr><tr><td><code>robot_models</code></td><td>produces</td><td><code>JointCommandSequence</code></td><td>HomingProcedure.plan(prior, so_far) -&gt; JointCommandSequence | None</td><td><a href="https://github.com/zacharyyamaoka/robot_models/blob/main/src/robot_models/homing/protocols.py">src/robot_models/homing/protocols.py:67</a></td></tr><tr><td><code>robot_reach</code></td><td>produces</td><td><code>NamedPose</code></td><td>goals.to_named_pose(rec, joints) turns a solved rest-pose record into a NamedPose</td><td><a href="https://github.com/zacharyyamaoka/robot_reach/blob/main/src/robot_reach/goals.py">src/robot_reach/goals.py:849</a></td></tr><tr><td><code>robot_trajectories</code></td><td>consumes</td><td><code>JointLimits</code></td><td>JointSpace.from_limits(limits, ...)</td><td><a href="https://github.com/zacharyyamaoka/robot_trajectories/blob/main/src/robot_trajectories/space.py">src/robot_trajectories/space.py:346</a></td></tr><tr><td><code>robot_trajectories</code></td><td>consumes</td><td><code>JointLimits</code></td><td>WaypointTrajectoryGenerator.__call__(points, limits, rate_hz)</td><td><a href="https://github.com/zacharyyamaoka/robot_trajectories/blob/main/src/robot_trajectories/waypoint_trajectory_generator.py">src/robot_trajectories/waypoint_trajectory_generator.py:323</a></td></tr><tr><td><code>robot_trajectories</code></td><td>produces</td><td><code>JointTrajectory</code></td><td>every kind (burn_in_wiggle, pick_and_place, ...); README: &#x27;Every kind returns a robot_msgs JointTrajectory&#x27;</td><td><a href="https://github.com/zacharyyamaoka/robot_trajectories/blob/main/README.md">README.md:23</a></td></tr><tr><td><code>robot_trajectories</code></td><td>produces</td><td><code>JointTrajectory</code></td><td>kernels.to_trajectory(...) -&gt; JointTrajectory</td><td><a href="https://github.com/zacharyyamaoka/robot_trajectories/blob/main/src/robot_trajectories/kernels.py">src/robot_trajectories/kernels.py:377</a></td></tr><tr><td><code>robot_trajectories</code></td><td>produces</td><td><code>JointTrajectory</code></td><td>recipe.rebuild(...) -&gt; JointTrajectory</td><td><a href="https://github.com/zacharyyamaoka/robot_trajectories/blob/main/src/robot_trajectories/recipe.py">src/robot_trajectories/recipe.py:47</a></td></tr><tr><td><code>sim2real</code></td><td>consumes</td><td><code>JointTrajectory</code></td><td>real-run ingest: every run read as a JointTrajectory at one door</td><td><a href="https://github.com/zacharyyamaoka/sim2real/blob/main/src/sim2real/real.py">src/sim2real/real.py:26</a></td></tr><tr><td><code>sim2real</code></td><td>consumes</td><td><code>NamedPose</code></td><td>named_poses(robot) / named_pose(name, group) return NamedPose</td><td><a href="https://github.com/zacharyyamaoka/sim2real/blob/main/src/sim2real/named_poses/__init__.py">src/sim2real/named_poses/__init__.py:36</a></td></tr><tr><td><code>sim2real</code></td><td>produces</td><td><code>JointTrajectory</code></td><td>twin builds JointTrajectory(t, joint_names, positions, velocities)</td><td><a href="https://github.com/zacharyyamaoka/sim2real/blob/main/src/sim2real/twin.py">src/sim2real/twin.py:699</a></td></tr></table></div></details>
+</figure>
+
+<h2 id="pick-and-place">A pick-and-place, assembled</h2>
+<p class="lede" style="font-size:17px">One script, no new robotics code: each stage is a call into a package, and each hands the next a <code>robot_msgs</code> type. The arm is a simulated UR5e (MuJoCo); every number below is from a real run of the script.</p>
+<div class="figure-card"><svg viewBox="0 0 1120 380" class="flow" role="img" aria-label="The pick-and-place pipeline: packages joined by the types they hand over"><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="mk-flow"/></marker></defs><path d="M186.0,98.0 L314.0,98.0" class="flow-edge" marker-end="url(#flow-arrow)"/><text x="250" y="88.0" text-anchor="middle" class="flow-label">Arm FK / IK</text><path d="M486.0,98.0 L614.0,98.0" class="flow-edge" marker-end="url(#flow-arrow)"/><text x="550" y="88.0" text-anchor="middle" class="flow-label">JointTrajectory</text><path d="M675,126 L675,250" class="flow-edge" marker-end="url(#flow-arrow)"/><text x="665" y="185" text-anchor="end" class="flow-label">ServoCommand</text><path d="M725,250 L725,126" class="flow-edge" marker-end="url(#flow-arrow)"/><text x="735" y="185" text-anchor="start" class="flow-label">JointState</text><path d="M400,70 C400,20 1010,20 1010,70" class="flow-edge" marker-end="url(#flow-arrow)"/><text x="705" y="36" text-anchor="middle" class="flow-label">target JointTrajectory</text><path d="M786.0,264 C880,264 960,200 985,126" class="flow-edge" marker-end="url(#flow-arrow)"/><text x="880" y="205" text-anchor="middle" class="flow-label">measured JointTrajectory</text><path d="M786.0,292 L924.0,292" class="flow-edge" marker-end="url(#flow-arrow)"/><text x="855" y="284" text-anchor="middle" class="flow-label">per joint</text><g class="flow-node pkg"><rect x="14.0" y="70" width="172" height="56" rx="12"/><text x="100" y="94" text-anchor="middle" class="flow-name">robot_reach</text><text x="100" y="113" text-anchor="middle" class="flow-sub">UR5e arm · reach check</text></g><g class="flow-node pkg"><rect x="314.0" y="70" width="172" height="56" rx="12"/><text x="400" y="94" text-anchor="middle" class="flow-name">robot_trajectories</text><text x="400" y="113" text-anchor="middle" class="flow-sub">pick_and_place()</text></g><g class="flow-node pkg"><rect x="614.0" y="70" width="172" height="56" rx="12"/><text x="700" y="94" text-anchor="middle" class="flow-name">robot_controllers</text><text x="700" y="113" text-anchor="middle" class="flow-sub">trajectory controller</text></g><g class="flow-node plant"><rect x="614.0" y="250" width="172" height="56" rx="12"/><text x="700" y="274" text-anchor="middle" class="flow-name">simulated UR5e</text><text x="700" y="293" text-anchor="middle" class="flow-sub">MuJoCo, 500 Hz loop</text></g><g class="flow-node pkg"><rect x="924.0" y="70" width="172" height="56" rx="12"/><text x="1010" y="94" text-anchor="middle" class="flow-name">robot_metrics</text><text x="1010" y="113" text-anchor="middle" class="flow-sub">tracking + stop error</text></g><g class="flow-node verdict-fail"><rect x="924.0" y="250" width="172" height="56" rx="12"/><text x="1010" y="274" text-anchor="middle" class="flow-name">robot_diagnostics</text><text x="1010" y="293" text-anchor="middle" class="flow-sub">stock.stop_error</text></g><text x="1010" y="328" text-anchor="middle" class="flow-result fail">FAIL: shoulder_lift</text><text x="1010" y="346" text-anchor="middle" class="flow-result fail">0.814° vs limit 0.206°</text></svg></div><p class="muted" style="font-size:14px;margin-top:8px">Each box is one package; each arrow is the object it hands the next. The controller and the simulated arm run in a 500 Hz loop. The <i>Arm FK / IK</i> arrow goes through a 20-line adapter in the example: no package offers that seam yet.</p><h3>Stage by stage, from the run</h3><ol class="pipeline"><li class="stage"><div class="stage-n">1</div><div class="stage-pkg"><a href="https://github.com/zacharyyamaoka/robot_reach">robot_reach</a></div><code class="stage-call">robot_reach.robots.ur5e()</code><div class="stage-io"><span>UR5e DH parameters</span> → <span>robot_reach.Arm</span></div><div class="stage-result">6 joints, closed-form IK with 8 branches; tool at home (-0.492, -0.133, 0.488) m</div></li><li class="stage"><div class="stage-n">2</div><div class="stage-pkg"><a href="https://github.com/zacharyyamaoka/robot_reach">robot_reach</a></div><code class="stage-call">robot_reach.reach_map(arm, positions, orientations)</code><div class="stage-io"><span>Arm + 4 tool points x 1 orientation</span> → <span>robot_reach.ReachMap</span></div><div class="stage-result">all 4 reachable tool-down; working IK branches pick 8, place 8, above pick 8, above place 8 (of 8)</div></li><li class="stage"><div class="stage-n">3</div><div class="stage-pkg"><a href="https://github.com/zacharyyamaoka/robot_trajectories">robot_trajectories</a></div><code class="stage-call">robot_trajectories.pick_and_place(space, pick, place, lift_m, waypoint_generator)</code><div class="stage-io"><span>JointSpace + 2 tool points</span> → <span>robot_msgs JointTrajectory</span></div><div class="stage-result">5.35 s, 2675 samples at 500 Hz, 8 segments; tool path 1.077 m; peak joint speed 79.9 deg/s (minimum_jerk, 30 % of the limit)</div></li><li class="stage"><div class="stage-n">4</div><div class="stage-pkg"><a href="https://github.com/zacharyyamaoka/robot_controllers">robot_controllers</a></div><code class="stage-call">robot_controllers.controller(&quot;joint_trajectory_controller&quot;).build(trajectory).tick(state, dt)</code><div class="stage-io"><span>JointTrajectory, then JointState each tick</span> → <span>robot_msgs ServoCommand each tick</span></div><div class="stage-result">2924 ticks at 500 Hz on the simulated (MuJoCo) UR5e, status &#x27;done&#x27;; median tick 12 us; peak servo torque 39.5 N.m (shoulder_lift)</div></li><li class="stage"><div class="stage-n">5</div><div class="stage-pkg"><a href="https://github.com/zacharyyamaoka/robot_metrics">robot_metrics</a></div><code class="stage-call">robot_metrics.Collection([Alias(ErrorStat), Alias(StopStat), ...]).fold(Run)</code><div class="stage-io"><span>Run{target, state: JointTrajectory; tool/target, tool/state: PoseTrajectory}</span> → <span>dict of values with units</span></div><div class="stage-result">tool error RMS 9.15 mm, max 12.28 mm; worst joint tracking shoulder_lift max 0.90 deg; worst stop error shoulder_lift 0.839 deg</div></li><li class="stage fail"><div class="stage-n">6</div><div class="stage-pkg"><a href="https://github.com/zacharyyamaoka/robot_diagnostics">robot_diagnostics</a></div><code class="stage-call">robot_diagnostics.evaluate(&quot;stock.stop_error&quot;, DEFAULTS[&quot;servo.stop_error&quot;], [Trajectory])</code><div class="stage-io"><span>robot_diagnostics Trajectory per joint</span> → <span>robot_diagnostics Result (DiagnosticStatus shape)</span></div><div class="stage-result">FAIL: worst ur5e/shoulder_lift p90 0.814 deg vs limit 0.206 deg (3/6 joints pass)</div></li></ol><details><summary>Not in this run, and why</summary><ul class="muted"><li><code>robot_thermal</code>: its burst budget needs a per-drive rule (I_cont, I_peak, kt) from a datasheet; no package has one for the UR5e&#x27;s drives, and inventing one is an artificial guard</li><li><code>sim2real</code>: a RobotTwin is calibrated against recorded hardware runs; there are none for a UR5e</li></ul></details><p class="muted run-meta">Plant: simulated (MuJoCo UR5e): MuJoCo Menagerie universal_robots_ur5e/ur5e.xml, its own PD position servos. Ran 2026-11-23 15:18, 1.63 s; package versions: robot_sdk c1f4f64, robot_msgs cf3709b-dirty, robot_reach 72a29f8-dirty, robot_trajectories aad4cd9-dirty, robot_controllers 20daa37, robot_metrics 68e0d3e, robot_diagnostics d4454fe.</p>
+<div class="plots"><figure><img src="media/pick_and_place_tool_path.png" alt="Tool path: measured (coloured by time) vs planned (dashed), pick and place marked" loading="lazy"><figcaption><b>Tool path: measured (coloured by time) vs planned (dashed), pick and place marked.</b> robot_msgs&#x27; stock PoseTrajectory.plot() of the measured tool pose, the plan drawn on top.</figcaption></figure><figure><img src="media/pick_and_place_joints.png" alt="Joint positions: target vs measured, every joint" loading="lazy"><figcaption><b>Joint positions: target vs measured, every joint.</b> The joint_trajectory_controller&#x27;s target (grey) against the simulated arm (blue).</figcaption></figure><figure><img src="media/pick_and_place_tracking_error.png" alt="Tracking error per joint, with the stop-error limit" loading="lazy"><figcaption><b>Tracking error per joint, with the stop-error limit.</b> Shaded: the stops robot_diagnostics scored. shoulder_lift sits outside the limit: the arm sags under gravity, and this run has no gravity feed-forward — the check catches exactly that.</figcaption></figure></div>
+<details><summary>The whole script (310 lines)</summary><p class="muted">From <a href="https://github.com/zacharyyamaoka/robot_sdk/blob/main/examples/pick_and_place.py"><code>examples/pick_and_place.py</code></a>; run it with <code>uv run python examples/pick_and_place.py</code> in a robot_sdk checkout.</p><pre class="code">&quot;&quot;&quot;Pick and place on a UR5e, assembled from the robot-sdk packages: reach -&gt; trajectory -&gt; controller -&gt; simulated arm -&gt;
+metrics -&gt; diagnostics. Every stage is one call into a package; this file only passes the objects between them.
+
+    uv run --project /home/bam/robot_sdk --group examples python /home/bam/robot_sdk/examples/pick_and_place.py
+
+Writes site/data/pick_and_place.json (each stage&#x27;s call and its real result, the packages&#x27; git shas) and three plots in
+site/media/. Nothing here is hardware: the arm is SIMULATED (MuJoCo Menagerie&#x27;s UR5e under its own PD position servos,
+the plant robot_metrics&#x27; UR5e gallery uses), and every number printed comes from running it.
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import datetime
+import json
+import math
+import os
+import subprocess
+import time
+from dataclasses import replace
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use(&quot;Agg&quot;)
+import matplotlib.pyplot as plt  # noqa: E402
+import mujoco  # noqa: E402
+import numpy as np  # noqa: E402
+from robot_controllers import controller  # noqa: E402
+from robot_diagnostics import evaluate, worst  # noqa: E402
+from robot_diagnostics.data import Trajectory  # noqa: E402
+from robot_diagnostics.defaults import DEFAULTS  # noqa: E402
+from robot_diagnostics.stock.tracking import stops  # noqa: E402
+from robot_metrics import DEGREES, Alias, Collection, ErrorStat, Run, StopStat  # noqa: E402
+from robot_msgs.sensor import JointState  # noqa: E402
+from robot_msgs.trajectory import JointLimits, JointTrajectory, PoseTrajectory  # noqa: E402
+from robot_reach import OrientationSet, reach_map  # noqa: E402
+from robot_reach.robots import ur5e  # noqa: E402
+from robot_trajectories import JointSpace, WaypointTrajectoryGenerator, pick_and_place, split  # noqa: E402
+
+SDK = Path(__file__).resolve().parents[1]
+DATA_DIR, MEDIA_DIR = SDK / &quot;site&quot; / &quot;data&quot;, SDK / &quot;site&quot; / &quot;media&quot;
+PACKAGES = (&quot;robot_msgs&quot;, &quot;robot_reach&quot;, &quot;robot_trajectories&quot;, &quot;robot_controllers&quot;, &quot;robot_metrics&quot;, &quot;robot_diagnostics&quot;)
+started = time.perf_counter()
+stages: list[dict] = []
+
+
+def record(package: str, call: str, input_type: str, output_type: str, one_line_result: str) -&gt; None:
+    &quot;&quot;&quot;One stage for the landing page, printed as it runs.&quot;&quot;&quot;
+    stages.append({&quot;package&quot;: package, &quot;call&quot;: call, &quot;input_type&quot;: input_type, &quot;output_type&quot;: output_type,
+                   &quot;one_line_result&quot;: one_line_result})
+    print(f&quot;[{len(stages)}] {package:&lt;19} {call}\n    {input_type} -&gt; {output_type}\n    {one_line_result}&quot;)
+
+
+# ---------------------------------------------------------------------------------------------- 1. robot: robot_reach
+# The UR5e&#x27;s closed-form kinematics from robot_reach (all eight IK branches, batched). robot_trajectories takes FK / IK
+# through its Kinematics protocol (forward(q) -&gt; 4x4, inverse(pose, seed) -&gt; one q), so a small adapter picks the
+# branch nearest the seed. WHY here and not in a package: leaves never import each other (the SDK&#x27;s layer rule).
+arm = ur5e()
+
+
+class ReachArmKinematics:
+    &quot;&quot;&quot;robot_reach&#x27;s batched Arm as robot_trajectories&#x27; Kinematics: the IK branch (and its +-2 pi twin) nearest the seed.&quot;&quot;&quot;
+
+    def __init__(self, reach_arm):
+        self.arm = reach_arm
+        self.joint_names = tuple(reach_arm.joint_names)
+        self.name = f&quot;robot_reach {reach_arm.name} (closed form)&quot;
+        self.cache_key = f&quot;robot_reach-{reach_arm.name}&quot;
+        self.lower, self.upper = np.asarray(reach_arm.lower, float), np.asarray(reach_arm.upper, float)
+
+    def forward(self, joint_positions):
+        return self.arm.fk(np.asarray(joint_positions, float)[None])[0]
+
+    def inverse(self, target_pose, seed=None):
+        branches, codes = self.arm.ik(np.asarray(target_pose, float)[None])
+        working = branches[0][codes[0] == 0]                       # robot_reach Code.OK == 0
+        if not len(working):
+            return None
+        seed = np.zeros(len(self.joint_names)) if seed is None else np.asarray(seed, float)
+        nearest_twin = seed + (working - seed + math.pi) % (2 * math.pi) - math.pi
+        inside = np.all((nearest_twin &gt;= self.lower) &amp; (nearest_twin &lt;= self.upper), axis=1)
+        if not inside.any():
+            return None
+        candidates = nearest_twin[inside]
+        return candidates[np.argmin(np.max(np.abs(candidates - seed), axis=1))]
+
+
+kinematics = ReachArmKinematics(arm)
+UR5E_SPEED_RAD_S = math.pi            # UR5e datasheet: 180 deg/s on every joint
+ASSUMED_ACCELERATION_RAD_S2 = 6.0     # a URDF has none; the value robot_trajectories&#x27; UR5e example states
+limits = JointLimits(joint_names=kinematics.joint_names, min_position=kinematics.lower, max_position=kinematics.upper,
+                     max_velocity=np.full(6, UR5E_SPEED_RAD_S))
+home = np.array(arm.meta[&quot;home&quot;], float)                       # robot_reach&#x27;s UR5e home: tool pointing straight down
+space = (JointSpace.from_limits(limits, home=home, max_acceleration=ASSUMED_ACCELERATION_RAD_S2, source=&quot;robot_reach ur5e&quot;)
+         .with_kinematics(kinematics))
+home_tool = space.forward(home)
+record(&quot;robot_reach&quot;, &quot;robot_reach.robots.ur5e()&quot;, &quot;UR5e DH parameters&quot;, &quot;robot_reach.Arm&quot;,
+       f&quot;6 joints, closed-form IK with 8 branches; tool at home ({&#x27;, &#x27;.join(f&#x27;{v:.3f}&#x27; for v in home_tool[:3, 3])}) m&quot;)
+
+# ---------------------------------------------------------------------------------------------- 2. reach: robot_reach
+# Two tool points in front of the arm, the tool kept pointing down. Cheap: two positions x one orientation, not a map.
+pick_point = home_tool[:3, 3] + np.array([0.10, -0.15, -0.30])
+place_point = home_tool[:3, 3] + np.array([-0.10, 0.20, -0.30])
+LIFT_M = 0.10
+targets = np.array([pick_point, place_point, pick_point + (0, 0, LIFT_M), place_point + (0, 0, LIFT_M)])
+tool_down = OrientationSet(R=home_tool[:3, :3][None], tilt=np.zeros(1), roll=np.zeros(1), approach=np.array([0.0, 0.0, -1.0]))
+reach = reach_map(arm, targets, tool_down)
+branches = reach.n_solutions[:, 0]
+if not reach.valid_mask.all():
+    raise SystemExit(f&quot;a target is out of reach: IK branches per target {branches.tolist()}&quot;)
+record(&quot;robot_reach&quot;, &quot;robot_reach.reach_map(arm, positions, orientations)&quot;, &quot;Arm + 4 tool points x 1 orientation&quot;,
+       &quot;robot_reach.ReachMap&quot;, f&quot;all 4 reachable tool-down; working IK branches pick {branches[0]}, place {branches[1]}, &quot;
+       f&quot;above pick {branches[2]}, above place {branches[3]} (of 8)&quot;)
+
+# ---------------------------------------------------------------------------------------------- 3. trajectory: robot_trajectories
+# The U: approach, straight down, dwell, up, over, down, dwell, up. Legs timed by the built-in minimum-jerk
+# WaypointTrajectoryGenerator (Ruckig is a plugin: not installed in this environment).
+leg_timing = WaypointTrajectoryGenerator.minimum_jerk(peak_speed_fraction=0.3)
+cycle = pick_and_place(space, pick=pick_point, place=place_point, lift_m=LIFT_M, waypoint_generator=leg_timing)
+planned_tool = space.tool_points(cycle)
+segments = split(cycle)
+record(&quot;robot_trajectories&quot;, &quot;robot_trajectories.pick_and_place(space, pick, place, lift_m, waypoint_generator)&quot;,
+       &quot;JointSpace + 2 tool points&quot;, &quot;robot_msgs JointTrajectory&quot;,
+       f&quot;{cycle.duration:.2f} s, {len(cycle)} samples at {space.rate_hz:g} Hz, {len(segments)} segments; &quot;
+       f&quot;tool path {np.sum(np.linalg.norm(np.diff(planned_tool, axis=0), axis=1)):.3f} m; &quot;
+       f&quot;peak joint speed {np.max(np.abs(cycle.velocities)) * DEGREES:.1f} deg/s (minimum_jerk, 30 % of the limit)&quot;)
+
+# ---------------------------------------------------------------------------------------------- 4. control: robot_controllers
+# The joint trajectory controller ticks against a SIMULATED UR5e: MuJoCo Menagerie&#x27;s ur5e.xml, each joint its own PD
+# position servo (kp 2000 / kd 400 N.m on the big joints, 500 / 100 on the wrist), no gravity compensation. A command&#x27;s
+# position and velocity drive it as kp (p - q) + kd (v - qd), i.e. ctrl = p + (kd / kp) v (the mapping robot_metrics&#x27;
+# ur5e_sim uses). The controller ticks once per physics step, 2 ms.
+menagerie = Path(os.environ.get(&quot;MENAGERIE&quot;, Path.home() / &quot;.cache&quot; / &quot;mujoco_menagerie&quot;))
+model = mujoco.MjModel.from_xml_path(str(menagerie / &quot;universal_robots_ur5e&quot; / &quot;ur5e.xml&quot;))
+data = mujoco.MjData(model)
+step_s = float(model.opt.timestep)
+servo_kp = model.actuator_gainprm[:, 0].copy()
+servo_kd = -model.actuator_biasprm[:, 2].copy()
+PRE_ROLL_S, SETTLE_S = 0.5, 0.5   # hold the start before t = 0 (the servos sag under gravity), then hold the end
+
+jtc = controller(&quot;joint_trajectory_controller&quot;).build(cycle)
+data.qpos[:] = cycle.positions[0]
+data.ctrl[:] = cycle.positions[0]
+for _ in range(round(PRE_ROLL_S / step_s)):
+    mujoco.mj_step(model, data)
+
+tick_times, commanded_q, commanded_qd, measured_q, measured_qd, measured_effort = [], [], [], [], [], []
+compute_s = []
+for tick in range(round((cycle.duration + SETTLE_S) / step_s)):
+    state = JointState(name=kinematics.joint_names, position=data.qpos.copy(), velocity=data.qvel.copy())
+    tick_start = time.perf_counter()
+    command, _defines = jtc.tick(state, step_s)
+    compute_s.append(time.perf_counter() - tick_start)
+    data.ctrl[:] = command.position + (servo_kd / servo_kp) * command.velocity
+    mujoco.mj_step(model, data)
+    tick_times.append((tick + 1) * step_s)
+    commanded_q.append(command.position)
+    commanded_qd.append(command.velocity)
+    measured_q.append(data.qpos.copy())
+    measured_qd.append(data.qvel.copy())
+    measured_effort.append(data.actuator_force.copy())
+
+tick_times = np.array(tick_times)
+target = JointTrajectory(t=tick_times, joint_names=kinematics.joint_names, positions=np.array(commanded_q),
+                         velocities=np.array(commanded_qd))
+measured = JointTrajectory(t=tick_times, joint_names=kinematics.joint_names, positions=np.array(measured_q),
+                           velocities=np.array(measured_qd), effort=np.array(measured_effort))
+peak_effort = np.max(np.abs(measured.effort), axis=0)
+record(&quot;robot_controllers&quot;, &#x27;robot_controllers.controller(&quot;joint_trajectory_controller&quot;).build(trajectory).tick(state, dt)&#x27;,
+       &quot;JointTrajectory, then JointState each tick&quot;, &quot;robot_msgs ServoCommand each tick&quot;,
+       f&quot;{len(tick_times)} ticks at {1 / step_s:g} Hz on the simulated (MuJoCo) UR5e, status {jtc.status!r}; &quot;
+       f&quot;median tick {np.median(compute_s) * 1e6:.0f} us; peak servo torque {peak_effort.max():.1f} N.m &quot;
+       f&quot;({kinematics.joint_names[int(np.argmax(peak_effort))]})&quot;)
+
+# ---------------------------------------------------------------------------------------------- 5. metrics: robot_metrics
+# Tracking error (RMS and max) and stop error per joint, plus the tool&#x27;s position error, all from one Run.
+tool_target = PoseTrajectory.from_matrices(tick_times, kinematics.arm.fk(target.positions), child_frame_id=&quot;flange&quot;)
+tool_measured = PoseTrajectory.from_matrices(tick_times, kinematics.arm.fk(measured.positions), child_frame_id=&quot;flange&quot;)
+run = Run(&quot;ur5e-pick-and-place-sim&quot;, streams={&quot;target&quot;: target, &quot;state&quot;: measured, &quot;tool/target&quot;: tool_target,
+                                               &quot;tool/state&quot;: tool_measured}, provenance=&quot;sim&quot;,
+          labels={&quot;deployment&quot;: &quot;ur5e (simulated, MuJoCo)&quot;, &quot;controller&quot;: &quot;joint_trajectory_controller&quot;})
+# WHY degrees: angles shown to a person are in degrees (Zach&#x27;s rule); the maths and the data stay SI (rad)
+DEG = 180.0 / np.pi
+aliases = [Alias(&quot;tool error RMS&quot;, ErrorStat(statistic=&quot;rms&quot;), signal=(&quot;tool/target&quot;, &quot;tool/state&quot;), unit=&quot;mm&quot;, scale=1e3),
+           Alias(&quot;tool error max&quot;, ErrorStat(statistic=&quot;max_abs&quot;), signal=(&quot;tool/target&quot;, &quot;tool/state&quot;), unit=&quot;mm&quot;, scale=1e3)]
+for index, joint in enumerate(kinematics.joint_names):
+    aliases += [Alias(f&quot;{joint} tracking RMS&quot;, ErrorStat(statistic=&quot;rms&quot;, joint=index), unit=&quot;deg&quot;, scale=DEG),
+                Alias(f&quot;{joint} tracking max&quot;, ErrorStat(statistic=&quot;max_abs&quot;, joint=index), unit=&quot;deg&quot;, scale=DEG),
+                Alias(f&quot;{joint} stop error max&quot;, StopStat(of=&quot;error&quot;, statistic=&quot;max&quot;, joint=index), unit=&quot;deg&quot;, scale=DEG)]
+metrics = Collection(aliases)
+values = metrics.values(metrics.fold(run))
+worst_tracking = max(kinematics.joint_names, key=lambda joint: values[f&quot;{joint} tracking max&quot;])
+worst_stop = max(kinematics.joint_names, key=lambda joint: values[f&quot;{joint} stop error max&quot;] or 0.0)
+record(&quot;robot_metrics&quot;, &quot;robot_metrics.Collection([Alias(ErrorStat), Alias(StopStat), ...]).fold(Run)&quot;,
+       &quot;Run{target, state: JointTrajectory; tool/target, tool/state: PoseTrajectory}&quot;, &quot;dict of values with units&quot;,
+       f&quot;tool error RMS {values[&#x27;tool error RMS&#x27;]:.2f} mm, max {values[&#x27;tool error max&#x27;]:.2f} mm; worst joint tracking &quot;
+       f&quot;{worst_tracking} max {values[f&#x27;{worst_tracking} tracking max&#x27;]:.2f} deg; worst stop error {worst_stop} &quot;
+       f&quot;{values[f&#x27;{worst_stop} stop error max&#x27;]:.3f} deg&quot;)
+
+# ---------------------------------------------------------------------------------------------- 6. diagnostics: robot_diagnostics
+# The stock stop-error check at its catalog default (servo.stop_error: p90 of |stop error| &lt;= 3.6 mrad, the strictest
+# joint&#x27;s share of the 5 mm tool gate), one per joint, rolled up. side=&quot;output&quot;: the simulated joint angle is the output.
+stop_check = replace(DEFAULTS[&quot;servo.stop_error&quot;].config, side=&quot;output&quot;)
+per_joint = []
+for index, joint in enumerate(kinematics.joint_names):
+    joint_run = Trajectory(t=tick_times, q_rad=measured.positions[:, index], q_target_rad=target.positions[:, index],
+                           qd_target_rad_s=target.velocities[:, index], run=f&quot;sim/{joint}&quot;, device=joint, source=&quot;sim&quot;)
+    per_joint.append(evaluate(&quot;stock.stop_error&quot;, stop_check, [joint_run], subject=f&quot;ur5e/{joint}&quot;))
+verdict = worst(result.verdict for result in per_joint)
+worst_result = max(per_joint, key=lambda result: result.value or 0.0)
+limit_mrad = stop_check.limits.error_high  # the catalog states it in mrad
+limit_deg = limit_mrad / 1e3 * DEG
+record(&quot;robot_diagnostics&quot;, &#x27;robot_diagnostics.evaluate(&quot;stock.stop_error&quot;, DEFAULTS[&quot;servo.stop_error&quot;], [Trajectory])&#x27;,
+       &quot;robot_diagnostics Trajectory per joint&quot;, &quot;robot_diagnostics Result (DiagnosticStatus shape)&quot;,
+       f&quot;{verdict.upper()}: worst {worst_result.subject} p90 {worst_result.value / 1e3 * DEG:.3f} deg vs limit {limit_deg:.3f} deg &quot;
+       f&quot;({sum(r.verdict == &#x27;pass&#x27; for r in per_joint)}/6 joints pass)&quot;)
+
+# ---------------------------------------------------------------------------------------------- plots (site/media)
+MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+SIM_LABEL = &quot;simulated (MuJoCo UR5e)&quot;
+
+# (a) the tool path: robot_msgs&#x27; stock PoseTrajectory.plot(), with the plan and the pick / place points drawn on its 3-D axes
+figure = tool_measured.plot()
+path_axes = figure.axes[0]
+for axis in figure.axes:  # the stock plot&#x27;s orientation panel is in rad; show degrees (data stays SI)
+    if axis.get_ylabel() == &quot;orientation (rad)&quot;:
+        for line in axis.get_lines():
+            line.set_ydata(np.asarray(line.get_ydata()) * DEG)
+        axis.relim(); axis.autoscale_view(); axis.set_ylabel(&quot;orientation (deg)&quot;)
+path_axes.plot(*tool_target.positions.T, color=&quot;#888888&quot;, lw=1.0, ls=&quot;--&quot;, label=&quot;planned&quot;)
+for point, name, colour in ((pick_point, &quot;pick&quot;, &quot;#2e7d32&quot;), (place_point, &quot;place&quot;, &quot;#c62828&quot;)):
+    path_axes.scatter(*point, s=60, color=colour, depthshade=False, label=name)
+path_axes.legend(loc=&quot;upper left&quot;, fontsize=8, frameon=False)
+figure.suptitle(f&quot;Tool path, {SIM_LABEL}: measured (coloured by time) vs planned (dashed)&quot;, fontsize=11)
+figure.set_size_inches(12, 5.6)
+figure.savefig(MEDIA_DIR / &quot;pick_and_place_tool_path.png&quot;, dpi=100)
+plt.close(figure)
+
+# (b) joint positions: target vs measured
+figure, axes = plt.subplots(2, 3, figsize=(12, 6), dpi=100, sharex=True)
+for index, (joint, axis) in enumerate(zip(kinematics.joint_names, axes.ravel(), strict=True)):
+    axis.plot(tick_times, target.positions[:, index] * DEGREES, color=&quot;#888888&quot;, lw=2.2, label=&quot;target&quot;)
+    axis.plot(tick_times, measured.positions[:, index] * DEGREES, color=&quot;#1f77b4&quot;, lw=1.1, label=&quot;measured, &quot; + SIM_LABEL)
+    axis.set_title(joint, fontsize=10)
+    axis.ticklabel_format(axis=&quot;y&quot;, useOffset=False)
+    middle = 0.5 * sum(axis.get_ylim())
+    if np.ptp(axis.get_ylim()) &lt; 4.0:                      # a joint that barely moves: show it at a readable scale
+        axis.set_ylim(middle - 2.0, middle + 2.0)
+    axis.grid(alpha=0.3)
+    axis.set_ylabel(&quot;deg&quot;)
+for axis in axes[1]:
+    axis.set_xlabel(&quot;t (s)&quot;)
+axes[0, 0].legend(fontsize=8, frameon=False)
+figure.suptitle(&quot;Joint positions: joint_trajectory_controller command vs the simulated UR5e&quot;, fontsize=11)
+figure.tight_layout()
+figure.savefig(MEDIA_DIR / &quot;pick_and_place_joints.png&quot;)
+plt.close(figure)
+
+# (c) tracking error over time, the stop windows the diagnostic scored, and its limit
+figure, axis = plt.subplots(figsize=(12, 4.6), dpi=100)
+error_deg = (measured.positions - target.positions) * DEG
+for index, joint in enumerate(kinematics.joint_names):
+    axis.plot(tick_times, error_deg[:, index], lw=1.1, label=joint)
+worst_index = kinematics.joint_names.index(worst_result.subject.split(&quot;/&quot;)[-1])
+for stop_number, (_error, dwell_start, dwell_end) in enumerate(stops(
+        Trajectory(t=tick_times, q_rad=measured.positions[:, worst_index], q_target_rad=target.positions[:, worst_index],
+                   qd_target_rad_s=target.velocities[:, worst_index]), stop_check)):
+    axis.axvspan(dwell_start, dwell_end, color=&quot;#f0c040&quot;, alpha=0.3, lw=0,
+                 label=f&quot;{kinematics.joint_names[worst_index]}&#x27;s scored stops&quot; if stop_number == 0 else None)
+for bound in (limit_deg, -limit_deg):
+    axis.axhline(bound, color=&quot;#c0392b&quot;, ls=&quot;--&quot;, lw=1.2)
+axis.text(tick_times[-1], limit_deg, f&quot; servo.stop_error limit {limit_deg:.3f} deg&quot;, color=&quot;#c0392b&quot;, va=&quot;bottom&quot;,
+          ha=&quot;right&quot;, fontsize=8)
+axis.set_xlabel(&quot;t (s)&quot;)
+axis.set_ylabel(&quot;measured - target (deg)&quot;)
+axis.set_title(f&quot;Tracking error per joint, {SIM_LABEL}: stock.stop_error verdict {verdict.upper()}, &quot;
+               f&quot;worst p90 {worst_result.value / 1e3 * DEG:.3f} deg ({worst_result.subject})&quot;, fontsize=10)
+axis.grid(alpha=0.3)
+axis.legend(fontsize=8, loc=&quot;upper left&quot;, bbox_to_anchor=(1.01, 1.0), frameon=False)
+figure.tight_layout()
+figure.savefig(MEDIA_DIR / &quot;pick_and_place_tracking_error.png&quot;)
+plt.close(figure)
+
+
+# ---------------------------------------------------------------------------------------------- site/data/pick_and_place.json
+def git_sha(repo: str) -&gt; str:
+    folder = SDK.parent / repo
+    sha = subprocess.run([&quot;git&quot;, &quot;-C&quot;, str(folder), &quot;rev-parse&quot;, &quot;--short&quot;, &quot;HEAD&quot;], capture_output=True, text=True).stdout.strip()
+    dirty = subprocess.run([&quot;git&quot;, &quot;-C&quot;, str(folder), &quot;status&quot;, &quot;--porcelain&quot;, &quot;--untracked-files=no&quot;], capture_output=True,
+                           text=True).stdout.strip()
+    return f&quot;{sha}{&#x27;-dirty&#x27; if dirty else &#x27;&#x27;}&quot;
+
+
+runtime_s = time.perf_counter() - started
+summary = {
+    &quot;title&quot;: &quot;Pick and place on a UR5e, assembled from robot-sdk&quot;,
+    &quot;plant&quot;: SIM_LABEL + &quot;: MuJoCo Menagerie universal_robots_ur5e/ur5e.xml, its own PD position servos&quot;,
+    &quot;stages&quot;: stages,
+    &quot;skipped&quot;: [
+        {&quot;package&quot;: &quot;robot_thermal&quot;, &quot;why&quot;: &quot;its burst budget needs a per-drive rule (I_cont, I_peak, kt) from a datasheet; &quot;
+                                            &quot;no package has one for the UR5e&#x27;s drives, and inventing one is an artificial guard&quot;},
+        {&quot;package&quot;: &quot;sim2real&quot;, &quot;why&quot;: &quot;a RobotTwin is calibrated against recorded hardware runs; there are none for a UR5e&quot;},
+    ],
+    &quot;media&quot;: [&quot;media/pick_and_place_tool_path.png&quot;, &quot;media/pick_and_place_joints.png&quot;, &quot;media/pick_and_place_tracking_error.png&quot;],
+    &quot;run&quot;: {&quot;date&quot;: datetime.datetime.now().astimezone().isoformat(timespec=&quot;seconds&quot;), &quot;runtime_s&quot;: round(runtime_s, 2),
+            &quot;mujoco&quot;: mujoco.__version__, &quot;git&quot;: {repo: git_sha(repo) for repo in (&quot;robot_sdk&quot;, *PACKAGES)}},
+}
+(DATA_DIR / &quot;pick_and_place.json&quot;).write_text(json.dumps(summary, indent=2) + &quot;\n&quot;)
+print(f&quot;\nwrote {DATA_DIR / &#x27;pick_and_place.json&#x27;} and 3 plots in {MEDIA_DIR} ({runtime_s:.1f} s)&quot;)
+</pre></details>
+
+<h2 id="packages">The packages</h2>
+<p class="muted">Bottom to top: <b>vocabulary</b> → <b>models</b> → <b>leaves</b> (each one job, never importing a sibling) → <b>outer API</b> and <b>checks</b>. A package imports only from layers below it; a check in <code>robot_sdk</code> enforces it.</p>
+<div class="grid"><div class="card"><h3><a href="https://github.com/zacharyyamaoka/robot_msgs">robot_msgs</a></h3><p>Frozen numpy-backed message dataclasses every package joins on</p><div class="meta">vocabulary · <code>pip install robot-msgs</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/robot_models">robot_models</a></h3><p>Generic models by type: actuators, arms, sensors, homing procedures</p><div class="meta">models · <code>pip install robot-models-lib</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/robot_trajectories">robot_trajectories</a></h3><p>Trajectory kinds from limits and tasks, one JointTrajectory out</p><div class="meta">leaf · <code>pip install robot-trajectories</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/robot_reach">robot_reach</a></h3><p>Workspace and IK-branch reach of any arm, FK/IK passed in</p><div class="meta">leaf · <code>pip install robot-reach</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/robot_controllers">robot_controllers</a></h3><p>Feed-forward/feedback controllers as black boxes plus a Layout</p><div class="meta">leaf · <code>pip install robot-controllers</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/robot_thermal">robot_thermal</a></h3><p>Motor and board heat tracking with burst-limit decisions</p><div class="meta">leaf · <code>pip install robot-thermal</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/robot_metrics">robot_metrics</a></h3><p>Tracking, stop, lag, repeatability metrics over message streams</p><div class="meta">leaf · <code>pip install robot-metrics</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/robot_activity">robot_activity</a></h3><p>Per-robot and fleet activity, work queue, stalemate flags</p><div class="meta">leaf · <code>pip install robot-activity</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/robot_autonomy">robot_autonomy</a></h3><p>Counts human interventions per working hour; ranks causes</p><div class="meta">leaf · <code>pip install robot-autonomy</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/like_keras">like_keras</a></h3><p>Components, ports and systems over dora; robot_msgs on the wire</p><div class="meta">comms · <code>pip install like_keras</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/sim2real">sim2real</a></h3><p>RobotTwin, calibrate() and fit/replay over real or simulated runs</p><div class="meta">outer API · <code>pip install sim2real</code></div></div><div class="card"><h3><a href="https://github.com/zacharyyamaoka/robot_diagnostics">robot_diagnostics</a></h3><p>Diagnostics as pure functions: diagnose(config, data) -&gt; Result</p><div class="meta">checks · <code>pip install robot-diagnostics</code></div></div></div>
+
+<h2 id="agents">Built for coding agents too</h2>
+<p>The repo ships an agent skill, <a href="https://github.com/zacharyyamaoka/robot_sdk/blob/main/skill/SKILL.md"><code>skill/SKILL.md</code></a>: one row per package saying what it is for, so an agent asked for "UR5e test trajectories, scored for tracking" reaches for <code>JointSpace.from_description</code>, a <code>WaypointTrajectoryGenerator</code>, the trajectory controller and <code>robot_metrics</code> — instead of writing them again. Link the folder into your agent's skills directory as <code>robot-sdk</code>.</p>
+
+<footer>robot-sdk · MIT · <a href="https://github.com/zacharyyamaoka/robot_sdk">github.com/zacharyyamaoka/robot_sdk</a> · built 2026-11-23 from robot_sdk 12ec3dc</footer>
+</main>
+<script>
+(function () {
+  document.querySelectorAll('[data-copy]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      try { navigator.clipboard.writeText(button.dataset.copy); button.textContent = 'Copied'; } catch (error) { /* no clipboard */ }
+    });
+  });
+  var svg = document.querySelector('svg.domain');
+  if (!svg) return;
+  var edges = Array.prototype.slice.call(svg.querySelectorAll('.edge'));
+  function clear() { svg.classList.remove('focus'); svg.querySelectorAll('.on').forEach(function (n) { n.classList.remove('on'); }); }
+  function focusRepo(repo) {
+    clear(); svg.classList.add('focus');
+    svg.querySelector('.pkg[data-repo="' + repo + '"]').classList.add('on');
+    edges.forEach(function (edge) {
+      if (edge.dataset.repo === repo || edge.dataset.repo2 === repo) {
+        edge.classList.add('on');
+        if (edge.dataset.type) svg.querySelector('.type[data-type="' + edge.dataset.type + '"]').classList.add('on');
+        var other = edge.dataset.repo === repo ? edge.dataset.repo2 : edge.dataset.repo;
+        if (other) svg.querySelector('.pkg[data-repo="' + other + '"]').classList.add('on');
+      }
+    });
+  }
+  function focusType(name) {
+    clear(); svg.classList.add('focus');
+    svg.querySelector('.type[data-type="' + name + '"]').classList.add('on');
+    edges.forEach(function (edge) {
+      if (edge.dataset.type === name) { edge.classList.add('on'); svg.querySelector('.pkg[data-repo="' + edge.dataset.repo + '"]').classList.add('on'); }
+    });
+  }
+  svg.querySelectorAll('.pkg').forEach(function (node) {
+    node.addEventListener('mouseenter', function () { focusRepo(node.dataset.repo); });
+    node.addEventListener('focus', function () { focusRepo(node.dataset.repo); });
+    node.addEventListener('click', function () { focusRepo(node.dataset.repo); });
+  });
+  svg.querySelectorAll('.type').forEach(function (node) {
+    node.addEventListener('mouseenter', function () { focusType(node.dataset.type); });
+    node.addEventListener('focus', function () { focusType(node.dataset.type); });
+    node.addEventListener('click', function () { focusType(node.dataset.type); });
+  });
+  svg.addEventListener('mouseleave', clear);
+})();
+</script>
+</body>
+</html>
