@@ -35,6 +35,16 @@ pip install robot-sdk
 
 **Not in here:** GUIs and workbenches. They *use* the SDK, the way RViz uses ROS.
 
+## The agents (what builds the packages)
+
+Packages are what agents build; agents are what build them, so both are tracked here. An agent is a self-contained black box: an outside view (objectives and gates, a frozen scorer, datasets), a population of solutions with their scorecards, a progress log kept in its own files, and a viewer that reads only the metrics. Point any coding agent at it and it carries on the search: compute + agent + black box = results.
+
+| Agent | Repo | Objective | Builds on | Status |
+|---|---|---|---|---|
+| Trajectory Tracking Agent | `../trajectory_tracking_agent` | Lowest tool tracking error on a given trajectory, inside its gates (UR5e first) | `robot-msgs`, `robot-controllers` | its `status.json` (`ai-team-status/1`) |
+
+**Dependency rule for agents:** an agent imports packages; a package never imports an agent. A building block that wins in an agent's search moves into its package by a PR there, and the agent then imports it. Each agent keeps its own repo, in the standard format: `README.md`, `OBJECTIVES.md`, `AGENTS.md`, `PROGRESS.md`, `ideas.md`, `REFERENCES.md`, `solutions/`, `ledger.jsonl`, `status.json`, `site/`.
+
 ## Develop across all of them
 
 Clone each package's repo next to this one (`../robot_msgs`, `../robot_models`, …), then `uv sync` here installs every package editable from those checkouts (see `[tool.uv.sources]`): one environment, one lockfile. The same idea as ROS's vcstool + colcon workspace. `uv sync --no-sources` installs the released versions from PyPI instead.
