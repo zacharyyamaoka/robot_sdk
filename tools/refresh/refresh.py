@@ -91,14 +91,41 @@ def listed_repos() -> list[str]:
     return list(dict.fromkeys(pinned_repos() + agent_repos()))
 
 
-def clone(repos: list[str]) -> dict[str, str]:
-    heads = {}
+def clone(repos: list[str]) -> tuple[dict[str, str], list[str]]:
+    """Clone each repo at main; one that can't be cloned (not on GitHub yet, or private) is a missing upstream."""
+    heads, missing = {}, []
     for repo in repos:
         path = ROOT / repo
         if not path.exists():
-            run("git", "clone", "--quiet", "--depth", "1", f"{OWNER}/{repo}.git", str(path), cwd=ROOT)
+            done = run("git", "clone", "--quiet", "--depth", "1", f"{OWNER}/{repo}.git", str(path), cwd=ROOT, check=False,
+                       env={**os.environ, "GIT_TERMINAL_PROMPT": "0"})  # a missing repo must fail, never prompt
+            if done.returncode:
+                missing.append(repo)
+                continue
         heads[repo] = run("git", "-C", str(path), "rev-parse", "--short=7", "HEAD").stdout.strip()
-    return heads
+    return heads, missing
+
+
+def carry_over(graph: dict, last_good: dict | None, missing: list[str]) -> list[str]:
+    """Keep each pinned package whose repo can't be cloned from the last good graph, marked `upstream: "missing"`.
+    WHY (coordinator, 2026-11-24): a package can be pinned before its first public push (Zach's call); the directory
+    keeps listing it, says so, and the run stays green. Returns the ids it carried."""
+    if not last_good:
+        return []
+    have = {p["id"] for p in graph["packages"]}
+    types = {t["id"] for t in graph["types"]}
+    carried = []
+    for package in last_good.get("packages", []):
+        if package["id"] in missing and package["id"] not in have:
+            graph["packages"].append({**package, "upstream": "missing"})
+            graph["uses"] += [u for u in last_good.get("uses", []) if u["package"] == package["id"]]
+            used = {u["type"] for u in last_good.get("uses", []) if u["package"] == package["id"]}
+            graph["types"] += [t for t in last_good.get("types", []) if t["id"] in used - types]
+            types |= used
+            if package["id"] in last_good.get("sources", {}):
+                graph["sources"][package["id"]] = last_good["sources"][package["id"]]
+            carried.append(package["id"])
+    return carried
 
 
 def content(graph: dict) -> dict:
@@ -112,8 +139,10 @@ def published(path: str) -> bytes | None:
 
 
 def main(argv: list[str]) -> int:
-    heads = clone(listed_repos())
+    heads, missing = clone(listed_repos())
     print("cloned at main:", ", ".join(f"{r} {s}" for r, s in heads.items()))
+    # The last good graph: main's committed one (built by a lane from its own checkouts), read before build overwrites it.
+    last_good = json.loads(GRAPH.read_text(encoding="utf-8")) if GRAPH.exists() else None
     run(sys.executable, "-m", "tools.sdk_graph", "build")
     lint = run(sys.executable, "-m", "tools.sdk_graph", "check", check=False)
     print(lint.stdout, end="")
@@ -121,6 +150,7 @@ def main(argv: list[str]) -> int:
     builder = "site/publish_dashboard.py" if (SDK / "site" / "publish_dashboard.py").exists() else "site/build.py"
     run(sys.executable, builder)
     graph = json.loads(GRAPH.read_text(encoding="utf-8"))
+    carried = carry_over(graph, last_good, missing)
 
     run("git", "fetch", "--quiet", "origin", f"{BRANCH}:refs/remotes/origin/{BRANCH}", check=False)
     old = published("data/graph.json")
@@ -134,6 +164,8 @@ def main(argv: list[str]) -> int:
 
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     lines = [f"lint exit {lint.returncode}", *(f"- {r} `{s}`" for r, s in heads.items())]
+    lines += [f"- {r}: missing upstream (no public repo to clone); "
+              + ("kept from the last good graph" if r in carried else "not in the last good graph either") for r in missing]
     if "--publish" in argv:
         lines.insert(0, publish(graph["sources"].get("robot_sdk", "?")))
     if summary:
