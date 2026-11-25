@@ -145,3 +145,23 @@ export function neighbourhood(graph, id) {
   if (kind === "agent") { const a = (graph.agents || []).find((x) => x.id === key); for (const p of a?.builds_on || []) set.add("pkg:" + p); }
   return set;
 }
+
+// Directory links (hard gate g5, Zach 2026-11-24: robot-sdk is "a directory and entry point" to every tool).
+// WHY no per-package URLs here: each package describes itself in its own robot-sdk.toml (`links`, additive in
+// graph.json); the hub only aggregates. Fallbacks come from fields every package already has.
+export function packageLinks(pkg) {
+  const l = pkg?.links || {};
+  const github = l.github || pkg?.repo_url || null;
+  return {
+    github,
+    site: l.site || null,
+    pypi: l.pypi || (pkg?.pypi ? `https://pypi.org/project/${pkg.pypi}/` : null),
+    readme: l.readme || (github ? `${github}#readme` : null),
+    docs: l.docs && l.docs !== l.site ? l.docs : null,
+  };
+}
+export function agentLinks(agent) {
+  const l = agent?.links || {};
+  const github = l.github || agent?.repo_url || agent?.status?.links?.repo || null;
+  return { github, site: l.site || null, pypi: null, readme: github ? `${github}#readme` : null, docs: l.docs || null };
+}

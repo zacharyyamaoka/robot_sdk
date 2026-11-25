@@ -6,7 +6,7 @@ import { Handle, Position } from "@xyflow/react";
 import toolPath from "@repo/site/media/pick_and_place_tool_path.png";
 import joints from "@repo/site/media/pick_and_place_joints.png";
 import trackingError from "@repo/site/media/pick_and_place_tracking_error.png";
-import { agentKpi, fmtDate, provenance, sourceUrl, shortType, useState_, USE_STATE_LABEL, KIND_LABEL, LAYER_LABEL } from "./graph.js";
+import { packageLinks, agentLinks, agentKpi, fmtDate, provenance, sourceUrl, shortType, useState_, USE_STATE_LABEL, KIND_LABEL, LAYER_LABEL } from "./graph.js";
 
 export const PLOTS = [
   { src: toolPath, title: "Tool path", caption: "Commanded vs simulated tool path, 1.077 m over 5.35 s." },
@@ -226,4 +226,19 @@ export function edgeMarker(kind) {
 export function Legend({ items = ["produces", "consumes", "dep", "extra", "builds"] }) {
   const label = { produces: "produces (public return)", consumes: "consumes (public parameter)", imports: "imports (not public)", dep: "requires (pyproject)", extra: "optional extra", builds: "agent builds on" };
   return <div className="legend">{items.map((k) => <span key={k} className={"lg lg-" + k}>{label[k]}</span>)}</div>;
+}
+
+// One-click external links for a package (or agent): GitHub · its own site (only when it has one) · PyPI · README · docs.
+// Put the in-site drill-down first and these after it (Zach: drill down here, then out to the package's own pages).
+export function PkgLinks({ pkg, agent, compact = false, className = "" }) {
+  const L = agent ? agentLinks(agent) : packageLinks(pkg);
+  const items = [["github", "GitHub"], ["site", "Site"], ["pypi", "PyPI"], ["readme", "README"], ["docs", "Docs"]].filter(([k]) => L[k]);
+  const stop = (e) => e.stopPropagation();
+  return (
+    <span className={"pkg-links " + (compact ? "compact " : "") + className} data-testid={"links-" + (agent ? agent.id : pkg?.id)}>
+      {items.map(([k, label]) => (
+        <a key={k} className={"pl pl-" + k + " nodrag"} href={L[k]} target="_blank" rel="noreferrer" onClick={stop} onPointerDown={stop} title={label + ": " + L[k]}>{label}{compact ? "" : " ↗"}</a>
+      ))}
+    </span>
+  );
 }
