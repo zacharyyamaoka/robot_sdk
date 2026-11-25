@@ -256,18 +256,25 @@ def main(argv: list[str]) -> int:
     return lint.returncode
 
 
-def publish(source: str) -> str:
-    parent = run("git", "rev-parse", "-q", "--verify", f"refs/remotes/origin/{BRANCH}", check=False).stdout.strip()
+def publish(source: str, attempts: int = 3) -> str:
     with tempfile.TemporaryDirectory() as scratch:
         env = {**os.environ, "GIT_INDEX_FILE": str(Path(scratch) / "index")}
         run("git", "--work-tree", str(BUILD), "add", "--all", "--force", ".", env=env)
         tree = run("git", "write-tree", env=env).stdout.strip()
-    if parent and run("git", "rev-parse", f"{parent}^{{tree}}").stdout.strip() == tree:
-        return f"unchanged: {BRANCH} already holds this build ({parent[:9]})"
     message = f"site: built from main {source} with data/graph.json (tools/refresh)"
-    commit = run("git", "commit-tree", tree, *(["-p", parent] if parent else []), "-m", message).stdout.strip()
-    run("git", "push", "origin", f"{commit}:refs/heads/{BRANCH}")
-    return f"published: {BRANCH} -> {commit[:9]} ({message})"
+    # WHY a retry (2026-11-25, run on 233de24): a hand publish (site/publish_pages.py) moved gh-pages in the same second,
+    # so this push was rejected and the run went red with a good build. gh-pages holds whole snapshots, so the same tree
+    # is re-parented on the new tip and pushed again; never a force push.
+    for attempt in range(1, attempts + 1):
+        parent = run("git", "rev-parse", "-q", "--verify", f"refs/remotes/origin/{BRANCH}", check=False).stdout.strip()
+        if parent and run("git", "rev-parse", f"{parent}^{{tree}}").stdout.strip() == tree:
+            return f"unchanged: {BRANCH} already holds this build ({parent[:9]})"
+        commit = run("git", "commit-tree", tree, *(["-p", parent] if parent else []), "-m", message).stdout.strip()
+        pushed = run("git", "push", "origin", f"{commit}:refs/heads/{BRANCH}", check=False)
+        if pushed.returncode == 0:
+            return f"published: {BRANCH} -> {commit[:9]} ({message})" + (f" on attempt {attempt}" if attempt > 1 else "")
+        run("git", "fetch", "--quiet", "origin", f"+{BRANCH}:refs/remotes/origin/{BRANCH}", check=False)
+    raise SystemExit(f"git push to {BRANCH} rejected {attempts} times: {pushed.stderr.strip() or pushed.stdout.strip()}")
 
 
 if __name__ == "__main__":

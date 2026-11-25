@@ -466,6 +466,54 @@ def load_refresh():
     return module
 
 
+def pages_race(tmp_path):
+    """A bare origin whose gh-pages a rival publisher moved after our last fetch: (origin, our clone, the rival's tip)."""
+    origin, ours, rival = tmp_path / "origin.git", tmp_path / "ours", tmp_path / "rival"
+    sh = lambda cwd, *a: subprocess.run(["git", *a], cwd=cwd, capture_output=True, text=True, check=True).stdout.strip()  # noqa: E731
+    sh(tmp_path, "init", "-q", "--bare", str(origin))
+    for clone in (ours, rival):
+        sh(tmp_path, "clone", "-q", str(origin), str(clone))
+        sh(clone, "config", "user.email", "t@t"), sh(clone, "config", "user.name", "t")
+    sh(rival, "checkout", "-q", "--orphan", "gh-pages")
+    (rival / "index.html").write_text("first")
+    sh(rival, "add", "."), sh(rival, "commit", "-qm", "first"), sh(rival, "push", "-q", "origin", "gh-pages")
+    sh(ours, "fetch", "-q", "origin", "+gh-pages:refs/remotes/origin/gh-pages")  # our view: the first build
+    (rival / "index.html").write_text("rival")
+    sh(rival, "commit", "-qam", "rival"), sh(rival, "push", "-q", "origin", "gh-pages")  # the other publisher wins the race
+    return origin, ours, sh(rival, "rev-parse", "HEAD"), sh
+
+
+def test_refresh_publish_survives_a_rival_publish(tmp_path, monkeypatch):
+    origin, ours, rival_tip, sh = pages_race(tmp_path)
+    refresh = load_refresh()
+    build = tmp_path / "_build"
+    build.mkdir()
+    (build / "index.html").write_text("ours")
+    monkeypatch.setattr(refresh, "BUILD", build)
+    real_run = refresh.run
+    monkeypatch.setattr(refresh, "run", lambda *a, cwd=None, **kw: real_run(*a, cwd=ours, **kw))
+    line = refresh.publish("abc1234")
+    assert line.startswith("published:") and "on attempt 2" in line
+    tip = sh(origin, "rev-parse", "gh-pages")
+    assert sh(origin, "rev-parse", f"{tip}^") == rival_tip  # re-parented on the rival's build, nothing force-pushed
+    assert sh(origin, "show", f"{tip}:index.html") == "ours"
+
+
+def test_refresh_publish_can_still_fail(tmp_path, monkeypatch):
+    # A retry that can't go red proves nothing: with no attempts left after the rejected one, the run must fail loudly.
+    origin, ours, rival_tip, sh = pages_race(tmp_path)
+    refresh = load_refresh()
+    build = tmp_path / "_build"
+    build.mkdir()
+    (build / "index.html").write_text("ours")
+    monkeypatch.setattr(refresh, "BUILD", build)
+    real_run = refresh.run
+    monkeypatch.setattr(refresh, "run", lambda *a, cwd=None, **kw: real_run(*a, cwd=ours, **kw))
+    with pytest.raises(SystemExit, match="rejected 1 times"):
+        refresh.publish("abc1234", attempts=1)
+    assert sh(origin, "rev-parse", "gh-pages") == rival_tip
+
+
 def test_refresh_leaves_out_a_failed_file_and_still_writes_the_rest(tmp_path, monkeypatch):
     refresh = load_refresh()
     data = tmp_path / "_build" / "data"

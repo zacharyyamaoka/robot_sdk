@@ -38,22 +38,31 @@ def main() -> None:
         tree = git("write-tree", env=env)
     # WHY fetch first (2026-11-24): the hourly refresh workflow also publishes gh-pages; building on a stale local branch
     # made every hand publish after it a rejected non-fast-forward push. Start from the remote tip when there is one.
-    subprocess.run(["git", "-C", str(ROOT), "fetch", "-q", "origin", f"{BRANCH}:refs/remotes/origin/{BRANCH}"], capture_output=True)
-    remote = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "-q", "--verify", f"refs/remotes/origin/{BRANCH}"],
-                            capture_output=True, text=True).stdout.strip()
-    if remote:
-        git("update-ref", f"refs/heads/{BRANCH}", remote)
-    parent = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "-q", "--verify", f"refs/heads/{BRANCH}"],
-                            capture_output=True, text=True).stdout.strip()
-    if parent and git("rev-parse", f"{parent}^{{tree}}") == tree:
-        print(f"{BRANCH} already holds this build ({parent[:9]})")
-    else:
-        message = f"site: built from main {source}" + (" (with uncommitted changes)" if dirty else "")
-        commit = git("commit-tree", tree, *(["-p", parent] if parent else []), "-m", message)
-        git("update-ref", f"refs/heads/{BRANCH}", commit, *([parent] if parent else []))
-        print(f"{BRANCH} -> {commit[:9]}: {message}")
-    if "--no-push" not in sys.argv:
-        print(git("push", "origin", f"{BRANCH}:{BRANCH}"))
+    # WHY retry (2026-11-25): the two can still push in the same second; gh-pages holds whole snapshots, so the loser
+    # re-parents the same tree on the new tip and pushes again (tools/refresh/refresh.py does the same). Never forced.
+    for attempt in range(1, 4):
+        subprocess.run(["git", "-C", str(ROOT), "fetch", "-q", "origin", f"+{BRANCH}:refs/remotes/origin/{BRANCH}"], capture_output=True)
+        remote = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "-q", "--verify", f"refs/remotes/origin/{BRANCH}"],
+                                capture_output=True, text=True).stdout.strip()
+        if remote:
+            git("update-ref", f"refs/heads/{BRANCH}", remote)
+        parent = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "-q", "--verify", f"refs/heads/{BRANCH}"],
+                                capture_output=True, text=True).stdout.strip()
+        if parent and git("rev-parse", f"{parent}^{{tree}}") == tree:
+            print(f"{BRANCH} already holds this build ({parent[:9]})")
+        else:
+            message = f"site: built from main {source}" + (" (with uncommitted changes)" if dirty else "")
+            commit = git("commit-tree", tree, *(["-p", parent] if parent else []), "-m", message)
+            git("update-ref", f"refs/heads/{BRANCH}", commit, *([parent] if parent else []))
+            print(f"{BRANCH} -> {commit[:9]}: {message}")
+        if "--no-push" in sys.argv:
+            return
+        pushed = subprocess.run(["git", "-C", str(ROOT), "push", "origin", f"{BRANCH}:{BRANCH}"], capture_output=True, text=True)
+        if pushed.returncode == 0:
+            print((pushed.stdout + pushed.stderr).strip() + (f" (attempt {attempt})" if attempt > 1 else ""))
+            return
+        print(f"push rejected (attempt {attempt}): {pushed.stderr.strip()}", file=sys.stderr)
+    raise SystemExit(f"git push origin {BRANCH} rejected 3 times")
 
 
 if __name__ == "__main__":
