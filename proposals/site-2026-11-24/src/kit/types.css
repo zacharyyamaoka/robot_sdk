@@ -1,0 +1,92 @@
+/* The Types workspace adapter: V2's TypesTab (rail | switchboard | rows) joins the kit's grid beside a panel switcher.
+   .types-tab is display: contents, so its three children are placed by this grid directly. */
+@import "./types.v2.css";
+
+.k-types { display: grid; grid-template-columns: 232px minmax(0, 1fr) minmax(320px, 380px); grid-template-rows: auto minmax(0, 1fr);
+  height: var(--k-types-h, 760px); min-height: 0; background: var(--bg); border: 1px solid var(--line); border-radius: var(--k-radius); overflow: hidden; }
+.k-types .types-tab { display: contents; }
+.k-types .rail { grid-column: 1; grid-row: 1 / span 2; min-height: 0; }
+.k-types .centre { grid-column: 2; grid-row: 1 / span 2; min-height: 0; }
+.k-types .k-types-ptabs { grid-column: 3; grid-row: 1; }
+.k-types .rows, .k-types .k-types-actions { grid-column: 3; grid-row: 2; min-height: 0; }
+.k-types.k-panel-actions .rows { display: none; }
+.k-types.k-panel-rows .k-types-actions { display: none; }
+.k-types.k-nointro .intro, .k-types.k-nointro .intro-reopen { display: none; }
+.k-types .sw-canvas { min-height: 300px; }
+
+.k-types-ptabs { display: flex; gap: 2px; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--card); padding: 6px 8px 0; }
+.k-ptab { font: inherit; font-size: 13px; border: 0; background: none; color: var(--muted); padding: 6px 10px 8px; cursor: pointer; border-bottom: 2.5px solid transparent; white-space: nowrap; }
+.k-ptab:hover { color: var(--ink); }
+.k-ptab.on { color: var(--ink); font-weight: 600; border-bottom-color: var(--accent); }
+.k-ptab .k-n { font-size: 11px; background: var(--band); color: var(--muted); border-radius: 99px; padding: 0 6px; margin-left: 4px; font-weight: 500; }
+.k-types-actions { border-left: 1px solid var(--line); background: var(--bg); overflow-y: auto; overscroll-behavior: contain; }
+
+/* health marks on V2's switchboard nodes and rows (colours injected per package by TypeWorkspace) */
+.k-types .sw-pkg { position: relative; }
+.k-types .sw-pkg::after { content: ""; position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+.k-types .rows-pkg-name::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: transparent; }
+
+/* tablet / phone: one column — the switchboard, then the answer, then the type list */
+@media (max-width: 1099px) {
+  .k-types { display: flex; flex-direction: column; height: auto; }
+  .k-types .centre { order: 1; }
+  .k-types .k-types-ptabs { order: 2; border-left: 0; border-top: 1px solid var(--line); }
+  .k-types .rows, .k-types .k-types-actions { order: 3; border-left: 0; }
+  .k-types .rail { order: 4; border-right: 0; border-top: 1px solid var(--line); }
+  .k-types .rail-list { max-height: 260px; }
+  .k-types .rows-list, .k-types .k-types-actions { max-height: 70vh; }
+  .k-types .sw-canvas { min-height: 420px; flex: none; height: 420px; }
+}
+@media (max-width: 640px) {
+  .k-types .intro { grid-template-columns: minmax(0, 1fr); padding: 12px 34px 12px 14px; }
+  .k-types .intro-actions .copy-code { flex-wrap: wrap; }
+  .k-types .centre { padding: 10px 12px; }
+  .k-types .th h1 { font-size: 21px; }
+  .k-types .copy-code { min-width: 0; max-width: 100%; } .k-types .copy-code pre { min-width: 0; }
+}
+
+/* ---- TypeActions ---- */
+.k-ta { padding: 12px 14px 22px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.k-ta-note { background: var(--k-warn-soft); color: var(--ink); border-radius: 8px; padding: 6px 10px; font-size: 13px; }
+.k-ta-head h3 { margin: 0; font-size: 16px; line-height: 1.3; }
+.k-ta-head p { margin: 2px 0 0; }
+.k-ta-stats { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; margin-top: 6px; }
+.k-ta-stats a { color: var(--ink); text-decoration: none; border-bottom: 1px dashed var(--line); }
+.k-ta-stats a:hover { border-bottom-color: var(--ink); }
+.k-ta-h { margin: 10px 0 0; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; scroll-margin-top: 8px; }
+.k-ta-h .k-faint { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.k-ta-imps { display: flex; flex-wrap: wrap; gap: 5px; }
+.k-siggroups { display: grid; gap: 8px; }
+.k-siggroup { background: var(--card); border: 1px solid var(--line); border-radius: 9px; padding: 6px 10px 6px; min-width: 0; }
+.k-siggroup-head { display: flex; align-items: center; gap: 7px; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+.k-siggroup-head code { font-weight: 700; background: none; padding: 0; }
+.k-siglist { list-style: none; margin: 0; padding: 0; }
+.k-sigrow { padding: 6px 0 5px; border-bottom: 1px dashed var(--line); display: grid; gap: 2px; min-width: 0; }
+.k-sigrow:last-child { border-bottom: 0; }
+.k-sigrow-top { display: flex; align-items: center; gap: 6px; min-width: 0; flex-wrap: wrap; }
+.k-sigrow-bot { display: flex; align-items: baseline; gap: 4px 10px; min-width: 0; flex-wrap: wrap; justify-content: space-between; }
+.k-sig-name { font-size: 12.5px; font-weight: 600; background: none; padding: 0; overflow-wrap: anywhere; min-width: 0; }
+.k-where { font: 11.5px var(--mono); white-space: nowrap; flex: none; margin-left: auto; }
+.k-sig { font: 12px var(--mono); color: var(--muted); overflow-wrap: anywhere; min-width: 0; }
+.k-sig-word { font-family: var(--sans); color: var(--faint); }
+.k-sig-arrow { color: var(--faint); }
+.k-sig-focus { color: var(--ink); }
+.k-more { font: inherit; font-size: 12px; border: 0; background: none; color: var(--accent); cursor: pointer; padding: 4px 0 0; }
+
+/* ---- TypeLink ---- */
+.k-tlink { font-family: var(--mono); font-size: .95em; color: var(--consume); text-decoration: none; border-bottom: 1px dotted color-mix(in srgb, var(--consume) 50%, transparent); }
+.k-tlink:hover { border-bottom-style: solid; }
+.k-tlink-on { color: var(--ink); font-weight: 700; }
+.k-tlink-x { color: var(--muted); border-bottom: 0; }
+
+/* ---- TypeSearch ---- */
+.k-ts { display: grid; gap: 8px; min-width: 0; }
+.k-ts input { font: inherit; font-size: 15px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink); width: 100%; }
+.k-ts input:focus { outline: 2px solid var(--consume-soft); border-color: var(--consume); }
+.k-ts-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.k-ts-type { display: grid; grid-template-columns: auto 1fr; gap: 0 10px; padding: 6px 10px; border-radius: 8px; color: var(--ink); text-decoration: none; }
+.k-ts-type:hover { background: var(--band); }
+.k-ts-type code { font-weight: 700; background: none; padding: 0; }
+.k-ts-what { grid-column: 1 / -1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.k-ts-flow { display: grid; gap: 8px; }
+.k-ts-chains .k-sigrow { display: block; font-size: 12.5px; }
