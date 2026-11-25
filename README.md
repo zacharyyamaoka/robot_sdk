@@ -28,7 +28,7 @@ pip install robot-sdk
 | leaf | `robot-metrics` | `../robot_metrics` | |
 | leaf | `robot-activity` | `../robot_activity` | |
 | comms | `like_keras` | `../like_keras` | Components and ports over dora |
-| viewers | `traj-compare` | `../traj_compare` | Views of robot_msgs data: the A/B trajectory comparison report (target vs sim vs real) and the coverage viewers for trajectories, grasps and any dataclass records. Depends on robot_msgs; nothing depends on a viewer |
+| viewers | `traj-compare` | `../traj_compare` | Views of robot_msgs data: the A/B trajectory comparison report (target vs sim vs real) and the coverage viewers for trajectories and grasps. Depends on robot_msgs; nothing depends on a viewer |
 | outer | `sim2real` | `../sim2real` | The one-click API (`RobotTwin`, `.calibrate()`). May import everything below |
 | checks | `robot-diagnostics` | `../robot_diagnostics` | Robot Diagnostics (RobotDx): a diagnostic = a metric + a threshold. Stdlib core; numpy, robot-metrics and sim2real via the `stock` extra |
 
