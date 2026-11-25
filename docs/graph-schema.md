@@ -60,3 +60,17 @@ that verifies it's true." An edge exists only where code makes it true (no inven
 
 Rules: `uses` holds one row per (package, type, kind, symbol); an agent imports packages, a package never imports an
 agent; ids are stable (they key URLs and node ids in every view).
+
+## How it is made (2026-11-24)
+
+- `python -m tools.sdk_graph` rewrites the file; `python -m tools.sdk_graph check` lints every package's `robot-sdk.toml`
+  and exits 1 naming file:line (also `tests/test_sdk_graph.py`, with mutation tests that prove it goes red).
+  `python -m tools.sdk_graph draft <package>` prints a first declaration from the scan.
+- The scan reads code with `ast`, never imports it. Public = no underscore in the module path, and the module's
+  `__all__` when it has one (a package `__init__` re-exporting out of a private module makes the name public there).
+  Parameters consume, returns produce; a dataclass field follows its class (a class only ever returned is an output);
+  a `Protocol` the package does not itself implement flips (the package hands the implementer its parameters and takes
+  back its return). `Any` or duck-typed signatures name no type, so they make no edge; the type then shows as `imports`.
+- `robot-sdk.toml` format: `declaration.py`'s docstring. `declared` is per symbol: the declaration names that symbol.
+- `sources`: `-dirty` means an uncommitted change in what the scan reads (`src/`, `pyproject.toml`, `robot-sdk.toml`,
+  `status.json`, `README.md`); a dirty lockfile or report elsewhere in a checkout doesn't count.
