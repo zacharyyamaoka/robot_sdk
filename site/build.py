@@ -20,11 +20,12 @@ ROOT = SITE.parent
 BUILD = SITE / "_build"
 REPO_URL = "https://github.com/zacharyyamaoka"
 
-LAYER_LABEL = {"vocabulary": "vocabulary", "models": "models", "leaf": "leaf", "comms": "comms", "outer": "outer API", "checks": "checks"}
-PYPI = {"robot_msgs": "robot-msgs", "robot_models": "robot-models-lib", "robot_trajectories": "robot-trajectories",
-        "robot_reach": "robot-reach", "robot_controllers": "robot-controllers", "robot_thermal": "robot-thermal",
-        "robot_metrics": "robot-metrics", "robot_activity": "robot-activity", "robot_autonomy": "robot-autonomy",
-        "like_keras": "like_keras", "sim2real": "sim2real", "robot_diagnostics": "robot-diagnostics"}
+# Display labels, bottom to top. WHY no per-package facts here (Zach, 2026-11-24: "robot-sdk doesn't need to maintain
+# that information itself"): the cards read each package's PyPI name, layer, blurb and links from site/data/graph.json,
+# which tools/sdk_graph builds from every repo's own robot-sdk.toml.
+LAYER_LABEL = {"vocabulary": "vocabulary", "models": "models", "leaf": "leaf", "comms": "comms", "viewers": "viewers",
+               "outer": "outer API", "checks": "checks"}
+LINK_LABEL = {"site": "site", "docs": "docs", "pypi": "PyPI"}
 
 # Diagram layout: the robot_msgs types are a band in the middle; packages sit above (leaves) and below (the rest),
 # ordered so their arrows cross as little as possible. Library-to-library imports that exist only as optional extras or
@@ -447,7 +448,8 @@ def main() -> None:
     import datetime
     import subprocess
 
-    domain = json.loads((SITE / "data" / "domain.json").read_text())
+    domain = json.loads((SITE / "data" / "domain.json").read_text())  # the hand-laid diagram's edges (see main's note)
+    graph = json.loads((SITE / "data" / "graph.json").read_text())
     pipeline_path = SITE / "data" / "pick_and_place.json"
     pipeline = json.loads(pipeline_path.read_text()) if pipeline_path.exists() else None
     diagram, edges = domain_svg(domain)
@@ -458,10 +460,15 @@ def main() -> None:
         f'<td><a href="{REPO_URL}/{esc(e["repo"])}/blob/main/{esc(line_anchor(e["evidence"]))}">{esc(e["evidence"])}</a></td></tr>'
         for e in edges)
 
+    def card_links(links: dict) -> str:
+        found = [f'<a href="{esc(links[k])}">{esc(label)}</a>' for k, label in LINK_LABEL.items() if k in links]
+        return f' · {" · ".join(found)}' if found else ""
+
     cards = "".join(
-        f'<div class="card"><h3><a href="{REPO_URL}/{esc(p["repo"])}">{esc(p["repo"])}</a></h3>'
-        f'<p>{esc(p["one_line"])}</p><div class="meta">{esc(LAYER_LABEL[p["layer"]])} · <code>pip install {esc(PYPI[p["repo"]])}</code></div></div>'
-        for p in sorted(domain["packages"], key=lambda p: list(LAYER_LABEL).index(p["layer"])))
+        f'<div class="card"><h3><a href="{esc(p["links"]["github"])}">{esc(p["id"])}</a></h3>'
+        f'<p>{esc(p["one_line"])}</p><div class="meta">{esc(LAYER_LABEL[p["layer"]])} · <code>pip install {esc(p["pypi"])}</code>'
+        f'{card_links(p["links"])}</div></div>'
+        for p in sorted(graph["packages"], key=lambda p: list(LAYER_LABEL).index(p["layer"])))
 
     BUILD.mkdir(exist_ok=True)
     media_out = BUILD / "media"
