@@ -1,0 +1,58 @@
+{
+  "frozen": "2026-11-24 21:58 MST, before any round-2 variant was built",
+  "round": "robot_sdk site, round 2: a site with workspaces (5 proposals, V6-V10; babble)",
+  "source": "Zach's feedback on round 1, Daily Note - Nov 24 2026 '# Robot SDK feedback' (line 2740)",
+  "outcome": "A visitor moves around robot-sdk by its types ('I have a JointTrajectory, what can I do with it?'), sees what is passing or failing, and can switch between Live, the latest release and previous versions, inside one site of workspaces (Types, Packages, Directory, Health, plus Agents and the Run) rather than one landing page.",
+  "invariants": [
+    "A site of workspaces, not a single scrolling landing page. Required workspaces: Types, Packages, Directory, Health; Agents, the pick-and-place Run and 'For coding agents' stay reachable.",
+    "Types workspace builds on round 1's V2 Type Switchboard (type rail, focused produces/consumes graph, rows panel with file:line); Zach: 'I really really really like this type view… we 100% should support this'.",
+    "Packages workspace builds on V1's layer tree (package deps) with a 'group by layer' checkbox beside imports / package deps / agents, plus a pipeline mode: packages joined producer -> consumer through the types they declare, robot_msgs hidden as the glue.",
+    "Directory has a Cards <-> Compact toggle (V1 'The layers' cards, V5 compact directory), one click to GitHub / Site / PyPI / README.",
+    "Health is first-class: tests on main, declaration lint, types verified, release vs pin, repo reachable, per package and agent, failing first, one click to the evidence.",
+    "Version picker in the top-right beside a GitHub icon that links to the robot_sdk repo; GitHub branch/tag-picker style; Live is the default; Latest release and previous snapshots reachable; switching changes the data every workspace shows; the current version is always visible.",
+    "Nothing from round 1's V3 Canvas Map (Zach: 'I don't like anything from v3').",
+    "Only real data: site/data/graph.json, health.json, versions.json (+ the version graphs it names), pick_and_place.json, read at runtime with a build-time fallback.",
+    "React Flow (@xyflow/react 12.12.0) for every graph; edge routing may use elkjs 0.12.1 (Zach: 'you can really use like the [ELK] plugin to do this routing' — assumption: the transcribed 'techagui plugin' is a layout/routing library such as ELK).",
+    "Static, gh-pages hostable; each variant one self-contained file at /vN/ behind the live site's Site design switcher."
+  ],
+  "scenario": "Land on the site. Find JointTrajectory and answer: what can I do with it (which functions take it, in which packages), where do I get one, and is each of those packages passing? Then switch to the latest release: what is different? Then open the package tree with layer grouping off.",
+  "axes": [
+    {"name": "Workspace navigation", "values": ["repo tabs under a header (V6)", "activity bar + editor tabs (V7)", "type search first (V8)", "health matrix home + side nav (V9)", "docs navbar + sidebar tree, a page per entity (V10)"]},
+    {"name": "Home screen", "values": ["the Types workspace (V6)", "the last selection, explorer open (V7)", "a type search box (V8)", "the health matrix (V9)", "an overview page (V10)"]},
+    {"name": "Version model", "values": ["GitHub branch/tag dropdown (V6)", "status-bar version + compare against Live (V7)", "dropdown, results annotated where the version differs (V8)", "versions as matrix columns side by side (V9)", "versioned docs dropdown, per-page versions (V10)"]}
+  ],
+  "requirements": [
+    {"id": "fr1", "name": "Types are the way in", "weight": 30,
+     "why": "Zach: 'Its a functional robot library so if you want to understand it moving around by the types is 100% the right way to navigate … you have a joint trajectory and you want to know what you can do with it? well now you can quickly find out'.",
+     "passCondition": "From the first screen, 'what can I do with a JointTrajectory' is answered in two actions or fewer: the functions that take it (symbol, package, file:line) and where to get one; every type mention anywhere is a link to that type.",
+     "anchors": {"1": "Types are one tab among many; the answer is package-level only or needs several steps.", "3": "The Types workspace answers it at function level but takes 3+ actions or loses the version/selection.", "5": "One or two actions; the answer lists functions with package, kind, file:line and each package's health inline, and type links work site-wide."}},
+    {"id": "fr2", "name": "Health is first-class", "weight": 20,
+     "why": "Zach: 'I really like the health view super duper important … you want to be able to see what is passing or not'.",
+     "passCondition": "What is failing is visible at a glance on the Health workspace and summarised on every screen; each failure opens its evidence (CI run, lint line) in one click.",
+     "anchors": {"1": "Health is a colour on a node with no evidence.", "3": "A health view exists with evidence links, but it is a tab you have to find, or failures are not first.", "5": "Failures first, at a glance, summarised everywhere, each one click from its CI run or lint line; health also colours the type and package views."}},
+    {"id": "fr3", "name": "Versions are first-class", "weight": 15,
+     "why": "Zach: 'just like ros has the different pinned versions we want that to be first class … by default it can be live … go back to the latest stable or previous ones … top right corner next to a github icon'.",
+     "passCondition": "The picker sits top-right beside the GitHub icon, Live is default, choosing Latest release or a snapshot changes what every workspace shows, and the current version is always visible.",
+     "anchors": {"1": "A label, or a picker that changes nothing.", "3": "Switching works but differences are invisible or some workspaces ignore it.", "5": "Switching is instant and site-wide, the current version is always on screen, and what differs from Live is visible."}},
+    {"id": "fr4", "name": "One site of workspaces", "weight": 15,
+     "why": "Zach: 'right now we have the single landing page design but we need to switch to more of a site layout where we have a couple different workspaces you can shift to'.",
+     "passCondition": "Workspaces are visible and one click apart; switching keeps the selected type/package and version; URLs deep-link and Back works; usable on a phone.",
+     "anchors": {"1": "A scrolling page with sections.", "3": "Workspaces exist but switching drops context or URLs don't deep-link.", "5": "Workspaces one click apart, context and version kept, every state deep-linkable, phone layout works."}},
+    {"id": "fr5", "name": "Package tree, pipeline and directory views", "weight": 10,
+     "why": "Zach liked V1's tree ('I like it like a tree'), asked for the pipeline with robot_msgs hidden and a group-by-layer checkbox, and both directory forms ('switch between like cards vs compact').",
+     "passCondition": "Tree with a working group-by-layer checkbox; pipeline joins packages by type with robot_msgs hidden; directory toggles Cards/Compact with one-click links.",
+     "anchors": {"1": "One of the three is missing.", "3": "All three exist; one is cramped, mis-routed or hard to read.", "5": "All three read at a glance with clean edge routing, and the checkbox/toggles are direct and remembered."}},
+    {"id": "fr6", "name": "First-minute understanding", "weight": 10,
+     "why": "It is still the public front door: an outsider should get what robot-sdk is and how to install it.",
+     "passCondition": "Within the first screen or one click: what it is, pip install, and the real pick-and-place run.",
+     "anchors": {"1": "A tool surface with no explanation.", "3": "The pitch exists but competes with the machinery.", "5": "Pitch, install and a real result land without crowding the workspace."}}
+  ],
+  "hardGates": [
+    {"id": "g1", "name": "Real data only", "test": "Reads graph.json, health.json, versions.json and pick_and_place.json at runtime (build-time copy when offline); no invented package, type, edge, check or version."},
+    {"id": "g2", "name": "All workspaces present", "test": "Types (V2 switchboard base), Packages (tree + group-by-layer + pipeline), Directory (Cards/Compact), Health; Agents, Run and For coding agents reachable."},
+    {"id": "g3", "name": "Version picker top-right beside GitHub", "test": "A GitHub icon linking https://github.com/zacharyyamaoka/robot_sdk sits beside the picker in the top-right; Live is the default; choosing another version changes the data shown."},
+    {"id": "g4", "name": "Nothing from V3", "test": "No whole-map zoom / fly-to canvas as a page."},
+    {"id": "g5", "name": "Directory links", "test": "One click from the directory to each package's GitHub, PyPI and README, and Site where declared."},
+    {"id": "g6", "name": "Runs clean", "test": "0 console errors at 1440 x 900; no sideways scroll at 390 px."}
+  ]
+}

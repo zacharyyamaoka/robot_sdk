@@ -25,7 +25,9 @@ from playwright.sync_api import sync_playwright
 
 HERE = Path(__file__).resolve().parent.parent  # proposals/site-2026-11-24
 REPO = HERE.parent.parent  # robot_sdk
-OUT_ROOT = REPO / "reports" / "media" / "site-proposals-2026-11-24"
+# WHY an env override (round 2, 2026-11-24): V6-V10 record into their own media folder so round 1's evidence stays put.
+import os
+OUT_ROOT = REPO / "reports" / "media" / os.environ.get("RSDK_ROUND_MEDIA", "site-proposals-2026-11-24")
 W, H = 1440, 900
 
 
