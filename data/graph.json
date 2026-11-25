@@ -1,9 +1,9 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-25T17:53:04+00:00",
+ "generated": "2026-11-25T19:29:02+00:00",
  "sources": {
   "robot_sdk": "ea8b6db",
-  "robot_msgs": "9b5b590",
+  "robot_msgs": "8827f5f",
   "robot_models": "61b292c",
   "robot_controllers": "3159fe9",
   "robot_reach": "04f95f5",
@@ -12,13 +12,13 @@
   "robot_autonomy": "0f68b89",
   "robot_metrics": "f953427",
   "robot_activity": "2ebea6e",
-  "traj_compare": "9da2cfb",
-  "robot_msg_viz": "8bd34aa",
+  "traj_compare": "15e9f4b",
+  "robot_msg_viz": "cc61028",
   "sim2real": "7355462",
   "robot_diagnostics": "2ab15cb",
-  "like_keras": "cdf58d8",
+  "like_keras": "72de480",
   "robot_sdk_agent": "706387f",
-  "trajectory_tracking_agent": "924f5fc",
+  "trajectory_tracking_agent": "4dab947",
   "robot_collision": "19aa8d0"
  },
  "packages": [
@@ -395,7 +395,7 @@
      "id": "python",
      "status": "full",
      "where": "src/traj_compare",
-     "evidence": "32 modules"
+     "evidence": "33 modules"
     }
    ]
   },
@@ -410,6 +410,7 @@
    "use_when": "Looking at any robot_msgs message in Rerun, live or from a file. **Never hand-write a Rerun layout for a standard type; grow its view here.**",
    "links": {
     "github": "https://github.com/zacharyyamaoka/robot_msg_viz",
+    "site": "https://zacharyyamaoka.github.io/robot_msg_viz/",
     "pypi": "https://pypi.org/project/robot-msg-viz/"
    },
    "version": "0.1.0",
@@ -428,7 +429,7 @@
      "id": "python",
      "status": "full",
      "where": "src/robot_msg_viz",
-     "evidence": "24 modules"
+     "evidence": "26 modules"
     }
    ]
   },
@@ -2205,7 +2206,7 @@
    "type": "robot_msgs.compare.Tolerances",
    "kind": "consumes",
    "symbol": "traj_compare.model.Comparison.tcp_tolerances",
-   "where": "src/traj_compare/model.py:557",
+   "where": "src/traj_compare/model.py:562",
    "public": true,
    "declared": false,
    "verified": true
@@ -2215,7 +2216,7 @@
    "type": "robot_msgs.compare.Tolerances",
    "kind": "consumes",
    "symbol": "traj_compare.model.Comparison.tolerances",
-   "where": "src/traj_compare/model.py:556",
+   "where": "src/traj_compare/model.py:561",
    "public": true,
    "declared": true,
    "verified": true
@@ -2235,7 +2236,7 @@
    "type": "robot_msgs.shape.Mesh",
    "kind": "imports",
    "symbol": "traj_compare.rerun_export",
-   "where": "src/traj_compare/rerun_export.py:72",
+   "where": "src/traj_compare/rerun_export.py:76",
    "public": false,
    "declared": false,
    "verified": true
@@ -2246,6 +2247,16 @@
    "kind": "imports",
    "symbol": "traj_compare.data_ui",
    "where": "src/traj_compare/data_ui.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "traj_compare.selection",
+   "where": "src/traj_compare/selection.py:172",
    "public": false,
    "declared": false,
    "verified": true
@@ -2303,6 +2314,26 @@
   {
    "package": "traj_compare",
    "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "traj_compare.rerun_target_run.target_vs_run_blueprint",
+   "where": "src/traj_compare/rerun_target_run.py:661",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "traj_compare.rerun_target_run.write_target_vs_run_rrd",
+   "where": "src/traj_compare/rerun_target_run.py:672",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointTrajectory",
    "kind": "produces",
    "symbol": "traj_compare.data_ui.links_from_robot",
    "where": "src/traj_compare/data_ui.py:350",
@@ -2328,6 +2359,26 @@
    "where": "src/traj_compare/data_ui.py:447",
    "public": true,
    "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "consumes",
+   "symbol": "traj_compare.rerun_target_run.target_vs_run_blueprint",
+   "where": "src/traj_compare/rerun_target_run.py:662",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "consumes",
+   "symbol": "traj_compare.rerun_target_run.write_target_vs_run_rrd",
+   "where": "src/traj_compare/rerun_target_run.py:676",
+   "public": true,
+   "declared": false,
    "verified": true
   },
   {
@@ -2945,7 +2996,7 @@
    "type": "robot_msgs.std.Header",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
-   "where": "src/robot_msg_viz/views/trajectory.py:45",
+   "where": "src/robot_msg_viz/views/trajectory.py:48",
    "public": false,
    "declared": false,
    "verified": true
@@ -2985,7 +3036,7 @@
    "type": "robot_msgs.trajectory.JointLimitViolation",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
-   "where": "src/robot_msg_viz/views/trajectory.py:46",
+   "where": "src/robot_msg_viz/views/trajectory.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -2995,7 +3046,7 @@
    "type": "robot_msgs.trajectory.JointLimits",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
-   "where": "src/robot_msg_viz/views/trajectory.py:46",
+   "where": "src/robot_msg_viz/views/trajectory.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3015,7 +3066,7 @@
    "type": "robot_msgs.trajectory.JointTrajectory",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
-   "where": "src/robot_msg_viz/views/trajectory.py:46",
+   "where": "src/robot_msg_viz/views/trajectory.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3025,7 +3076,7 @@
    "type": "robot_msgs.trajectory.JointTrajectoryPoint",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
-   "where": "src/robot_msg_viz/views/trajectory.py:46",
+   "where": "src/robot_msg_viz/views/trajectory.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3045,7 +3096,7 @@
    "type": "robot_msgs.trajectory.PoseTrajectory",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
-   "where": "src/robot_msg_viz/views/trajectory.py:46",
+   "where": "src/robot_msg_viz/views/trajectory.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3055,7 +3106,7 @@
    "type": "robot_msgs.trajectory.PoseTrajectoryPoint",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
-   "where": "src/robot_msg_viz/views/trajectory.py:46",
+   "where": "src/robot_msg_viz/views/trajectory.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3065,7 +3116,7 @@
    "type": "robot_msgs.trajectory.Trajectory",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
-   "where": "src/robot_msg_viz/views/trajectory.py:46",
+   "where": "src/robot_msg_viz/views/trajectory.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3075,7 +3126,7 @@
    "type": "robot_msgs.trajectory.TrajectoryPoint",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
-   "where": "src/robot_msg_viz/views/trajectory.py:46",
+   "where": "src/robot_msg_viz/views/trajectory.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -4455,7 +4506,7 @@
    "type": "robot_msgs.std.Header",
    "kind": "imports",
    "symbol": "like_keras.component",
-   "where": "src/like_keras/component.py:309",
+   "where": "src/like_keras/component.py:365",
    "public": false,
    "declared": false,
    "verified": true
@@ -4465,7 +4516,7 @@
    "type": "robot_msgs.std.LogRecord",
    "kind": "imports",
    "symbol": "like_keras.component",
-   "where": "src/like_keras/component.py:309",
+   "where": "src/like_keras/component.py:365",
    "public": false,
    "declared": false,
    "verified": true

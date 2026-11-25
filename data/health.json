@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-25T17:45:13+00:00",
- "graph_generated": "2026-11-25T17:45:02+00:00",
+ "generated": "2026-11-25T19:29:15+00:00",
+ "graph_generated": "2026-11-25T19:29:02+00:00",
  "checks": [
   {
    "id": "tests",
@@ -37,11 +37,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main 9b5b590",
-     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45581171902",
+     "detail": "test.yml passed on main 8827f5f",
+     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45677686774",
      "workflow": "test.yml",
-     "sha": "9b5b590",
-     "at": "2026-11-25T08:59:35Z"
+     "sha": "8827f5f",
+     "at": "2026-11-25T18:41:19Z"
     },
     "lint": {
      "state": "pass",
@@ -406,11 +406,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main 9da2cfb",
-     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45654341870",
+     "detail": "test.yml passed on main 15e9f4b",
+     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45677900171",
      "workflow": "test.yml",
-     "sha": "9da2cfb",
-     "at": "2026-11-25T16:29:03Z"
+     "sha": "15e9f4b",
+     "at": "2026-11-25T18:42:38Z"
     },
     "lint": {
      "state": "pass",
@@ -420,9 +420,9 @@
     },
     "types": {
      "state": "pass",
-     "detail": "10 declared + verified · 7 found, not declared · 0 missing",
+     "detail": "10 declared + verified · 12 found, not declared · 0 missing",
      "verified": 10,
-     "found": 7,
+     "found": 12,
      "missing": 0
     },
     "release": {
@@ -567,11 +567,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main cdf58d8",
-     "url": "https://github.com/zacharyyamaoka/like_keras/actions/runs/45654374284",
+     "detail": "test.yml passed on main 72de480",
+     "url": "https://github.com/zacharyyamaoka/like_keras/actions/runs/45683673083",
      "workflow": "test.yml",
-     "sha": "cdf58d8",
-     "at": "2026-11-25T16:29:15Z"
+     "sha": "72de480",
+     "at": "2026-11-25T19:17:13Z"
     },
     "lint": {
      "state": "pass",
