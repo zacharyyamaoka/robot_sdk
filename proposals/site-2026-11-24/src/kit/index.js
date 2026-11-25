@@ -10,6 +10,7 @@ export * from "./model.js";
 export { VersionPicker, GitHubButton, GitHubMark, BranchIcon, TopRight, VersionBanner, VersionDiff, TAGS_URL } from "./top.jsx";
 export { HealthDot, HealthPill, HealthBoard, HealthInline, shortCheck } from "./health.jsx";
 export { Directory, DirModeToggle, useStoredState, store, pagePathKey } from "./directory.jsx";
+export { LanguageChips, languageLabel, languageTitle } from "./languages.jsx";
 export { PackageMap, PackageMapToolbar, PM_DEFAULTS, PM_MODE_DEFAULTS, PM_NARROW, PM_FIT_MAX_ZOOM, pmOptions, switchMode } from "./packagemap.jsx";
 export { layoutTree, layoutPipeline, layoutPackages, pipelineLabel, roundedPath, PM } from "./layout.js";
 export { TypeWorkspace, TypeActions, TypeLink, TypeText, TypeSearch, Signature } from "./types.jsx";

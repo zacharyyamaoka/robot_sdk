@@ -1,25 +1,25 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-25T01:41:30-07:00",
+ "generated": "2026-11-25T08:07:14-07:00",
  "sources": {
-  "robot_sdk": "bf2705a-dirty",
-  "robot_msgs": "3023fce",
+  "robot_sdk": "e300b3e-dirty",
+  "robot_msgs": "9b5b590",
   "robot_models": "61b292c",
   "robot_controllers": "3159fe9",
-  "robot_reach": "940ada4",
+  "robot_reach": "04f95f5",
   "robot_collision": "19aa8d0",
   "robot_thermal": "928622d",
   "robot_trajectories": "e2cdd76",
   "robot_autonomy": "0f68b89",
   "robot_metrics": "f953427",
   "robot_activity": "2ebea6e",
-  "traj_compare": "95da542",
+  "traj_compare": "eca941c",
   "robot_msg_viz": "8bd34aa",
-  "sim2real": "21f81b0",
+  "sim2real": "7355462",
   "robot_diagnostics": "2ab15cb",
   "like_keras": "f2995b0",
   "robot_sdk_agent": "706387f",
-  "trajectory_tracking_agent": "e4f5ff1"
+  "trajectory_tracking_agent": "924f5fc"
  },
  "packages": [
   {
@@ -50,7 +50,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_msgs",
+     "evidence": "94 modules"
+    }
+   ]
   },
   {
    "id": "robot_models",
@@ -78,7 +86,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_models",
+     "evidence": "58 modules"
+    }
+   ]
   },
   {
    "id": "robot_controllers",
@@ -108,7 +124,21 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_controllers",
+     "evidence": "54 modules"
+    },
+    {
+     "id": "cpp",
+     "status": "partial",
+     "where": "src/robot_controllers/controllers/cpp",
+     "evidence": "1 controller: joint_trajectory_controller · parity test tests/test_cpp_parity.py"
+    }
+   ]
   },
   {
    "id": "robot_reach",
@@ -135,7 +165,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_reach",
+     "evidence": "24 modules"
+    }
+   ]
   },
   {
    "id": "robot_collision",
@@ -163,7 +201,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_collision",
+     "evidence": "12 modules"
+    }
+   ]
   },
   {
    "id": "robot_thermal",
@@ -192,7 +238,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_thermal",
+     "evidence": "22 modules"
+    }
+   ]
   },
   {
    "id": "robot_trajectories",
@@ -218,7 +272,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_trajectories",
+     "evidence": "103 modules"
+    }
+   ]
   },
   {
    "id": "robot_autonomy",
@@ -245,7 +307,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_autonomy",
+     "evidence": "27 modules"
+    }
+   ]
   },
   {
    "id": "robot_metrics",
@@ -276,7 +346,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_metrics",
+     "evidence": "19 modules"
+    }
+   ]
   },
   {
    "id": "robot_activity",
@@ -306,7 +384,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_activity",
+     "evidence": "17 modules"
+    }
+   ]
   },
   {
    "id": "traj_compare",
@@ -339,7 +425,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/traj_compare",
+     "evidence": "32 modules"
+    }
+   ]
   },
   {
    "id": "robot_msg_viz",
@@ -364,7 +458,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_msg_viz",
+     "evidence": "24 modules"
+    }
+   ]
   },
   {
    "id": "sim2real",
@@ -401,7 +503,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/sim2real",
+     "evidence": "117 modules"
+    }
+   ]
   },
   {
    "id": "robot_diagnostics",
@@ -428,7 +538,15 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_diagnostics",
+     "evidence": "28 modules"
+    }
+   ]
   },
   {
    "id": "like_keras",
@@ -455,7 +573,21 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass"
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/like_keras",
+     "evidence": "14 modules"
+    },
+    {
+     "id": "cpp",
+     "status": "partial",
+     "where": "cpp",
+     "evidence": "6 headers: abi, lk, msgs/control, msgs/sensor +2 more"
+    }
+   ]
   }
  ],
  "types": [

@@ -3,7 +3,7 @@
 // pass/warn/fail, plus the top failures, each one click from its run). And, on the Packages workspace, the same
 // column for one package: what it is, its checks, its types.
 import { useState } from "react";
-import { PITCH, LAYER_RULE, REPO_URL, CopyCode, PkgLinks, TypeLink, TypeText, healthOf, healthSummary, sortedMembers, fmtShortDate } from "@kit";
+import { PITCH, LAYER_RULE, REPO_URL, CopyCode, LanguageChips, PkgLinks, TypeLink, TypeText, healthOf, healthSummary, sortedMembers, fmtShortDate } from "@kit";
 import { LAYER_LABEL, usesOfPackage, packageEdges } from "@shared/graph.js";
 import { Icon, StatusIcon } from "./icons.jsx";
 import { worstLine, memberChecks, CheckLine, HealthBar } from "./checks.jsx";
@@ -166,6 +166,7 @@ export function PackageSide({ site, id, onOpenType, onOpenPackage, healthHref, o
           <span className="gh-label">{LAYER_LABEL[p.layer] || p.layer}</span>
           {p.role === "viewer" && <span className="gh-label gh-label-viewer">viewer</span>}
           {m && <a className={"gh-label gh-label-st gh-is-" + m.state} href={healthHref(p.id)}><StatusIcon state={m.state} size={12} />{m.state === "fail" ? "failing" : m.state === "warn" ? "warnings" : m.state}</a>}
+          <LanguageChips pkg={p} className="gh-pkg-langs" />
         </div>
         <p className="gh-about-desc"><TypeText text={p.one_line} graph={graph} onOpenType={onOpenType} /></p>
         {p.use_when && <p className="gh-small gh-muted gh-usewhen"><b>Reach for it when:</b> <TypeText text={p.use_when.replace(/\*\*/g, "")} graph={graph} onOpenType={onOpenType} /></p>}

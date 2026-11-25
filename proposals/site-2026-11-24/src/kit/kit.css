@@ -30,6 +30,10 @@ button.k-chip:hover { border-color: var(--muted); }
 .k-tag-warn { color: var(--k-warn); background: var(--k-warn-soft); border-color: transparent; }
 .k-tag-bad { color: var(--k-fail); background: var(--k-fail-soft); border-color: transparent; }
 .k-tag-viewer { color: var(--viewer); border-color: var(--viewer); background: var(--viewer-soft); }
+/* language chips (languages.jsx): a filled grey pill per language; partial / planned the same pill, muted and dashed */
+.k-langs { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; min-width: 0; }
+.k-lang { font: 500 11px/17px var(--sans); padding: 0 7px; border-radius: 99px; border: 1px solid transparent; background: var(--band); color: var(--ink); white-space: nowrap; cursor: default; }
+.k-lang-partial, .k-lang-planned { background: transparent; border: 1px dashed var(--line); color: var(--muted); }
 .k-pill { font-size: 11px; border: 1px solid var(--line); border-radius: 99px; padding: 0 7px; color: var(--muted); margin-left: 8px; font-weight: 500; }
 .k-count { font-size: 11.5px; background: var(--band); color: var(--muted); border-radius: 99px; padding: 0 7px; font-variant-numeric: tabular-nums; }
 .k-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--card); flex: none; }

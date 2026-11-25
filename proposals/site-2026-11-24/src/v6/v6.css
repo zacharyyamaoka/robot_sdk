@@ -205,6 +205,7 @@ a.gh-label:hover { text-decoration: none; filter: brightness(.97); }
 /* one package as the right column */
 .gh-pkgside { display: grid; }
 .gh-pkg-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.gh-pkg-meta .k-lang { font-size: 12px; line-height: 18px; border-radius: 2em; }
 .gh-usewhen { margin: -4px 0 12px; line-height: 1.45; }
 .gh-typelist { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; }
 .gh-typechip { white-space: nowrap; }
@@ -252,12 +253,19 @@ a.gh-label:hover { text-decoration: none; filter: brightness(.97); }
 .gh-ft { overflow: hidden; }
 .gh-ft .k-dir-head h3 { margin: 0; font-size: 14px; font-weight: 600; }
 .gh-ft-rows { display: grid; }
-.gh-ft-row { display: grid; grid-template-columns: minmax(200px, 250px) minmax(0, 1fr) auto 64px 28px; gap: 16px; align-items: center; padding: 0 16px; min-height: 40px; border-top: 1px solid var(--line); font-size: 14px; min-width: 0; }
+.gh-ft-row { display: grid; grid-template-columns: minmax(200px, 250px) 120px minmax(0, 1fr) auto 64px 28px; gap: 16px; align-items: center; padding: 0 16px; min-height: 40px; border-top: 1px solid var(--line); font-size: 14px; min-width: 0; }
+/* Name · Languages · What it is · Links · Version · Health. WHY order + a fixed Languages width: every row is its own
+   grid, so only fixed tracks line up row to row; the chips sit beside the name they describe. On a phone the wrapper
+   becomes one wrapping line (chips, then links). */
+.gh-ft-tail { display: contents; }
+.gh-ft-name, .gh-ft-name-h { order: 1; } .gh-ft-langs, .gh-ft-langs-h { order: 2; } .gh-ft-msg, .gh-ft-msg-h { order: 3; }
+.gh-ft-links, .gh-ft-links-h { order: 4; } .gh-ft-ver { order: 5; } .gh-ft-status, .gh-ft-st-h { order: 6; }
+.gh-ft-langs { min-width: 0; padding: 4px 0; display: flex; align-items: center; }
 .gh-ft-colhead { min-height: 34px; font-size: 12px; font-weight: 600; color: var(--muted); border-top: 0; background: var(--card); }
 .gh-ft-st-h { text-align: center; }
 .gh-ft-pkg:hover { background: var(--band); }
 .gh-ft-folder { background: var(--card); }
-.gh-ft-folder .gh-ft-msg { grid-column: 2 / -1; }
+.gh-ft-folder .gh-ft-msg { grid-column: 2 / -1; }  /* a folder row has no chips: its blurb starts under Languages */
 .gh-ft-name { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .gh-ft-name b { font-weight: 600; }
 .gh-ft-pkg .gh-ft-name { padding-left: 22px; }
@@ -304,9 +312,9 @@ a.gh-ft-status:hover { background: var(--gh-hover); }
   .gh-types-box .k-types { display: flex; }
 }
 @media (max-width: 900px) {
-  .gh-ft-row { grid-template-columns: minmax(160px, 200px) minmax(0, 1fr) 56px 28px; }
+  .gh-ft-row { grid-template-columns: minmax(160px, 200px) 120px minmax(0, 1fr) 56px 28px; }
   .gh-ft-links, .gh-ft-links-h { display: none; }
-  .gh-ft-pkg .gh-ft-links { display: block; grid-column: 2 / -1; justify-self: start; padding-bottom: 6px; }
+  .gh-ft-pkg .gh-ft-links { display: block; grid-column: 3 / -1; grid-row: 2; justify-self: start; padding-bottom: 6px; }
 }
 @media (max-width: 760px) {
   .gh-hide-narrow { display: none !important; }
@@ -331,7 +339,10 @@ a.gh-ft-status:hover { background: var(--gh-hover); }
   .gh-ft-colhead { display: none; }
   .gh-ft-pkg .gh-ft-name { padding-left: 0; }
   .gh-ft-pkg .gh-ft-msg { grid-column: 1 / -1; grid-row: 2; font-size: 12.5px; }
-  .gh-ft-pkg .gh-ft-links { grid-column: 1 / -1; grid-row: 3; }
+  .gh-ft-pkg .gh-ft-tail { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; grid-column: 1 / -1; grid-row: 3; min-width: 0; }
+  .gh-ft-pkg .gh-ft-links { grid-column: auto; grid-row: auto; padding-bottom: 0; }
+  .gh-ft-langs-h { display: none; }
+  .gh-ft-langs:empty { display: none; }
   .gh-ft-folder .gh-ft-msg { grid-column: 1 / -1; font-size: 12px; white-space: normal; }
   .gh-checkrow-main { grid-template-columns: 16px minmax(0, 1fr) auto 28px; gap: 8px; padding: 6px 8px 6px 12px; }
   .gh-checkrow-text { white-space: normal; }

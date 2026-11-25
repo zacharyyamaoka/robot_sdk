@@ -12,6 +12,7 @@ import subprocess
 import tomllib
 
 from . import declaration as decl
+from . import languages
 from .scan import SHARED_TYPES, PackageScan, TypeIndex
 
 SDK = pathlib.Path(__file__).resolve().parents[2]  # this robot_sdk checkout
@@ -20,7 +21,9 @@ OUT = SDK / "site" / "data" / "graph.json"
 SCHEMA = "robot-sdk-graph/1"
 GITHUB = "https://github.com/zacharyyamaoka"
 # The inputs a scan reads; a dirty file elsewhere in a checkout (a lockfile, a report) doesn't change the graph.
-SCANNED = ("src", "pyproject.toml", decl.FILE, "status.json", "README.md")
+# cpp/ … tests/*parity*: what `languages` reads (2026-11-25; a git pathspec's * crosses folders).
+SCANNED = ("src", "pyproject.toml", decl.FILE, "status.json", "README.md",
+           "cpp", "python", "rust", "Cargo.toml", "tests/*parity*")  # fmt: skip
 
 
 def normalize(requirement: str) -> str:
@@ -154,6 +157,7 @@ def build(root: pathlib.Path = ROOT, sdk: pathlib.Path = SDK, overrides: dict[st
             "deps": deps_of(meta, pypi_to_id),
             "declaration": decl.FILE if declared else None,
             "lint": result.status,
+            "languages": languages.detect(repo, pkg),
         })  # fmt: skip
         for use in rows:
             uses.append({
@@ -170,7 +174,9 @@ def build(root: pathlib.Path = ROOT, sdk: pathlib.Path = SDK, overrides: dict[st
     for folder in agent_repos(root):
         repo = repo_of(folder)
         declared = decl.Declaration.read(repo)
-        meta = pyproject(repo)
+        # WHY optional (2026-11-25): an agent that imports no package at runtime ships no pyproject.toml
+        # (robot_sdk_cpp_agent reads source at pinned commits); it builds on nothing, and the build must not crash on it.
+        meta = pyproject(repo) if (repo / "pyproject.toml").is_file() else {"project": {"name": folder}}
         sources[folder] = git_source(repo)
         deps = deps_of(meta, pypi_to_id)
         builds_on = list(dict.fromkeys(deps["required"] + [d for ex in deps["extras"].values() for d in ex]))

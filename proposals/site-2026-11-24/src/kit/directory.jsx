@@ -7,6 +7,7 @@ import { PkgLinks } from "@shared/parts.jsx";
 import { LAYER_LABEL, LAYER_BLURB, layersOf, usesOfPackage } from "@shared/graph.js";
 import { HealthDot, HealthInline } from "./health.jsx";
 import { healthOf } from "./model.js";
+import { LanguageChips } from "./languages.jsx";
 
 export const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -55,6 +56,7 @@ function PackageCard({ graph, health, p, onOpenPackage }) {
         {health && <HealthDot state={healthOf(health, p.id)?.state || "unknown"} title={healthOf(health, p.id) ? undefined : "no health row"} />}
       </div>
       <p className="k-card-one">{p.one_line}</p>
+      <LanguageChips pkg={p} className="k-card-langs" />
       <div className="k-card-meta">
         {c.total ? <><span className="k-c-prod">{c.produces} produce</span> · <span className="k-c-cons">{c.consumes} consume</span> · {c.imports} import</>
           : defines ? <span>defines {defines} types</span> : <span className="k-faint">no type uses</span>}
@@ -123,6 +125,7 @@ export function Directory({ graph, health, mode: modeProp, onMode, onOpenPackage
                     <div className="k-dirc-top">
                       {onOpenPackage ? <button className="k-dirc-name" onClick={() => onOpenPackage(p.id)} title="its types and uses"><code>{p.id}</code></button> : <code className="k-dirc-name">{p.id}</code>}
                       {p.role === "viewer" && <span className="k-tag k-tag-viewer">viewer</span>}
+                      <LanguageChips pkg={p} className="k-dirc-langs" />
                       <span className="k-grow" />
                       <span className="k-faint k-small">v{p.version}</span>
                       {health && <HealthDot state={st || "unknown"} />}

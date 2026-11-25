@@ -73,7 +73,8 @@ agent; ids are stable (they key URLs and node ids in every view).
   back its return). `Any` or duck-typed signatures name no type, so they make no edge; the type then shows as `imports`.
 - `robot-sdk.toml` format: `declaration.py`'s docstring. `declared` is per symbol: the declaration names that symbol.
 - `sources`: `-dirty` means an uncommitted change in what the scan reads (`src/`, `pyproject.toml`, `robot-sdk.toml`,
-  `status.json`, `README.md`); a dirty lockfile or report elsewhere in a checkout doesn't count.
+  `status.json`, `README.md`, and since 2026-11-25 `cpp/`, `python/`, `rust/`, `Cargo.toml`, `tests/*parity*` for
+  `languages`); a dirty lockfile or report elsewhere in a checkout doesn't count.
 
 ## Additive fields (2026-11-24, still `robot-sdk-graph/1`)
 
@@ -113,3 +114,38 @@ need to maintain that information itself… its decentralized").
 - `upstream` (per package, optional, added 2026-11-24 by the refresh workflow): `"missing"` when the package is pinned in
   robot_sdk but its GitHub repo is not reachable (e.g. not yet public). The package is then kept from the last good graph.
   Absent means the repo was cloned and scanned.
+
+## Additive field: `languages` (2026-11-25, still `robot-sdk-graph/1`)
+
+**WHY (Zach, 2026-11-25, Daily Note):** "In the robot SDK landing page now on each package you can also like support
+lanuagues, py, cpp". Like every edge, a language is listed only where the code makes it true: `tools/sdk_graph/languages.py`
+reads each package repo's own files; no declaration names a language. Additive under the rule above (no field changed;
+readers that ignore unknown keys keep working), so the schema stays `/1`. A graph from before 2026-11-25 (an older
+snapshot in `versions.json`) has no `languages`; readers show nothing for it, never a guess.
+
+```jsonc
+"packages": [{
+  // … the fields above, plus:
+  "languages": [                                   // display order python, cpp, rust; an absent language is not listed
+    {"id": "python", "status": "full",    "where": "src/robot_controllers", "evidence": "54 modules"},
+    {"id": "cpp",    "status": "partial", "where": "src/robot_controllers/controllers/cpp",
+     "evidence": "1 controller: joint_trajectory_controller · parity test tests/test_cpp_parity.py"}
+  ]
+}]
+```
+
+- `id`: `python | cpp | rust`. `status`: `full | partial | planned`. `where`: repo-relative folder. `evidence`: one short
+  line for a tooltip, made from file names only.
+- **python**: the package's Python source, `src/<pkg>` (else `python/src/<pkg>` or `python/<pkg>`, mjbots moteus's
+  `cpp/` · `python/` · `rust/` layout, which robot_sdk_cpp_agent ports to). Always `full`: the reference implementation.
+- **cpp**: a top-level `cpp/` with at least one header, else C++ files under `src/` or `python/` (`where` = their common
+  folder; `.h` alone is C and proves nothing). `partial` unless the full-parity proof below holds.
+- **rust**: a `Cargo.toml` (`partial` unless proved), else `rust/README.md` alone → `planned`.
+- Only files the repo owns count: `git ls-files -co --exclude-standard` in a checkout (so like_keras's gitignored `build/`,
+  which holds dora's `Cargo.toml`, is not Rust), and build output, virtualenvs and `node_modules` are skipped everywhere.
+  Tests and benchmarks (`tests/cpp`, `kpi/`) are not the package.
+- **full** (the hook; nothing earns it today): a module under `tests/` assigns `CPP_PARITY` (or `RUST_PARITY`) a literal
+  list of public symbols it pins against the Python. `full` when that list covers every public definition the scanner
+  finds (any of its public paths, re-exports included; an empty API never counts), and a listed symbol counts only if
+  the test's own code names it. Otherwise the evidence says how far it got: `1 of 12 public symbols parity-tested`.
+- README.md's layers table and skill/SKILL.md's packages table carry it as a Languages column (`Py, C++ · partial`).

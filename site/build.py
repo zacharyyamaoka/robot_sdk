@@ -26,6 +26,9 @@ REPO_URL = "https://github.com/zacharyyamaoka"
 LAYER_LABEL = {"vocabulary": "vocabulary", "models": "models", "leaf": "leaf", "comms": "comms", "viewers": "viewers",
                "outer": "outer API", "checks": "checks"}
 LINK_LABEL = {"site": "site", "docs": "docs", "pypi": "PyPI"}
+# Language chips (2026-11-25): graph.json's packages[].languages, read from each repo's files by tools/sdk_graph/languages.py.
+LANG_SHORT = {"python": "Py", "cpp": "C++", "rust": "Rust"}
+LANG_NAME = {"python": "Python", "cpp": "C++", "rust": "Rust"}
 
 # Diagram layout: the robot_msgs types are a band in the middle; packages sit above (leaves) and below (the rest),
 # ordered so their arrows cross as little as possible. Library-to-library imports that exist only as optional extras or
@@ -48,6 +51,18 @@ TYPE_W, TYPE_H = 156, 40
 
 def esc(text: object) -> str:
     return html.escape(str(text), quote=True)
+
+
+def language_chips(package: dict) -> str:
+    """Py · C++ · partial · Rust (planned), the evidence as the tooltip; nothing for a graph without `languages`."""
+    chips = []
+    for lang in package.get("languages") or []:
+        text = LANG_SHORT.get(lang["id"], lang["id"])
+        text += " · partial" if lang["status"] == "partial" else " (planned)" if lang["status"] == "planned" else ""
+        state = "" if lang["status"] == "full" else f", {lang['status']}"
+        title = f"{LANG_NAME.get(lang['id'], lang['id'])}{state}: {lang['evidence']} (in {lang['where']})"
+        chips.append(f'<span class="lang lang-{esc(lang["status"])}" title="{esc(title)}">{esc(text)}</span>')
+    return f'<span class="langs">{"".join(chips)}</span>' if chips else ""
 
 
 def spread(count: int, left: float, right: float) -> list[float]:
@@ -358,6 +373,9 @@ pre.code { background:var(--code); padding:14px 16px; border-radius:12px; overfl
 .card h3 { margin:0 0 4px; font:600 15px ui-monospace,Menlo,monospace; } .card h3 a { text-decoration:none; }
 .card p { margin:4px 0 8px; font-size:14.5px; }
 .card .meta { color:var(--muted); font-size:13px; }
+.langs { display:flex; flex-wrap:wrap; gap:4px; margin:0 0 6px; }
+.lang { font-size:11.5px; line-height:1.6; padding:0 8px; border-radius:99px; border:1px solid transparent; background:var(--band); color:var(--ink); white-space:nowrap; }
+.lang-partial, .lang-planned { background:transparent; border:1px dashed var(--line); color:var(--muted); }
 .layers { margin-top:12px; }
 footer { margin-top:64px; color:var(--muted); font-size:14px; border-top:1px solid var(--line); padding-top:16px; }
 .phone-hint { display:none; font-size:13px; margin:0 0 6px; }
@@ -466,7 +484,7 @@ def main() -> None:
 
     cards = "".join(
         f'<div class="card"><h3><a href="{esc(p["links"]["github"])}">{esc(p["id"])}</a></h3>'
-        f'<p>{esc(p["one_line"])}</p><div class="meta">{esc(LAYER_LABEL[p["layer"]])} · <code>pip install {esc(p["pypi"])}</code>'
+        f'<p>{esc(p["one_line"])}</p>{language_chips(p)}<div class="meta">{esc(LAYER_LABEL[p["layer"]])} · <code>pip install {esc(p["pypi"])}</code>'
         f'{card_links(p["links"])}</div></div>'
         for p in sorted(graph["packages"], key=lambda p: list(LAYER_LABEL).index(p["layer"])))
 

@@ -1,7 +1,7 @@
 // Directory, Compact: GitHub's file browser table (icon · name · one line · version · status), one folder row per
 // layer, agents last. Cards is the kit's own Directory. Same links as the kit's (GitHub, Site where declared, PyPI,
 // README, Docs) so the directory stays one click from every package's own pages (gate g5).
-import { DirModeToggle, PkgLinks, TypeText, healthOf } from "@kit";
+import { DirModeToggle, LanguageChips, PkgLinks, TypeText, healthOf } from "@kit";
 import { LAYER_LABEL, LAYER_BLURB, layersOf } from "@shared/graph.js";
 import { Icon, StatusIcon } from "./icons.jsx";
 import { worstLine } from "./checks.jsx";
@@ -29,7 +29,8 @@ export function FileTable({ graph, health, mode, onMode, onOpenPackage, onOpenAg
       </div>
       <div className="gh-ft-rows" role="table" aria-label="robot-sdk packages">
         <div className="gh-ft-row gh-ft-colhead" role="row">
-          <span role="columnheader">Name</span><span role="columnheader">What it is</span><span role="columnheader" className="gh-ft-links-h">Links</span>
+          <span role="columnheader" className="gh-ft-name-h">Name</span><span role="columnheader" className="gh-ft-msg-h">What it is</span>
+          <span className="gh-ft-tail"><span role="columnheader" className="gh-ft-langs-h">Languages</span><span role="columnheader" className="gh-ft-links-h">Links</span></span>
           <span role="columnheader" className="gh-ft-ver">Version</span><span role="columnheader" className="gh-ft-st-h">Health</span>
         </div>
         {layers.map((l) => (
@@ -47,7 +48,12 @@ export function FileTable({ graph, health, mode, onMode, onOpenPackage, onOpenAg
                 </span>
                 {/* WHY title: the one line is cut with an ellipsis here; the full text stays one hover away. */}
                 <span className="gh-ft-msg gh-muted" title={p.one_line}><TypeText text={p.one_line} graph={graph} onOpenType={onOpenType} /></span>
-                <span className="gh-ft-links"><PkgLinks pkg={p} compact /></span>
+                {/* WHY one wrapper: on a wide screen it vanishes (display: contents) and `order` puts Languages right after the
+                    name, in a fixed-width column that lines up row to row; on a phone chips and links share one wrapping line. */}
+                <span className="gh-ft-tail">
+                  <span className="gh-ft-langs"><LanguageChips pkg={p} /></span>
+                  <span className="gh-ft-links"><PkgLinks pkg={p} compact /></span>
+                </span>
                 <span className="gh-ft-ver gh-muted">v{p.version}</span>
                 <Status health={health} id={p.id} href={healthHref(p.id)} />
               </div>
@@ -66,7 +72,10 @@ export function FileTable({ graph, health, mode, onMode, onOpenPackage, onOpenAg
                 <button className="gh-ft-link gh-sans" onClick={() => onOpenAgent(a.id)}>{a.name}</button>
               </span>
               <span className="gh-ft-msg gh-muted" title={a.one_line || a.objective}>{a.one_line || a.objective}</span>
-              <span className="gh-ft-links"><PkgLinks agent={a} compact /></span>
+              <span className="gh-ft-tail">
+                <span className="gh-ft-langs" />
+                <span className="gh-ft-links"><PkgLinks agent={a} compact /></span>
+              </span>
               <span className="gh-ft-ver gh-faint">—</span>
               <Status health={health} id={a.id} href={healthHref(a.id)} />
             </div>

@@ -312,6 +312,27 @@ class PackageScan:
                         changed = True
         return public
 
+    def public_aliases(self) -> dict[str, set[str]]:
+        """Each public top-level definition (its public path) → every public path that reaches it, re-exports included
+        (toy.core.run and toy.run). languages.py's parity hook counts a definition covered when a test lists any of them."""
+        paths = {key: {path} | ({f"{key[0]}.{key[1]}"} if is_public_module(key[0]) else set())
+                 for key, path in self._public.items()}  # fmt: skip
+        changed = True
+        while changed:
+            changed = False
+            for m in self.modules.values():
+                if not is_public_module(m.name) or not m.is_package:
+                    continue
+                listed = literal_all(m.tree)
+                for local, target in m.imports.names.items():
+                    if (listed is not None and local not in listed) or (listed is None and local.startswith("_")):
+                        continue
+                    for known in paths.values():
+                        if target in known and f"{m.name}.{local}" not in known:
+                            known.add(f"{m.name}.{local}")
+                            changed = True
+        return {path: paths[key] for key, path in self._public.items()}
+
     def _add(self, type_id: str, kind: str, symbol: str, module: Module, line: int, public: bool = True) -> None:
         self.uses.append(Use(self.package, type_id, kind, symbol, self.where(module, line), public))
 

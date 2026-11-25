@@ -13,6 +13,7 @@ import pathlib
 import re
 
 from . import declaration as decl
+from . import languages
 
 LINK_ORDER = ("github", "site", "docs", "pypi")
 LINK_LABEL = {"github": "GitHub", "pypi": "PyPI"}
@@ -28,15 +29,20 @@ def link_list(links: dict[str, str]) -> str:
     return " · ".join(f"[{LINK_LABEL.get(k, k)}]({links[k]})" for k in keys)
 
 
+def languages_cell(package: dict) -> str:
+    """Py, C++ · partial: the landing page's chips as text (2026-11-25; a graph from before then has none)."""
+    return ", ".join(languages.label(entry) for entry in package.get("languages") or [])
+
+
 def by_layer(graph: dict) -> list[dict]:
     rank = {layer: i for i, layer in enumerate(decl.LAYERS)}
     return sorted(graph["packages"], key=lambda p: rank.get(p["layer"], len(rank)))  # stable: pin order inside a layer
 
 
 def packages_table(graph: dict) -> str:
-    rows = ["| Layer | Package (PyPI) | Repo | What it is | Links |", "|---|---|---|---|---|"]
-    rows += [f"| {p['layer']} | `{p['pypi']}` | `../{p['id']}` | {cell(p['one_line'])} | {link_list(p['links'])} |"
-             for p in by_layer(graph)]  # fmt: skip
+    rows = ["| Layer | Package (PyPI) | Repo | What it is | Languages | Links |", "|---|---|---|---|---|---|"]
+    rows += [f"| {p['layer']} | `{p['pypi']}` | `../{p['id']}` | {cell(p['one_line'])} | {languages_cell(p)} | "
+             f"{link_list(p['links'])} |" for p in by_layer(graph)]  # fmt: skip
     return "\n".join(rows)
 
 
@@ -50,11 +56,11 @@ def agents_table(graph: dict) -> str:
 
 
 def skill_table(graph: dict) -> str:
-    rows = ["| Package (repo) | What it is | Reach for it when |", "|---|---|---|"]
+    rows = ["| Package (repo) | Languages | What it is | Reach for it when |", "|---|---|---|---|"]
     for p in by_layer(graph):
         same = p["pypi"].lower().replace("-", "_") == p["id"]
         name = f"**{p['id']}**" + ("" if same else f" (PyPI `{p['pypi']}`)")
-        rows.append(f"| {name} | {cell(p['summary'] or p['one_line'])} | {cell(p['use_when'])} |")
+        rows.append(f"| {name} | {languages_cell(p)} | {cell(p['summary'] or p['one_line'])} | {cell(p['use_when'])} |")
     return "\n".join(rows)
 
 

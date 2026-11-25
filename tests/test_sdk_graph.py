@@ -193,9 +193,10 @@ def test_committed_graph_matches_the_schema():
     ids = {p["id"] for p in graph["packages"]}
     types = {t["id"] for t in graph["types"]}
     for p in graph["packages"]:
-        # graph/1 fields, plus the additive ones of 2026-11-24 (summary, use_when, links from each robot-sdk.toml)
+        # graph/1 fields, plus the additive ones of 2026-11-24 (summary, use_when, links from each robot-sdk.toml) and
+        # 2026-11-25 (languages, read from the repo's files: tests/test_languages.py)
         assert set(p) == {"id", "pypi", "repo_url", "role", "layer", "one_line", "version", "deps", "declaration", "lint",
-                          "summary", "use_when", "links"}  # fmt: skip
+                          "summary", "use_when", "links", "languages"}  # fmt: skip
         assert p["role"] in decl.ROLES and p["layer"] in decl.LAYERS and p["lint"] in {"pass", "fail", "undeclared"}
         assert set(p["deps"]["required"]) <= ids
         assert {"github", "pypi"} <= set(p["links"]) and all(decl.well_formed(u) for u in p["links"].values())
