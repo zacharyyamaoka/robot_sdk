@@ -41,6 +41,8 @@ Each row is the package's own `robot-sdk.toml` (`one_line`, `layer`, `[links]`),
 
 **Dependency rule:** a package imports only from layers below it. Leaves never import each other: when one needs another's behaviour it declares a Protocol or takes a function as an argument. Viewers are end points: no package depends on one. `tools/check_layers.py` enforces this.
 
+**Inside each package:** [`docs/package-layout.md`](docs/package-layout.md): the core, one `lk/` folder for like_keras blocks (components, systems, launch, config) behind an `[lk]` extra, and the C++ twin in `cpp/` (default pick of five proposals, pending Zach's choice).
+
 **Not in here:** GUIs and workbenches. They *use* the SDK, the way RViz uses ROS. Viewer packages built on robot_msgs types (the way rqt_plot reads ROS messages) are in.
 
 ## The agents (what builds the packages)
