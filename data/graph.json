@@ -1,9 +1,9 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-24T21:13:44-07:00",
+ "generated": "2026-11-25T04:27:51+00:00",
  "sources": {
-  "robot_sdk": "7d5b607",
-  "robot_msgs": "39ca3ea",
+  "robot_sdk": "dc405f7",
+  "robot_msgs": "248f9f1",
   "robot_models": "61b292c",
   "robot_controllers": "3159fe9",
   "robot_reach": "42a6c2a",
@@ -12,10 +12,11 @@
   "robot_autonomy": "ac7ecf0",
   "robot_metrics": "f953427",
   "robot_activity": "01ab392",
-  "traj_compare": "5ba36f8-dirty",
+  "traj_compare": "023b876",
   "sim2real": "21f81b0",
   "robot_diagnostics": "2ab15cb",
   "like_keras": "a57ae51",
+  "robot_sdk_agent": "cdedb30",
   "trajectory_tracking_agent": "8bf6fc8"
  },
  "packages": [
@@ -3168,6 +3169,63 @@
   }
  ],
  "agents": [
+  {
+   "id": "robot_sdk_agent",
+   "name": "Robot SDK Agent",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_sdk_agent",
+   "objective": "Lowest max_stale_hours (worst listed repo's hours behind its main) on the live directory, inside its gates (zero lint failures, nothing more than 24 h stale)",
+   "builds_on": [],
+   "status": {
+    "schema": "ai-team-status/1",
+    "member": "Robot SDK Agent",
+    "team": "Robot Team",
+    "remit": "keep robot-sdk a true, current directory of the robot-* packages, inside the gates (ruler v1, OBJECTIVES.md)",
+    "kpi": {
+     "name": "max_stale_hours (worst listed repo: hours since the first push the live graph missed)",
+     "value": null,
+     "unit": "h",
+     "direction": "down",
+     "target": 24,
+     "level": "0 of 9 gates",
+     "level_name": "ruler v1 · live directory",
+     "next_gate": "fresh_24h",
+     "on_track": false
+    },
+    "counter_kpi": {
+     "name": "gates failed by the best solution",
+     "value": 9,
+     "unit": "gates",
+     "owner": "Robot SDK Agent"
+    },
+    "status": "idle",
+    "blocked_on": null,
+    "todo": {
+     "open": 10,
+     "done_7d": 1,
+     "top": [
+      "**Push-triggered refresh**: a tiny workflow in each package (`on: push: branches: [main]`) that sends",
+      "**Weekly discovery sweep**: list the owner's public repos, flag any whose pyproject names robot-msgs or which",
+      "**Dead-link PRs**: robotmsgs.com's per-type pages (`/types/<module>/<Type>/`) 404 for 13 types; either the"
+     ]
+    },
+    "links": {
+     "repo": "https://github.com/zacharyyamaoka/robot_sdk_agent",
+     "report": "PROGRESS.md",
+     "wandb": null,
+     "vault": null
+    },
+    "updated_t": 1795580816.450973
+   },
+   "one_line": "Keeps robot-sdk a true, current directory of the robot-* packages",
+   "summary": "A black-box agent: a frozen scorer measures how stale, true and complete the live robot-sdk directory is (freshness against each repo's main, the declaration lint, coverage of robot_msgs repos, dead links, CI and PyPI health, the live site), and a scored population of refresh mechanisms competes to keep every gate green.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_sdk_agent",
+    "progress": "https://github.com/zacharyyamaoka/robot_sdk_agent/blob/main/PROGRESS.md",
+    "objectives": "https://github.com/zacharyyamaoka/robot_sdk_agent/blob/main/OBJECTIVES.md"
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
   {
    "id": "trajectory_tracking_agent",
    "name": "Trajectory Tracking Agent",
