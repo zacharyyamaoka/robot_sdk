@@ -31,10 +31,10 @@ ROUNDS = [
         "v5": "V5 · Commit Dashboard",
     }),
 ]
-# WHY v6 (2026-11-25): round 2's AI prune pick, V6 Repo at 96/100 (prune.r2.json); round 1's was v5 at 92. Your own pick
-# in the switcher still wins for you (localStorage); change this line to make another design the page everyone lands on.
-DEFAULT = "v6"
-SWITCHER = True
+# WHY v10 and no switcher (Zach, 2026-11-25: "PLase ship the robot sdk v10 Docs"): he settled on V10 Docs, so the site is
+# one page again: / is V10 and /v1 … /v10 are no longer built. To bring the comparison back, set SWITCHER = True.
+DEFAULT = "v10"
+SWITCHER = False
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 BUILD = ROOT / "site" / "_build"
@@ -95,6 +95,13 @@ if SWITCHER:
     for variant in VARIANTS:
         (BUILD / variant).mkdir()
         (BUILD / variant / "index.html").write_text(page(variant, at_root=False))
+else:
+    # WHY stubs: /v6/#/packages/… links were shared while the switcher was live; they land on the one design, same route.
+    for variant in VARIANTS:
+        (BUILD / variant).mkdir()
+        (BUILD / variant / "index.html").write_text(
+            '<!doctype html><meta charset="utf-8"><title>robot-sdk</title><link rel="canonical" href="../">'
+            '<script>location.replace("../" + location.hash)</script><a href="../">robot-sdk</a>\n')
 for name in ("graph.json", "pick_and_place.json"):
     shutil.copy2(ROOT / "site" / "data" / name, BUILD / "data" / name)
 for name in ("health.json", "versions.json"):  # the Health workspace and version picker (docs/site-data-schema.md)
