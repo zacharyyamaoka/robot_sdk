@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-25T07:28:18+00:00",
- "graph_generated": "2026-11-25T07:27:53+00:00",
+ "generated": "2026-11-25T07:30:45+00:00",
+ "graph_generated": "2026-11-25T07:30:35+00:00",
  "checks": [
   {
    "id": "tests",
@@ -508,9 +508,11 @@
      "missing": 0
     },
     "release": {
-     "state": "unknown",
-     "detail": "pins ~=0.1.0; PyPI: URLError: _ssl.c:994: The handshake operation timed out",
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
      "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
      "url": "https://pypi.org/project/robot-diagnostics/"
     },
     "upstream": {
