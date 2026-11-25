@@ -16,7 +16,9 @@ SDK = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SDK))
 
 from tools.sdk_graph import declaration as decl  # noqa: E402
-from tools.sdk_graph.graph import OUT, ROOT, build  # noqa: E402
+from tools.sdk_graph import links as link_check  # noqa: E402
+from tools.sdk_graph import readme  # noqa: E402
+from tools.sdk_graph.graph import OUT, ROOT, SDK as SDK_ROOT, build, link_problems  # noqa: E402
 from tools.sdk_graph.scan import PackageScan, TypeIndex  # noqa: E402
 
 needs_checkouts = pytest.mark.skipif(
@@ -191,9 +193,13 @@ def test_committed_graph_matches_the_schema():
     ids = {p["id"] for p in graph["packages"]}
     types = {t["id"] for t in graph["types"]}
     for p in graph["packages"]:
-        assert set(p) == {"id", "pypi", "repo_url", "role", "layer", "one_line", "version", "deps", "declaration", "lint"}
+        # graph/1 fields, plus the additive ones of 2026-11-24 (summary, use_when, links from each robot-sdk.toml)
+        assert set(p) == {"id", "pypi", "repo_url", "role", "layer", "one_line", "version", "deps", "declaration", "lint",
+                          "summary", "use_when", "links"}  # fmt: skip
         assert p["role"] in decl.ROLES and p["layer"] in decl.LAYERS and p["lint"] in {"pass", "fail", "undeclared"}
         assert set(p["deps"]["required"]) <= ids
+        assert {"github", "pypi"} <= set(p["links"]) and all(decl.well_formed(u) for u in p["links"].values())
+        assert p["links"]["github"] == p["repo_url"]
     for t in graph["types"]:
         assert set(t) == {"id", "name", "package", "module", "what", "docs_url"}
     keys = set()
@@ -205,5 +211,111 @@ def test_committed_graph_matches_the_schema():
         assert key not in keys
         keys.add(key)
     for a in graph["agents"]:
-        assert set(a) == {"id", "name", "repo_url", "objective", "builds_on", "status"}
+        assert set(a) == {"id", "name", "repo_url", "objective", "builds_on", "status",
+                          "one_line", "summary", "links", "declaration", "lint"}  # fmt: skip
         assert set(a["builds_on"]) <= ids and a["id"] not in ids
+        assert a["declaration"] == decl.FILE and "github" in a["links"]
+    assert [a["id"] for a in graph["agents"]] == ["trajectory_tracking_agent"]  # found by its own declaration
+
+
+# ------------------------------------------------------------------------------------------------ links (2026-11-24)
+# WHY: a link is a claim the code can't fully check, so it is at least validated: present, well formed, the repo's own.
+
+
+def test_missing_pypi_link_goes_red(controllers, index):
+    path = controllers / decl.FILE
+    text = path.read_text()
+    assert 'pypi = "https://pypi.org/project/robot-controllers/"\n' in text
+    path.write_text(text.replace('pypi = "https://pypi.org/project/robot-controllers/"\n', ""))
+    result = lint_of(controllers, index)
+    assert result.status == "fail"
+    line = next(i for i, l in enumerate(path.read_text().splitlines(), 1) if l.strip() == "[links]")
+    assert any(f.startswith(f"{decl.FILE}:{line}:") and "needs pypi" in f for f in result.failures), result.failures
+
+
+def test_malformed_link_goes_red(controllers, index):
+    path = controllers / decl.FILE
+    path.write_text(path.read_text().replace('site = "https://', 'site = "http//', 1))
+    result = lint_of(controllers, index)
+    assert result.status == "fail" and any("links.site is not an https URL" in f for f in result.failures)
+
+
+def test_link_to_another_repo_goes_red(controllers):
+    path = controllers / decl.FILE
+    path.write_text(path.read_text().replace('github = "https://github.com/zacharyyamaoka/robot_controllers"',
+                                             'github = "https://github.com/zacharyyamaoka/robot_reach"'))
+    built = build(overrides={"robot_controllers": controllers})
+    failures = built.lints["robot_controllers"].failures
+    assert built.lints["robot_controllers"].status == "fail"
+    assert any("links.github" in f and "pyproject.toml makes it" in f for f in failures), failures
+
+
+def test_pypi_link_must_name_the_pyproject_project(controllers):
+    path = controllers / decl.FILE
+    path.write_text(path.read_text().replace("pypi.org/project/robot-controllers/", "pypi.org/project/robot-control/"))
+    built = build(overrides={"robot_controllers": controllers})
+    assert any("links.pypi" in f for f in built.lints["robot_controllers"].failures)
+
+
+def test_pypi_probe_uses_the_json_api():
+    # pypi.org/project/<name>/ answers 200 (a bot challenge) for any name, so the HTML page proves nothing.
+    assert link_check.probe_url("https://pypi.org/project/robot-msgs/") == "https://pypi.org/pypi/robot-msgs/json"
+    assert link_check.probe_url("https://robotmsgs.com") == "https://robotmsgs.com"
+    assert link_check.verdict("pypi", 404) == "unpublished" and link_check.verdict("site", 404) == "dead"
+
+
+@pytest.mark.network
+def test_every_declared_link_resolves():
+    graph = json.loads(OUT.read_text())
+    owners = {p["id"]: p["links"] for p in graph["packages"]} | {a["id"]: a["links"] for a in graph["agents"]}
+    rows = link_check.check_all(owners)
+    dead = [(owner, key, url, code) for owner, key, url, code, verdict in rows if verdict == "dead"]
+    assert not dead, dead
+    assert any(key == "pypi" and verdict == "ok" for _, key, _, _, verdict in rows)  # the probe can say yes
+    assert link_check.verdict("pypi", link_check.status("https://pypi.org/project/no-such-robot-sdk-pkg-zz/")) == "unpublished"
+
+
+# ------------------------------------------------------------------------------------------------ agents (2026-11-24)
+
+
+@pytest.fixture
+def agent(tmp_path):
+    repo = tmp_path / "trajectory_tracking_agent"
+    repo.mkdir()
+    for name in ("pyproject.toml", decl.FILE, "status.json"):
+        shutil.copy(ROOT / "trajectory_tracking_agent" / name, repo / name)
+    return repo
+
+
+def test_agent_builds_on_must_match_its_pyproject(agent):
+    path = agent / decl.FILE
+    path.write_text(path.read_text().replace('builds_on = ["robot_msgs", "robot_controllers"]', 'builds_on = ["robot_msgs"]'))
+    built = build(overrides={"trajectory_tracking_agent": agent})
+    result = built.lints["trajectory_tracking_agent"]
+    assert result.status == "fail" and any("builds_on" in f for f in result.failures), result.failures
+    assert next(a for a in built.graph["agents"] if a["id"] == "trajectory_tracking_agent")["lint"] == "fail"
+
+
+def test_agent_without_objective_goes_red(agent):
+    path = agent / decl.FILE
+    path.write_text("\n".join(l for l in path.read_text().splitlines() if not l.startswith("objective")) + "\n")
+    built = build(overrides={"trajectory_tracking_agent": agent})
+    assert any("needs objective" in f for f in built.lints["trajectory_tracking_agent"].failures)
+
+
+# ------------------------------------------------------------------------------------------------ generated README
+
+
+def test_readme_and_skill_tables_match_graph():
+    graph = json.loads(OUT.read_text())
+    assert readme.stale(SDK_ROOT, graph) == [], "run `python -m tools.sdk_graph readme`"
+
+
+def test_stale_readme_goes_red():
+    graph = json.loads(OUT.read_text())
+    graph["packages"][0]["one_line"] = "something the README doesn't say"
+    graph["packages"][0]["summary"] = "something the skill doesn't say"
+    assert readme.stale(SDK_ROOT, graph) == ["README.md", "skill/SKILL.md"]
+    graph = json.loads(OUT.read_text())
+    graph["agents"][0]["objective"] = "a different objective"
+    assert readme.stale(SDK_ROOT, graph) == ["README.md"]

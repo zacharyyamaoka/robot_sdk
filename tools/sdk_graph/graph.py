@@ -19,8 +19,6 @@ ROOT = SDK.parent  # sibling checkouts live next to it: /home/bam/<repo>
 OUT = SDK / "site" / "data" / "graph.json"
 SCHEMA = "robot-sdk-graph/1"
 GITHUB = "https://github.com/zacharyyamaoka"
-# WHY listed here, not read from pyproject: a viewer is scanned like a package but is not one of the stack's pins.
-VIEWERS = ("traj_compare",)
 # The inputs a scan reads; a dirty file elsewhere in a checkout (a lockfile, a report) doesn't change the graph.
 SCANNED = ("src", "pyproject.toml", decl.FILE, "status.json", "README.md")
 
@@ -35,7 +33,7 @@ def pyproject(repo: pathlib.Path) -> dict:
 
 
 def sdk_packages(root: pathlib.Path, sdk: pathlib.Path) -> list[str]:
-    """Import names (== repo names) of robot_sdk's pins, in pin order, then the viewers."""
+    """Import names (== repo names) of robot_sdk's pins, in pin order (viewers are pinned like any package)."""
     by_pypi = {}
     for repo in sorted(p for p in root.iterdir() if (p / "pyproject.toml").exists()):
         try:
@@ -43,26 +41,35 @@ def sdk_packages(root: pathlib.Path, sdk: pathlib.Path) -> list[str]:
         except (KeyError, tomllib.TOMLDecodeError):
             continue
     ids = [by_pypi[normalize(d)] for d in pyproject(sdk)["project"]["dependencies"] if normalize(d) in by_pypi]
-    return list(dict.fromkeys(ids + [v for v in VIEWERS if (root / v).exists()]))
+    return list(dict.fromkeys(ids))
 
 
-def agent_rows(sdk: pathlib.Path) -> list[tuple[str, str, str]]:
-    """(name, repo dir, objective) from README's agents table."""
-    rows, in_table = [], False
-    for line in (sdk / "README.md").read_text(encoding="utf-8").splitlines():
-        if line.startswith("| Agent |"):
-            in_table = True
+def agent_repos(root: pathlib.Path) -> list[str]:
+    """Sibling checkouts whose own robot-sdk.toml says role = "agent". WHY discovered, not listed: an agent joins the
+    directory by declaring itself in its repo; robot_sdk keeps no list of agents (Zach, 2026-11-24: "its decentralized")."""
+    found = []
+    for path in sorted(root.glob(f"*/{decl.FILE}")):
+        try:
+            if tomllib.loads(path.read_text(encoding="utf-8")).get("role") == "agent":
+                found.append(path.parent.name)
+        except tomllib.TOMLDecodeError:
             continue
-        if in_table:
-            if not line.startswith("|"):
-                break
-            cells = [c.strip() for c in line.strip("|").split("|")]
-            if set(cells[0]) <= {"-", ":", " "}:
-                continue
-            repo = re.search(r"`\.\./([^`]+)`", cells[1])
-            if repo:
-                rows.append((cells[0], repo.group(1).strip("/"), cells[2]))
-    return rows
+    return found
+
+
+def link_problems(declared: decl.Declaration, meta: dict, folder: str) -> list[str]:
+    """The links the code can check: github is this repo's, pypi names this pyproject's project."""
+    problems = []
+    text = declared.path.read_text(encoding="utf-8")
+    line = lambda key: next((n for n, l in enumerate(text.splitlines(), 1) if re.match(rf"\s*{key}\s*=", l)), 1)  # noqa: E731
+    want = {"github": repo_url(meta, folder)}
+    if "pypi" in declared.links or declared.role != "agent":
+        want["pypi"] = f"https://pypi.org/project/{meta['project']['name']}/"
+    for key, url in want.items():
+        got = declared.links.get(key)
+        if got is not None and got.rstrip("/") != url.rstrip("/"):
+            problems.append(f"{decl.FILE}:{line(key)}: links.{key} is {got!r}, but pyproject.toml makes it {url!r}")
+    return problems
 
 
 def git_source(repo: pathlib.Path) -> str:
@@ -119,12 +126,17 @@ def build(root: pathlib.Path = ROOT, sdk: pathlib.Path = SDK, overrides: dict[st
         declared = decl.Declaration.read(repo)
         rows = [] if pkg in SHARED_TYPES else PackageScan(repo, pkg, index).rows()
         result = decl.lint(pkg, rows, declared)
+        if declared:
+            result.failures += link_problems(declared, meta, pkg)
+            if declared.role == "agent":
+                result.failures.append(f"{decl.FILE}: role 'agent' on a pinned package; an agent is not a package")
+            result.status = "fail" if result.failures else result.status
         if declared and pkg in layers and declared.layer != layers[pkg]:
             result.failures.append(f"{decl.FILE}: layer {declared.layer!r} disagrees with robot_sdk's LAYERS "
                                    f"({layers[pkg]!r}, src/robot_sdk/__init__.py)")  # fmt: skip
             result.status = "fail"
         lints[pkg] = result
-        role = (declared and declared.role) or ("viewer" if pkg in VIEWERS else "library")
+        role = (declared and declared.role) or "library"
         packages.append({
             "id": pkg,
             "pypi": meta["project"]["name"],
@@ -132,6 +144,9 @@ def build(root: pathlib.Path = ROOT, sdk: pathlib.Path = SDK, overrides: dict[st
             "role": role,
             "layer": (declared and declared.layer) or layers.get(pkg) or ("viewers" if role == "viewer" else "leaf"),
             "one_line": (declared and declared.one_line) or meta["project"].get("description", ""),
+            "summary": declared.summary if declared else None,
+            "use_when": declared.use_when if declared else None,
+            "links": dict(declared.links) if declared else {"github": repo_url(meta, pkg)},
             "version": meta["project"].get("version"),
             "deps": deps_of(meta, pypi_to_id),
             "declaration": decl.FILE if declared else None,
@@ -149,20 +164,38 @@ def build(root: pathlib.Path = ROOT, sdk: pathlib.Path = SDK, overrides: dict[st
             })  # fmt: skip
 
     agents = []
-    for name, folder, objective in agent_rows(sdk):
-        repo = root / folder
-        if not repo.exists():
-            continue
+    for folder in agent_repos(root):
+        repo = repo_of(folder)
+        declared = decl.Declaration.read(repo)
+        meta = pyproject(repo)
         sources[folder] = git_source(repo)
-        deps = deps_of(pyproject(repo), pypi_to_id)
-        status_file = repo / "status.json"
+        deps = deps_of(meta, pypi_to_id)
+        builds_on = list(dict.fromkeys(deps["required"] + [d for ex in deps["extras"].values() for d in ex]))
+        failures = list(declared.problems) + link_problems(declared, meta, folder)
+        stated = declared.agent.get("builds_on") or []
+        if sorted(stated) != sorted(builds_on):
+            failures.append(f"{decl.FILE}: builds_on {sorted(stated)} but pyproject.toml's dependencies import "
+                            f"{sorted(builds_on)}")  # fmt: skip
+        if declared.entries:
+            failures.append(f"{decl.FILE}: an agent declares no [[consumes]]/[[produces]]; those are a package's API")
+        lints[folder] = decl.Lint("fail" if failures else "pass", failures, set(), [])
+        status_name = declared.agent.get("status") or "status.json"
+        status_file = repo / status_name
+        if declared.agent.get("status") and not status_file.exists():
+            lints[folder].failures.append(f"{decl.FILE}: status = {status_name!r}, but the repo has no such file")
+            lints[folder].status = "fail"
         agents.append({
             "id": folder,
-            "name": name,
-            "repo_url": repo_url(pyproject(repo), folder),
-            "objective": objective,
-            "builds_on": list(dict.fromkeys(deps["required"] + [d for ex in deps["extras"].values() for d in ex])),
+            "name": declared.agent.get("name") or folder,
+            "repo_url": declared.links.get("github") or repo_url(meta, folder),
+            "objective": declared.agent.get("objective") or "",
+            "builds_on": builds_on,
             "status": json.loads(status_file.read_text(encoding="utf-8")) if status_file.exists() else None,
+            "one_line": declared.one_line,
+            "summary": declared.summary,
+            "links": dict(declared.links),
+            "declaration": decl.FILE,
+            "lint": lints[folder].status,
         })  # fmt: skip
 
     order = {pkg: i for i, pkg in enumerate(ids)}

@@ -74,3 +74,39 @@ agent; ids are stable (they key URLs and node ids in every view).
 - `robot-sdk.toml` format: `declaration.py`'s docstring. `declared` is per symbol: the declaration names that symbol.
 - `sources`: `-dirty` means an uncommitted change in what the scan reads (`src/`, `pyproject.toml`, `robot-sdk.toml`,
   `status.json`, `README.md`); a dirty lockfile or report elsewhere in a checkout doesn't count.
+
+## Additive fields (2026-11-24, still `robot-sdk-graph/1`)
+
+No field above changed; readers that ignore unknown keys keep working. Every value is copied from the member's own
+`robot-sdk.toml`, so robot_sdk keeps no facts about a package or an agent itself (Zach, 2026-11-24: "robot-sdk doesn't
+need to maintain that information itself… its decentralized").
+
+```jsonc
+"packages": [{
+  // … the fields above, plus:
+  "summary": "2-4 sentences for drill-down, or null",            // robot-sdk.toml `summary` (the skill's "What it is")
+  "use_when": "when an agent should reach for it, or null",       // robot-sdk.toml `use_when` (the skill's "Reach for it when")
+  "links": {                                                      // robot-sdk.toml [links], verbatim, in file order
+    "github": "https://github.com/zacharyyamaoka/robot_metrics",  // required; equals repo_url (lint)
+    "pypi": "https://pypi.org/project/robot-metrics/",            // required; names pyproject's [project].name (lint)
+    "site": "https://zacharyyamaoka.github.io/robot_metrics/",    // optional: its own landing page
+    "docs": "…", "changelog": "…"                                 // optional; any other key a package wants
+  }
+}],
+"agents": [{
+  // … the fields above, plus (an agent is found by role = "agent" in a sibling repo's robot-sdk.toml):
+  "one_line": "…", "summary": "… or null",
+  "links": {"github": "…", "site": "…"},                          // github required
+  "declaration": "robot-sdk.toml",
+  "lint": "pass"                                                  // pass | fail: builds_on matches its pyproject, links valid
+}]
+```
+
+- `name`, `objective` and `builds_on` of an agent now come from its declaration (before: robot_sdk's README table);
+  `builds_on` stays the robot-sdk packages its pyproject imports, and the lint fails when the declaration disagrees.
+- Links are lint-checked offline (present, `https://`, github/pypi are the repo's own). `python -m tools.sdk_graph check
+  --online` (and `pytest -m network`) fetches each one: any non-200 fails, except a PyPI 404, reported `unpublished`
+  (the package is not released yet). PyPI is probed through `https://pypi.org/pypi/<name>/json`, because the project
+  page answers 200 with a bot challenge for any name.
+- README.md's layers and agents tables and skill/SKILL.md's packages table are generated from this file between
+  `<!-- robot-sdk:… begin/end -->` markers (`python -m tools.sdk_graph readme`); a test fails when they are stale.

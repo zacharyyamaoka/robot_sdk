@@ -47,6 +47,11 @@ Repository = "https://github.com/zacharyyamaoka/robot_sdk"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.pytest.ini_options]
+# `network` tests fetch every declared link (python -m tools.sdk_graph check --online); run them with -m network.
+markers = ["network: fetches URLs from the internet"]
+addopts = "-m 'not network'"
+
 [dependency-groups]
 dev = ["pytest"]
 # examples/pick_and_place.py: the simulated UR5e (MuJoCo, pinned as sim2real's and robot_controllers' extras) and its plots.

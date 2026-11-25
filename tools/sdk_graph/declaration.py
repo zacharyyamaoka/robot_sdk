@@ -1,9 +1,19 @@
 """A package's `robot-sdk.toml`: the public contract it states, and the lint that holds it to the code.
 
     schema = "robot-sdk-declaration/1"
-    role = "library"                  # library | viewer
-    layer = "leaf"                    # vocabulary | models | leaf | comms | outer | checks | viewers
-    one_line = "..."
+    role = "library"                  # library | viewer | agent
+    layer = "leaf"                    # vocabulary | models | leaf | comms | viewers | outer | checks (not for an agent)
+    one_line = "..."                  # the directory's blurb: one line
+    summary = "..."                   # optional: 2-4 sentences for drill-down (the skill's "What it is")
+    use_when = "..."                  # optional: when an agent should reach for it (the skill's "Reach for it when")
+
+    [links]                           # where to read more; github and pypi required (an agent: github only)
+    github = "https://github.com/zacharyyamaoka/<repo>"   # must be the repo's own (pyproject urls / repo name)
+    pypi = "https://pypi.org/project/<pyproject name>/"   # must name pyproject's [project].name
+    site = "..."                      # optional, like docs, changelog, dashboard or anything else: https URLs
+
+An agent (role = "agent") also states `name`, `objective`, `builds_on` (the robot-sdk packages it imports, checked
+against its pyproject) and optionally `status` (a JSON file in its repo, copied verbatim into graph.json).
 
     [[consumes]]                      # a public parameter (or an input record's field) of this type
     type = "robot_msgs.sensor.JointState"
@@ -24,14 +34,22 @@ import dataclasses
 import pathlib
 import re
 import tomllib
+import urllib.parse
 
 from .scan import Use
 
 FILE = "robot-sdk.toml"
 SCHEMA = "robot-sdk-declaration/1"
-ROLES = ("library", "viewer")
-LAYERS = ("vocabulary", "models", "leaf", "comms", "outer", "checks", "viewers")
+ROLES = ("library", "viewer", "agent")
+# Bottom to top, the order README and the skill list them in (tools/check_layers.py ranks them).
+LAYERS = ("vocabulary", "models", "leaf", "comms", "viewers", "outer", "checks")
 KINDS = ("consumes", "produces")
+REQUIRED_LINKS = {"library": ("github", "pypi"), "viewer": ("github", "pypi"), "agent": ("github",)}
+
+
+def well_formed(url: object) -> bool:
+    parts = urllib.parse.urlsplit(url) if isinstance(url, str) else None
+    return bool(parts and parts.scheme == "https" and "." in parts.netloc and " " not in url)
 
 
 @dataclasses.dataclass
@@ -40,6 +58,10 @@ class Declaration:
     role: str | None
     layer: str | None
     one_line: str | None
+    summary: str | None
+    use_when: str | None
+    links: dict[str, str]
+    agent: dict  # name, objective, builds_on, status: only for role = "agent"
     entries: dict[tuple[str, str], list[str]]  # (kind, type) → symbols
     lines: dict[tuple[str, str, str | None], int]  # (kind, type, symbol | None for the type line) → line number
     problems: list[str]
@@ -54,7 +76,7 @@ class Declaration:
         try:
             data = tomllib.loads(text)
         except tomllib.TOMLDecodeError as error:
-            return cls(path, None, None, None, {}, {}, [f"{FILE}: not valid TOML ({error})"])
+            return cls(path, None, None, None, None, None, {}, {}, {}, {}, [f"{FILE}: not valid TOML ({error})"])
         if data.get("schema") != SCHEMA:
             problems.append(f"{FILE}:1: schema must be {SCHEMA!r}, got {data.get('schema')!r}")
         entries: dict[tuple[str, str], list[str]] = {}
@@ -69,11 +91,41 @@ class Declaration:
         role, layer = data.get("role"), data.get("layer")
         if role not in ROLES:
             problems.append(f"{FILE}:{_line(text, 'role')}: role must be one of {ROLES}, got {role!r}")
-        if layer not in LAYERS:
+        if role != "agent" and layer not in LAYERS:
             problems.append(f"{FILE}:{_line(text, 'layer')}: layer must be one of {LAYERS}, got {layer!r}")
         if not data.get("one_line"):
             problems.append(f"{FILE}:1: one_line is missing")
-        return cls(path, role, layer, data.get("one_line"), entries, lines, problems)
+        for key in ("summary", "use_when"):
+            if key in data and not (isinstance(data[key], str) and data[key].strip()):
+                problems.append(f"{FILE}:{_line(text, key)}: {key} must be a non-empty string")
+        links = data.get("links", {})
+        if not isinstance(links, dict):
+            problems.append(f"{FILE}:{_line(text, 'links')}: links must be a [links] table")
+            links = {}
+        for key in REQUIRED_LINKS.get(role, ()):
+            if key not in links:
+                problems.append(f"{FILE}:{_table_line(text, 'links')}: [links] needs {key} = \"https://…\"")
+        for key, url in links.items():
+            if not well_formed(url):
+                problems.append(f"{FILE}:{_line(text, key)}: links.{key} is not an https URL: {url!r}")
+        agent = {}
+        if role == "agent":
+            agent = {k: data.get(k) for k in ("name", "objective", "builds_on", "status")}
+            for key in ("name", "objective"):
+                if not (isinstance(agent[key], str) and agent[key].strip()):
+                    problems.append(f"{FILE}:1: an agent needs {key} = \"…\"")
+            if not (isinstance(agent["builds_on"], list) and all(isinstance(b, str) for b in agent["builds_on"])):
+                problems.append(f"{FILE}:{_line(text, 'builds_on')}: an agent needs builds_on = [\"robot_msgs\", …]")
+                agent["builds_on"] = []
+        return cls(path, role, layer, data.get("one_line"), data.get("summary"), data.get("use_when"),
+                   {k: v for k, v in links.items() if isinstance(v, str)}, agent, entries, lines, problems)
+
+
+def _table_line(text: str, table: str) -> int:
+    for number, line in enumerate(text.splitlines(), 1):
+        if line.strip() == f"[{table}]":
+            return number
+    return 1
 
 
 def _line(text: str, key: str) -> int:
