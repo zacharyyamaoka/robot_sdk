@@ -31,11 +31,11 @@ Error generating stack: `+e.message+`
   background:rgba(20,22,26,.92);color:#fff;border-radius:10px;padding:6px 8px;box-shadow:0 4px 18px rgba(0,0,0,.25);
   display:flex;gap:6px;align-items:center">
   <span style="opacity:.75">Site design</span>
-  <select aria-label="Site design" style="font:inherit;border-radius:6px;border:0;padding:3px 6px"><option value="v1">V1 · Layer Atlas</option><option value="v2">V2 · Type Switchboard</option><option value="v3">V3 · Canvas Map</option><option value="v4">V4 · Catalog</option><option value="v5">V5 · Commit Dashboard (default)</option></select>
+  <select aria-label="Site design" style="font:inherit;border-radius:6px;border:0;padding:3px 6px"><optgroup label="Round 2 · site with workspaces"><option value="v6">V6 · Repo (default)</option><option value="v7">V7 · Workbench</option><option value="v8">V8 · Type Search</option><option value="v9">V9 · Buildfarm</option><option value="v10">V10 · Docs</option></optgroup><optgroup label="Round 1 · landing page"><option value="v1">V1 · Layer Atlas</option><option value="v2">V2 · Type Switchboard</option><option value="v3">V3 · Canvas Map</option><option value="v4">V4 · Catalog</option><option value="v5">V5 · Commit Dashboard</option></optgroup></select>
 </div>
 <script>
 (function () {
-  var KEY = "robot-sdk-site-variant", CURRENT = "v2", DEFAULT = "v5", AT_ROOT = false;
+  var KEY = "robot-sdk-site-variant", CURRENT = "v2", DEFAULT = "v6", AT_ROOT = false;
   var select = document.querySelector("#rsdk-switch select");
   select.value = CURRENT;
   function href(v) { var base = AT_ROOT ? "./" : "../"; return v === DEFAULT ? base : base + v + "/"; }
@@ -45,7 +45,7 @@ Error generating stack: `+e.message+`
   });
   if (AT_ROOT) {  // the root remembers: open the last-picked design
     var saved = null; try { saved = localStorage.getItem(KEY); } catch (e) {}
-    if (saved && saved !== DEFAULT && saved !== CURRENT && ['v1', 'v2', 'v3', 'v4', 'v5'].indexOf(saved) >= 0) location.replace(href(saved) + location.hash);
+    if (saved && saved !== DEFAULT && saved !== CURRENT && ['v6', 'v7', 'v8', 'v9', 'v10', 'v1', 'v2', 'v3', 'v4', 'v5'].indexOf(saved) >= 0) location.replace(href(saved) + location.hash);
   }
 })();
 </script>
