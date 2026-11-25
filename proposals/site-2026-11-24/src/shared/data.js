@@ -6,8 +6,11 @@ import { useEffect, useState } from "react";
 import seedGraph from "@repo/site/data/graph.json";
 import seedPick from "@repo/site/data/pick_and_place.json";
 
-const GRAPH_URL = "../../../site/data/graph.json"; // from proposals/site-2026-11-24/vN/index.html to the repo's site/data
-const PICK_URL = "../../../site/data/pick_and_place.json";
+// WHY a meta override: the deployed site (gh-pages) serves its data beside index.html, not three folders up; the deploy
+// step sets <meta name="robot-sdk-data" content="data/">. Default: the repo layout the proposals are served from.
+const DATA_BASE = (typeof document !== "undefined" && document.querySelector('meta[name="robot-sdk-data"]')?.content) || "../../../site/data/";
+const GRAPH_URL = DATA_BASE + "graph.json";
+const PICK_URL = DATA_BASE + "pick_and_place.json";
 
 async function fetchJson(url) {
   const r = await fetch(new URL(url, location.href), { cache: "no-store" });
