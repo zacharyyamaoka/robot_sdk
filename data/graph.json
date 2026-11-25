@@ -1,24 +1,24 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-24T21:29:46-07:00",
+ "generated": "2026-11-25T04:45:21+00:00",
  "sources": {
-  "robot_sdk": "dc405f7-dirty",
+  "robot_sdk": "5f81a08",
   "robot_msgs": "248f9f1",
   "robot_models": "61b292c",
   "robot_controllers": "3159fe9",
   "robot_reach": "42a6c2a",
-  "robot_collision": "19aa8d0",
   "robot_thermal": "928622d",
   "robot_trajectories": "e2cdd76",
   "robot_autonomy": "ac7ecf0",
   "robot_metrics": "f953427",
   "robot_activity": "01ab392",
-  "traj_compare": "023b876",
+  "traj_compare": "1105f65",
   "sim2real": "21f81b0",
   "robot_diagnostics": "2ab15cb",
   "like_keras": "a57ae51",
-  "robot_sdk_agent": "cdedb30",
-  "trajectory_tracking_agent": "8bf6fc8"
+  "robot_sdk_agent": "6ecacbf",
+  "trajectory_tracking_agent": "8bf6fc8",
+  "robot_collision": "19aa8d0"
  },
  "packages": [
   {
@@ -129,34 +129,6 @@
     ],
     "extras": {
      "plot": [],
-     "viz": [],
-     "test": []
-    }
-   },
-   "declaration": "robot-sdk.toml",
-   "lint": "pass"
-  },
-  {
-   "id": "robot_collision",
-   "pypi": "robot-collision",
-   "repo_url": "https://github.com/zacharyyamaoka/robot_collision",
-   "role": "library",
-   "layer": "leaf",
-   "one_line": "Allowed Collision Matrix for any robot, robots, or robot + scene",
-   "summary": "Computes the Allowed Collision Matrix (SRDF disable_collisions) for one robot, several robots, or a robot and its scene: a robot description, or your own pure FK function plus bodies, in; a robot_msgs AllowedCollisionMatrix out, proved equal to brute force. Closed linkages (five-bar, delta) work through the description's own expand(q). Viewed in viser with a floating matrix window.",
-   "use_when": "Which link pairs to collision-check, generating an SRDF, viewing a robot's collision pairs.",
-   "links": {
-    "github": "https://github.com/zacharyyamaoka/robot_collision",
-    "pypi": "https://pypi.org/project/robot-collision/",
-    "site": "https://zacharyyamaoka.github.io/robot_collision/"
-   },
-   "version": "0.1.0",
-   "deps": {
-    "required": [
-     "robot_msgs"
-    ],
-    "extras": {
-     "urdf": [],
      "viz": [],
      "test": []
     }
@@ -429,6 +401,35 @@
    },
    "declaration": "robot-sdk.toml",
    "lint": "pass"
+  },
+  {
+   "id": "robot_collision",
+   "pypi": "robot-collision",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_collision",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Allowed Collision Matrix for any robot, robots, or robot + scene",
+   "summary": "Computes the Allowed Collision Matrix (SRDF disable_collisions) for one robot, several robots, or a robot and its scene: a robot description, or your own pure FK function plus bodies, in; a robot_msgs AllowedCollisionMatrix out, proved equal to brute force. Closed linkages (five-bar, delta) work through the description's own expand(q). Viewed in viser with a floating matrix window.",
+   "use_when": "Which link pairs to collision-check, generating an SRDF, viewing a robot's collision pairs.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_collision",
+    "pypi": "https://pypi.org/project/robot-collision/",
+    "site": "https://zacharyyamaoka.github.io/robot_collision/"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "urdf": [],
+     "viz": [],
+     "test": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass",
+   "upstream": "missing"
   }
  ],
  "types": [
@@ -561,14 +562,6 @@
    "docs_url": "https://robotmsgs.com/types/geometry/Pose/"
   },
   {
-   "id": "robot_msgs.manipulation.AllowedCollisionMatrix",
-   "name": "AllowedCollisionMatrix",
-   "package": "robot_msgs",
-   "module": "robot_msgs.manipulation",
-   "what": "Pairwise allowed-contact matrix over named bodies (robot links and scene objects)",
-   "docs_url": "https://robotmsgs.com/types/manipulation/AllowedCollisionMatrix/"
-  },
-  {
    "id": "robot_msgs.manipulation.GraspPose",
    "name": "GraspPose",
    "package": "robot_msgs",
@@ -599,14 +592,6 @@
    "module": "robot_msgs.shape",
    "what": "`vertices` is ``(N, 3)`` float64 metres; `triangles` is ``(M, 3)`` int32 vertex indices (ROS's ``MeshTriangle.vertex_indices``), counter-clockwise seen from outside",
    "docs_url": "https://robotmsgs.com/types/shape/Mesh/"
-  },
-  {
-   "id": "robot_msgs.shape.SolidPrimitive",
-   "name": "SolidPrimitive",
-   "package": "robot_msgs",
-   "module": "robot_msgs.shape",
-   "what": "`type` is one of the ROS constants below and `dimensions` follows ROS's index layout:",
-   "docs_url": "https://robotmsgs.com/types/shape/SolidPrimitive/"
   },
   {
    "id": "robot_msgs.space.Space",
@@ -679,6 +664,22 @@
    "module": "robot_msgs.trajectory",
    "what": "Samples at strictly increasing times `t` (seconds after `header.stamp`)",
    "docs_url": "https://robotmsgs.com/types/trajectory/Trajectory/"
+  },
+  {
+   "id": "robot_msgs.manipulation.AllowedCollisionMatrix",
+   "name": "AllowedCollisionMatrix",
+   "package": "robot_msgs",
+   "module": "robot_msgs.manipulation",
+   "what": "Pairwise allowed-contact matrix over named bodies (robot links and scene objects)",
+   "docs_url": "https://robotmsgs.com/types/manipulation/AllowedCollisionMatrix/"
+  },
+  {
+   "id": "robot_msgs.shape.SolidPrimitive",
+   "name": "SolidPrimitive",
+   "package": "robot_msgs",
+   "module": "robot_msgs.shape",
+   "what": "`type` is one of the ROS constants below and `dimensions` follows ROS's index layout:",
+   "docs_url": "https://robotmsgs.com/types/shape/SolidPrimitive/"
   }
  ],
  "uses": [
@@ -1120,36 +1121,6 @@
    "where": "src/robot_reach/workspace.py:81",
    "public": false,
    "declared": false,
-   "verified": true
-  },
-  {
-   "package": "robot_collision",
-   "type": "robot_msgs.manipulation.AllowedCollisionMatrix",
-   "kind": "produces",
-   "symbol": "robot_collision.analysis.CollisionAnalysis.acm",
-   "where": "src/robot_collision/analysis.py:136",
-   "public": true,
-   "declared": true,
-   "verified": true
-  },
-  {
-   "package": "robot_collision",
-   "type": "robot_msgs.shape.Mesh",
-   "kind": "consumes",
-   "symbol": "robot_collision.geometry.coal_geometry",
-   "where": "src/robot_collision/geometry.py:21",
-   "public": true,
-   "declared": true,
-   "verified": true
-  },
-  {
-   "package": "robot_collision",
-   "type": "robot_msgs.shape.SolidPrimitive",
-   "kind": "consumes",
-   "symbol": "robot_collision.geometry.coal_geometry",
-   "where": "src/robot_collision/geometry.py:21",
-   "public": true,
-   "declared": true,
    "verified": true
   },
   {
@@ -3241,6 +3212,36 @@
    "public": false,
    "declared": false,
    "verified": true
+  },
+  {
+   "package": "robot_collision",
+   "type": "robot_msgs.manipulation.AllowedCollisionMatrix",
+   "kind": "produces",
+   "symbol": "robot_collision.analysis.CollisionAnalysis.acm",
+   "where": "src/robot_collision/analysis.py:136",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_collision",
+   "type": "robot_msgs.shape.Mesh",
+   "kind": "consumes",
+   "symbol": "robot_collision.geometry.coal_geometry",
+   "where": "src/robot_collision/geometry.py:21",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_collision",
+   "type": "robot_msgs.shape.SolidPrimitive",
+   "kind": "consumes",
+   "symbol": "robot_collision.geometry.coal_geometry",
+   "where": "src/robot_collision/geometry.py:21",
+   "public": true,
+   "declared": true,
+   "verified": true
   }
  ],
  "agents": [
@@ -3257,18 +3258,18 @@
     "remit": "keep robot-sdk a true, current directory of the robot-* packages, inside the gates (ruler v1, OBJECTIVES.md)",
     "kpi": {
      "name": "max_stale_hours (worst listed repo: hours since the first push the live graph missed)",
-     "value": null,
+     "value": 0.0,
      "unit": "h",
      "direction": "down",
      "target": 24,
-     "level": "0 of 9 gates",
+     "level": "5 of 9 gates",
      "level_name": "ruler v1 · live directory",
-     "next_gate": "fresh_24h",
-     "on_track": false
+     "next_gate": "ci_green",
+     "on_track": true
     },
     "counter_kpi": {
      "name": "gates failed by the best solution",
-     "value": 9,
+     "value": 4,
      "unit": "gates",
      "owner": "Robot SDK Agent"
     },
@@ -3289,7 +3290,7 @@
      "wandb": null,
      "vault": null
     },
-    "updated_t": 1795580816.450973
+    "updated_t": 1795581105.5878384
    },
    "one_line": "Keeps robot-sdk a true, current directory of the robot-* packages",
    "summary": "A black-box agent: a frozen scorer measures how stale, true and complete the live robot-sdk directory is (freshness against each repo's main, the declaration lint, coverage of robot_msgs repos, dead links, CI and PyPI health, the live site), and a scored population of refresh mechanisms competes to keep every gate green.",
