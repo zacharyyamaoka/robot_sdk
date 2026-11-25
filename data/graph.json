@@ -1,12 +1,13 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-25T15:54:15+00:00",
+ "generated": "2026-11-25T08:07:14-07:00",
  "sources": {
-  "robot_sdk": "42116f8",
+  "robot_sdk": "e300b3e-dirty",
   "robot_msgs": "9b5b590",
   "robot_models": "61b292c",
   "robot_controllers": "3159fe9",
   "robot_reach": "04f95f5",
+  "robot_collision": "19aa8d0",
   "robot_thermal": "928622d",
   "robot_trajectories": "e2cdd76",
   "robot_autonomy": "0f68b89",
@@ -18,8 +19,7 @@
   "robot_diagnostics": "2ab15cb",
   "like_keras": "f2995b0",
   "robot_sdk_agent": "706387f",
-  "trajectory_tracking_agent": "924f5fc",
-  "robot_collision": "19aa8d0"
+  "trajectory_tracking_agent": "924f5fc"
  },
  "packages": [
   {
@@ -172,6 +172,42 @@
      "status": "full",
      "where": "src/robot_reach",
      "evidence": "24 modules"
+    }
+   ]
+  },
+  {
+   "id": "robot_collision",
+   "pypi": "robot-collision",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_collision",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Allowed Collision Matrix for any robot, robots, or robot + scene",
+   "summary": "Computes the Allowed Collision Matrix (SRDF disable_collisions) for one robot, several robots, or a robot and its scene: a robot description, or your own pure FK function plus bodies, in; a robot_msgs AllowedCollisionMatrix out, proved equal to brute force. Closed linkages (five-bar, delta) work through the description's own expand(q). Viewed in viser with a floating matrix window.",
+   "use_when": "Which link pairs to collision-check, generating an SRDF, viewing a robot's collision pairs.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_collision",
+    "pypi": "https://pypi.org/project/robot-collision/",
+    "site": "https://zacharyyamaoka.github.io/robot_collision/"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "urdf": [],
+     "viz": [],
+     "test": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass",
+   "languages": [
+    {
+     "id": "python",
+     "status": "full",
+     "where": "src/robot_collision",
+     "evidence": "12 modules"
     }
    ]
   },
@@ -552,43 +588,6 @@
      "evidence": "6 headers: abi, lk, msgs/control, msgs/sensor +2 more"
     }
    ]
-  },
-  {
-   "id": "robot_collision",
-   "pypi": "robot-collision",
-   "repo_url": "https://github.com/zacharyyamaoka/robot_collision",
-   "role": "library",
-   "layer": "leaf",
-   "one_line": "Allowed Collision Matrix for any robot, robots, or robot + scene",
-   "summary": "Computes the Allowed Collision Matrix (SRDF disable_collisions) for one robot, several robots, or a robot and its scene: a robot description, or your own pure FK function plus bodies, in; a robot_msgs AllowedCollisionMatrix out, proved equal to brute force. Closed linkages (five-bar, delta) work through the description's own expand(q). Viewed in viser with a floating matrix window.",
-   "use_when": "Which link pairs to collision-check, generating an SRDF, viewing a robot's collision pairs.",
-   "links": {
-    "github": "https://github.com/zacharyyamaoka/robot_collision",
-    "pypi": "https://pypi.org/project/robot-collision/",
-    "site": "https://zacharyyamaoka.github.io/robot_collision/"
-   },
-   "version": "0.1.0",
-   "deps": {
-    "required": [
-     "robot_msgs"
-    ],
-    "extras": {
-     "urdf": [],
-     "viz": [],
-     "test": []
-    }
-   },
-   "declaration": "robot-sdk.toml",
-   "lint": "pass",
-   "languages": [
-    {
-     "id": "python",
-     "status": "full",
-     "where": "src/robot_collision",
-     "evidence": "12 modules"
-    }
-   ],
-   "upstream": "missing"
   }
  ],
  "types": [
@@ -1568,6 +1567,36 @@
    "where": "src/robot_reach/workspace.py:81",
    "public": false,
    "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_collision",
+   "type": "robot_msgs.manipulation.AllowedCollisionMatrix",
+   "kind": "produces",
+   "symbol": "robot_collision.analysis.CollisionAnalysis.acm",
+   "where": "src/robot_collision/analysis.py:136",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_collision",
+   "type": "robot_msgs.shape.Mesh",
+   "kind": "consumes",
+   "symbol": "robot_collision.geometry.coal_geometry",
+   "where": "src/robot_collision/geometry.py:21",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_collision",
+   "type": "robot_msgs.shape.SolidPrimitive",
+   "kind": "consumes",
+   "symbol": "robot_collision.geometry.coal_geometry",
+   "where": "src/robot_collision/geometry.py:21",
+   "public": true,
+   "declared": true,
    "verified": true
   },
   {
@@ -4488,36 +4517,6 @@
    "where": "src/like_keras/backends/inproc.py:717",
    "public": false,
    "declared": false,
-   "verified": true
-  },
-  {
-   "package": "robot_collision",
-   "type": "robot_msgs.manipulation.AllowedCollisionMatrix",
-   "kind": "produces",
-   "symbol": "robot_collision.analysis.CollisionAnalysis.acm",
-   "where": "src/robot_collision/analysis.py:136",
-   "public": true,
-   "declared": true,
-   "verified": true
-  },
-  {
-   "package": "robot_collision",
-   "type": "robot_msgs.shape.Mesh",
-   "kind": "consumes",
-   "symbol": "robot_collision.geometry.coal_geometry",
-   "where": "src/robot_collision/geometry.py:21",
-   "public": true,
-   "declared": true,
-   "verified": true
-  },
-  {
-   "package": "robot_collision",
-   "type": "robot_msgs.shape.SolidPrimitive",
-   "kind": "consumes",
-   "symbol": "robot_collision.geometry.coal_geometry",
-   "where": "src/robot_collision/geometry.py:21",
-   "public": true,
-   "declared": true,
    "verified": true
   }
  ],

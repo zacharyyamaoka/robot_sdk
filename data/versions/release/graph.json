@@ -1,8 +1,8 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-25T15:54:27+00:00",
+ "generated": "2026-11-25T01:41:39-07:00",
  "sources": {
-  "robot_sdk": "42116f8",
+  "robot_sdk": "bf2705a-dirty",
   "robot_msgs": "daa6e1b",
   "robot_models": "486ecc2",
   "robot_metrics": "2573912",
@@ -35,15 +35,7 @@
     }
    },
    "declaration": null,
-   "lint": "undeclared",
-   "languages": [
-    {
-     "id": "python",
-     "status": "full",
-     "where": "src/robot_msgs",
-     "evidence": "93 modules"
-    }
-   ]
+   "lint": "undeclared"
   },
   {
    "id": "robot_models",
@@ -68,15 +60,7 @@
     }
    },
    "declaration": null,
-   "lint": "undeclared",
-   "languages": [
-    {
-     "id": "python",
-     "status": "full",
-     "where": "src/robot_models",
-     "evidence": "56 modules"
-    }
-   ]
+   "lint": "undeclared"
   },
   {
    "id": "robot_metrics",
@@ -104,15 +88,7 @@
     }
    },
    "declaration": null,
-   "lint": "undeclared",
-   "languages": [
-    {
-     "id": "python",
-     "status": "full",
-     "where": "src/robot_metrics",
-     "evidence": "19 modules"
-    }
-   ]
+   "lint": "undeclared"
   },
   {
    "id": "robot_activity",
@@ -138,15 +114,7 @@
     }
    },
    "declaration": null,
-   "lint": "undeclared",
-   "languages": [
-    {
-     "id": "python",
-     "status": "full",
-     "where": "src/robot_activity",
-     "evidence": "17 modules"
-    }
-   ]
+   "lint": "undeclared"
   }
  ],
  "types": [
