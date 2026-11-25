@@ -8,7 +8,7 @@ import "@shared/kit.css";
 import "./v2.css";
 import { useData, useHashRoute } from "@shared/data.js";
 import { stats, byId, LAYER_LABEL } from "@shared/graph.js";
-import { Provenance, Install, PickPlaceStages, Plots, AgentCard, SkillBlock, PITCH, AGENT_RULE, REPO_URL } from "@shared/parts.jsx";
+import { Provenance, Install, Plots, AgentCard, SkillBlock, PkgLinks, PITCH, AGENT_RULE, REPO_URL } from "@shared/parts.jsx";
 import { TypesTab } from "./types-tab.jsx";
 import { PackagesTab } from "./packages-tab.jsx";
 import { mostUsedType, resolveType, typeKey } from "./sw-model.js";
@@ -72,7 +72,8 @@ function ExampleTab({ data, go }) {
           <li key={i} className="tp-stage">
             <div className="tp-n">{i + 1}</div>
             <div className="tp-body">
-              <button className="tp-pkg" onClick={() => go("packages", st.package)} data-testid={`tp-pkg-${i}`}><code>{st.package}</code></button>
+              <div className="tp-pkgline"><button className="tp-pkg" onClick={() => go("packages", st.package)} data-testid={`tp-pkg-${i}`}><code>{st.package}</code></button>
+                {graph.packages.find((p) => p.id === st.package) && <PkgLinks pkg={graph.packages.find((p) => p.id === st.package)} compact />}</div>
               <code className="tp-call">{st.call}</code>
               <div className="tp-io">
                 <div><span className="tp-io-l">in</span><span><TypeText text={st.input_type} graph={graph} go={go} /></span></div>
@@ -109,6 +110,7 @@ function AgentsTab({ data, go }) {
               <span className="muted small">builds on (open in Packages):</span>
               {(a.builds_on || []).map((p) => <button key={p} className="pill" onClick={() => go("packages", p)} data-testid={`agent-pkg-${p}`}>{p}</button>)}
             </div>
+            <div className="agent-walk"><span className="muted small">this agent:</span><PkgLinks agent={a} /></div>
           </div>
         ))}
       </div>

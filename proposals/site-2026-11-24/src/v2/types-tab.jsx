@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ReactFlow, ReactFlowProvider, Background, Controls, Handle, Position, BaseEdge, EdgeLabelRenderer, getBezierPath } from "@xyflow/react";
 import { byId, usesOfType, useState_, LAYER_LABEL, KIND_LABEL } from "@shared/graph.js";
-import { UseRow, edgeStyle, edgeMarker, Legend, Install, LAYER_RULE } from "@shared/parts.jsx";
+import { UseRow, edgeStyle, edgeMarker, Legend, Install, LAYER_RULE, PkgLinks } from "@shared/parts.jsx";
 import { KINDS, NODE_W, NODE_H, TYPE_W, TYPE_H, RING_W, RING_H, typeCounts, buildSwitchboard, filterRows, otherTypesOf, typeKey, layerIndex } from "./sw-model.js";
 import { markReady, store, FitOnChange, useNarrow } from "./util.js";
 
@@ -198,7 +198,7 @@ function Rail({ graph, counts, current, go }) {
   );
 }
 
-function RowsPanel({ graph, type, rows, focus, setFocus, pkgById }) {
+function RowsPanel({ graph, type, rows, focus, setFocus, pkgById, go }) {
   const shown = rows.filter((u) => {
     if (!focus) return true;
     if (focus.layer) return pkgById[u.package]?.layer === focus.layer && (!focus.kind || u.kind === focus.kind);
@@ -229,10 +229,11 @@ function RowsPanel({ graph, type, rows, focus, setFocus, pkgById }) {
           return (
             <section key={p} className="rows-pkg" data-testid={`rows-pkg-${p}`}>
               <div className="rows-pkg-head">
-                <code>{p}</code>
+                <button className="rows-pkg-name" onClick={() => go("packages", p)} title="open this package in the Packages tab" data-testid={`rows-open-${p}`}><code>{p}</code></button>
                 <span className="muted small">{LAYER_LABEL[pkgById[p]?.layer] || ""}</span>
                 <span className="rows-kc">{KINDS.filter((k) => kc[k]).map((k) => <span key={k} className={"kind k-" + k}>{k} {kc[k]}</span>)}</span>
               </div>
+              {pkgById[p] && <PkgLinks pkg={pkgById[p]} compact className="rows-links" />}
               {[...list].sort((a, b) => kOrder[a.kind] - kOrder[b.kind] || a.symbol.localeCompare(b.symbol)).map((u, i) => (
                 <UseRow key={i} graph={graph} use={u} showPackage={false} showType={false} />
               ))}
@@ -255,7 +256,7 @@ function Intro({ go }) {
         <p><b>Start from a type.</b> robot-sdk's packages meet only on robot_msgs types: pick one from the list to see who produces it, who consumes it, and where in the code. One install, versions pinned to a set known to work together.</p>
         <p className="intro-rule"><b>The layer rule.</b> {LAYER_RULE}</p>
       </div>
-      <div className="intro-actions"><Install /><button className="btn" onClick={() => go("example")} data-testid="intro-run">See the real run →</button></div>
+      <div className="intro-actions"><Install /><button className="btn" onClick={() => go("example")} data-testid="intro-run">See the real run →</button><button className="btn ghost" onClick={() => go("packages")} data-testid="intro-directory">Package directory →</button></div>
       <button className="intro-close" onClick={toggle} aria-label="hide the intro" data-testid="intro-toggle">×</button>
     </section>
   );
@@ -340,7 +341,7 @@ export function TypesTab({ graph, type, go, filters, setFilters }) {
           <span className="muted small">Edge numbers = rows (one per symbol). Click a count, a package or a layer; <b>+N types</b> opens a package's other types.</span>
         </div>
       </main>
-      <RowsPanel graph={graph} type={type} rows={rows} focus={focus} setFocus={setFocus} pkgById={pkgById} />
+      <RowsPanel graph={graph} type={type} rows={rows} focus={focus} setFocus={setFocus} pkgById={pkgById} go={go} />
     </div>
   );
 }

@@ -105,7 +105,9 @@ export function buildStack(graph, opts) {
   raw.forEach((e) => {
     const rs = rankOf.get(e.s), rt = rankOf.get(e.t);
     e.route = [];
-    if (rs == null || rt == null) return;
+    // WHY: an edge inside one row (e.g. a vocabulary package's extra on another vocabulary package) has no rank to
+    // cross; stepping toward it would never arrive and ran off the end of ranks[].
+    if (rs == null || rt == null || rs === rt) return;
     const step = rt > rs ? 1 : -1;
     const upper = rs > rt ? e.s : e.t;
     const lane = `${upper}~${e.kind === "extra" ? "dep" : e.kind}`;
@@ -116,7 +118,7 @@ export function buildStack(graph, opts) {
       e.route.push(d);
       link(prev, d); prev = d;
     }
-    if (rs !== rt) link(prev, e.t);
+    link(prev, e.t);
   });
 
   // ---- order inside ranks: barycentre sweeps (down then up), "+N more" pinned at the end
@@ -249,7 +251,10 @@ export function buildStack(graph, opts) {
   const edges = [];
   const bIdx = (visId) => bandIndex[bandOfVis.get(visId)] ?? 0;
   for (const a of agg.values()) {
-    const up = bIdx(a.s) > bIdx(a.t); // source band sits above target band
+    // source sits above target: by band, then by row inside a multi-row band; same row = arc over the top
+    const rk = (v) => rankOf.get(v) ?? -1;
+    const sameRow = bIdx(a.s) === bIdx(a.t) && (rk(a.s) === rk(a.t) || a.s.startsWith("band:") || a.t.startsWith("band:"));
+    const up = bIdx(a.s) > bIdx(a.t) || (bIdx(a.s) === bIdx(a.t) && rk(a.s) > rk(a.t));
     const hot = hotEdges.has(a.key);
     const dim = selected ? !hot : false;
     const intoBand = a.s.startsWith("band:") || a.t.startsWith("band:") || a.s === "type-more" || a.t === "type-more";
@@ -276,12 +281,12 @@ export function buildStack(graph, opts) {
     else if (intoBand && a.links > 1 && !dim) label = isType ? `${a.links} ${a.s === "type-more" || a.t === "type-more" ? "types" : "pkgs"} · ${a.n} uses` : `${a.links} ${unit}`;
     else if (hot && isType) label = String(a.n);
     edges.push({
-      id, source: a.s, target: a.t, sourceHandle: up ? "bs" : "ts", targetHandle: up ? "t" : "b",
+      id, source: a.s, target: a.t, sourceHandle: sameRow ? "ts" : up ? "bs" : "ts", targetHandle: sameRow ? "t" : up ? "t" : "b",
       type: "routed", zIndex: hot ? 6 : 2, style, interactionWidth: 14,
       markerEnd: dim ? undefined : `v1-arrow-${a.kind === "extra" ? "dep" : a.kind}`,
       label, labelStyle: { fontSize: 11, fill: "var(--ink)", fontFamily: "var(--mono)" },
       labelBgStyle: { fill: "var(--card)", stroke: "var(--line)" }, labelBgPadding: [5, 2], labelBgBorderRadius: 5,
-      data: { points, up, dx: a.kind === "produces" ? -6 : a.kind === "consumes" ? 6 : 0, sx: sFold ? mean(a.sxs) : null, tx: tFold ? mean(a.txs) : null, labelAt: intoBand && hoverEdge !== id ? (sFold || a.s === "type-more" ? "source" : "target") : null, labelDy: a.kind === "consumes" ? 17 : 0 },
+      data: { points, up, arc: sameRow, dx: a.kind === "produces" ? -6 : a.kind === "consumes" ? 6 : 0, sx: sFold ? mean(a.sxs) : null, tx: tFold ? mean(a.txs) : null, labelAt: intoBand && hoverEdge !== id ? (sFold || a.s === "type-more" ? "source" : "target") : null, labelDy: a.kind === "consumes" ? 17 : 0 },
     });
   }
   return { nodes, edges, W, H: -y - BAND_GAP, bands, hiddenTypes: hiddenTypes.length, shownTypes: shownTypeIds.length };
@@ -308,12 +313,16 @@ function edgeStyleLocal(kind, { dim, hot }) {
 export const MARKER_KINDS = ["produces", "consumes", "imports", "dep", "builds"];
 
 // Path through the waypoints: vertical through each band it crosses, S-curves in the gaps.
-export function routedPath({ sourceX, sourceY, targetX, targetY, points, up, dx = 0, sx = null, tx = null, labelAt = null, labelDy = 0 }) {
+export function routedPath({ sourceX, sourceY, targetX, targetY, points, up, arc = false, dx = 0, sx = null, tx = null, labelAt = null, labelDy = 0 }) {
   if (sx != null) sourceX = sx;
   if (tx != null) targetX = tx;
   const pts = [{ x: sourceX + dx, y: sourceY }];
   for (const p of points) { if (up) { pts.push({ x: p.x, y: p.top }, { x: p.x, y: p.bot }); } else { pts.push({ x: p.x, y: p.bot }, { x: p.x, y: p.top }); } }
   pts.push({ x: targetX + dx, y: targetY });
+  if (arc) { // both ends on top of the same row: one arch above it
+    const a = pts[0], b = pts[pts.length - 1], top = Math.min(a.y, b.y) - 26;
+    return { d: `M${a.x},${a.y} C${a.x},${top} ${b.x},${top} ${b.x},${b.y}`, labelX: (a.x + b.x) / 2, labelY: top + 6 };
+  }
   let d = `M${pts[0].x},${pts[0].y}`;
   for (let i = 1; i < pts.length; i++) {
     const a = pts[i - 1], b = pts[i];

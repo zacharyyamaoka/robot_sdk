@@ -10,13 +10,12 @@ import {
   byId, layersOf, packageEdges, packagesByLayer, stats, shortType, useState_, KIND_LABEL, LAYER_BLURB, LAYER_LABEL,
 } from "@shared/graph.js";
 import {
-  PackageNode, TypeNode, AgentNode, Provenance, UseRow, PickPlaceStages, Plots, AgentCard, SkillBlock, Install, Legend,
+  PackageNode, TypeNode, AgentNode, Provenance, UseRow, PickPlaceStages, Plots, AgentCard, SkillBlock, Install, Legend, PkgLinks,
   PITCH, PITCH_2, LAYER_RULE, AGENT_RULE, REPO_URL,
 } from "@shared/parts.jsx";
 import { buildStack, bestPerRow, defaultTypeIds, typeRanking, routedPath, MARKER_KINDS, TYPES_DEFAULT } from "./stack.js";
 
 const NAV = [["stack", "Stack"], ["types", "Types"], ["viewers", "Viewers"], ["example", "Example"], ["agents", "Agents"], ["skill", "For coding agents"]];
-const pypiUrl = (p) => p.pypi ? `https://pypi.org/project/${p.pypi}/` : null;
 const scrollToId = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
 // ---- React Flow node types (bands and the "+N more" chip are local; packages/types/agents are the shared ones)
@@ -49,7 +48,7 @@ function MoreNode({ data }) {
 }
 const nodeTypes = { pkg: PackageNode, type: TypeNode, agent: AgentNode, band: BandNode, more: MoreNode };
 function RoutedEdge({ sourceX, sourceY, targetX, targetY, data, style, markerEnd, label, labelStyle, labelBgStyle, labelBgPadding, labelBgBorderRadius, interactionWidth }) {
-  const { d, labelX, labelY } = routedPath({ sourceX, sourceY, targetX, targetY, points: data?.points || [], up: data?.up, dx: data?.dx, sx: data?.sx, tx: data?.tx, labelAt: data?.labelAt, labelDy: data?.labelDy });
+  const { d, labelX, labelY } = routedPath({ sourceX, sourceY, targetX, targetY, points: data?.points || [], up: data?.up, arc: data?.arc, dx: data?.dx, sx: data?.sx, tx: data?.tx, labelAt: data?.labelAt, labelDy: data?.labelDy });
   return <BaseEdge path={d} style={style} markerEnd={markerEnd} label={label} labelX={labelX} labelY={labelY} labelStyle={labelStyle}
     labelBgStyle={labelBgStyle} labelBgPadding={labelBgPadding} labelBgBorderRadius={labelBgBorderRadius} interactionWidth={interactionWidth} />;
 }
@@ -204,9 +203,8 @@ function PackageInspector({ graph, pkgId, select }) {
       <div className="v1-meta">
         <span className="tag">v{p.version}</span>
         <span className={"tag " + (p.lint === "pass" ? "ok" : p.lint === "fail" ? "bad" : "")}>lint {p.lint}</span>
-        {pypiUrl(p) && <a href={pypiUrl(p)} target="_blank" rel="noreferrer">PyPI</a>}
-        <a href={p.repo_url} target="_blank" rel="noreferrer">repo</a>
       </div>
+      <PkgLinks pkg={p} />
       <div className="v1-deps">
         <div><span className="muted small">requires</span> {out.filter((e) => e.required).map((e) => chip(e.target)) }{!out.some((e) => e.required) && <span className="faint small">nothing in robot-sdk</span>}</div>
         {out.some((e) => !e.required) && <div><span className="muted small">optional extras</span> {out.filter((e) => !e.required).map((e) => chip(e.target, "[" + e.extras.join(", ") + "]"))}</div>}
@@ -227,7 +225,7 @@ function PackageInspector({ graph, pkgId, select }) {
 
 function AgentInspector({ graph, agentId }) {
   const a = (graph.agents || []).find((x) => "agent:" + x.id === agentId || x.id === agentId);
-  return a ? <div className="v1-insp-body"><div className="v1-insp-eyebrow">agent</div><AgentCard agent={a} graph={graph} compact /></div> : null;
+  return a ? <div className="v1-insp-body"><div className="v1-insp-eyebrow">agent</div><AgentCard agent={a} graph={graph} compact /><PkgLinks agent={a} /></div> : null;
 }
 
 function DefaultInspector({ graph, st }) {
@@ -278,10 +276,11 @@ function PackageCard({ graph, p, onFocus }) {
       <p>{p.one_line}</p>
       <div className="v1-pcard-foot">
         <span className="muted small">{uses.length ? <><span className="k-produces">{prod} produce</span> · <span className="k-consumes">{cons} consume</span> · {uses.length - prod - cons} import</> : "no type uses"}</span>
-        <span className="v1-spacer" />
-        {pypiUrl(p) && <a href={pypiUrl(p)} target="_blank" rel="noreferrer" className="small">{p.pypi}</a>}
-        <a href={p.repo_url} target="_blank" rel="noreferrer" className="small">repo</a>
-        <button className="btn ghost v1-mini" onClick={() => onFocus("pkg:" + p.id)}>show in stack ↑</button>
+      </div>
+      {/* WHY drill-down first (Zach, gate g5): in-site types & uses before the package's own GitHub / site / PyPI / README. */}
+      <div className="v1-pcard-links">
+        <button className="btn v1-mini v1-drill" data-testid={`drill-${p.id}`} onClick={() => onFocus("pkg:" + p.id)}>types &amp; uses ↑</button>
+        <PkgLinks pkg={p} />
       </div>
     </div>
   );
@@ -406,8 +405,14 @@ function App() {
 
         <section className="v1-sec" id="agents">
           <div className="v1-sec-head"><h2>Agents</h2><p className="muted">{AGENT_RULE}</p></div>
-          <div className="v1-agents">{(graph.agents || []).map((a) => <AgentCard key={a.id} agent={a} graph={graph} />)}</div>
-          <button className="btn v1-mini" onClick={() => { setView((v) => ({ ...v, showAgents: true })); scrollToId("stack"); }}>show agents in the stack ↑</button>
+          <div className="v1-agents">{(graph.agents || []).map((a) => (
+            <div key={a.id} className="v1-agent-wrap">
+              <AgentCard agent={a} graph={graph} />
+              <div className="v1-pcard-links">
+                <button className="btn v1-mini v1-drill" data-testid={`drill-agent-${a.id}`} onClick={() => { setView((v) => ({ ...v, showAgents: true })); select("agent:" + a.id); scrollToId("stack"); }}>in the stack ↑</button>
+                <PkgLinks agent={a} />
+              </div>
+            </div>))}</div>
         </section>
 
         <section className="v1-sec" id="skill">

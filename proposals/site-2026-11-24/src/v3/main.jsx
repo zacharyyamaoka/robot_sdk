@@ -8,7 +8,7 @@ import "@shared/kit.css";
 import "./v3.css";
 import { useData } from "@shared/data.js";
 import { packageEdges, typeEdges, neighbourhood, shortType, stats, useState_, LAYER_LABEL, KIND_LABEL, byId, fmtDate } from "@shared/graph.js";
-import { edgeStyle, edgeMarker, UseRow, AgentCard, REPO_URL, CopyCode } from "@shared/parts.jsx";
+import { edgeStyle, edgeMarker, UseRow, AgentCard, REPO_URL, CopyCode, PkgLinks } from "@shared/parts.jsx";
 import { buildLayout, makeRep, REGIONS } from "./layout3.js";
 import { MapCtx, nodeTypes3, edgeTypes3, useTier } from "./nodes3.jsx";
 
@@ -156,7 +156,7 @@ function LintLine({ rows }) {
   );
 }
 
-function Inspector({ graph, focus, edgeSel, onClose, onSelect }) {
+function Inspector({ graph, focus, edgeSel, onClose, onSelect, onExpand, expanded }) {
   if (edgeSel) {
     const byType = new Map();
     for (const r of edgeSel.rows) { const k = r.package + " · " + shortType(r.type); if (!byType.has(k)) byType.set(k, []); byType.get(k).push(r); }
@@ -205,8 +205,11 @@ function Inspector({ graph, focus, edgeSel, onClose, onSelect }) {
       <aside className="v3-ins" data-testid="inspector">
         <div className="v3-ins-head"><div><div className="v3-ins-kicker">package · {LAYER_LABEL[p.layer] || p.layer}{p.role === "viewer" ? " · viewer" : ""} · v{p.version}</div><h3>{p.id}</h3></div><button className="v3-x" onClick={onClose} aria-label="close">×</button></div>
         <p className="v3-ins-what">{p.one_line}</p>
+        <div className="v3-ins-dir">
+          {rows.length > 0 && <button className="v3-mini" data-testid="ins-expand" onClick={() => onExpand(p.id)}>{expanded.has(p.id) ? "fold its types on the map" : "list its types on the map"}</button>}
+          <PkgLinks pkg={p} />
+        </div>
         <div className="v3-ins-meta">
-          <a href={p.repo_url} target="_blank" rel="noreferrer">repo</a>
           <span>pip install {p.pypi}</span>
           <span className={"flag " + (p.lint === "pass" ? "st-verified" : p.lint === "fail" ? "st-missing" : "st-found")}>lint {p.lint}</span>
           <span className="faint">{p.declaration || "no declaration file"}</span>
@@ -228,6 +231,7 @@ function Inspector({ graph, focus, edgeSel, onClose, onSelect }) {
     return (
       <aside className="v3-ins" data-testid="inspector">
         <div className="v3-ins-head"><div><div className="v3-ins-kicker">agent</div><h3>{a.name}</h3></div><button className="v3-x" onClick={onClose} aria-label="close">×</button></div>
+        <div className="v3-ins-dir"><PkgLinks agent={a} /></div>
         <div className="v3-ins-body"><AgentCard agent={a} graph={graph} /></div>
       </aside>
     );
@@ -374,7 +378,7 @@ function MapView({ data }) {
             {!mobile && <Controls position="bottom-right" showInteractive={false} className="v3-controls" />}
           </ReactFlow>
         </div>
-        <Inspector graph={graph} focus={focus} edgeSel={edgeSel} onClose={() => { setFocus(null); setEdgeSel(null); }} onSelect={(sel) => select(sel, { fly: true })} />
+        <Inspector graph={graph} focus={focus} edgeSel={edgeSel} onClose={() => { setFocus(null); setEdgeSel(null); }} onSelect={(sel) => select(sel, { fly: true })} onExpand={toggleExpand} expanded={expanded} />
         {!(mobile && (focus || edgeSel)) && <div className={"v3-layers" + (legendOpen ? " open" : "")} data-testid="layers-panel">
           <button className="v3-layers-head" data-testid="layers-toggle" onClick={() => setLegendOpen((x) => !x)} title="show / hide kinds of lines">Layers {legendOpen ? "▾" : "▸"}</button>
           {legendOpen && <>

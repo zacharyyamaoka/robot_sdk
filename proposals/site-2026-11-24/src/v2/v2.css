@@ -220,3 +220,16 @@ button { font: inherit; }
 .react-flow__controls { box-shadow: none; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .react-flow__controls button { border-bottom-color: var(--line); }
 .react-flow__controls button svg { fill: var(--ink); }
+
+/* directory (g5): name = in-site drill-down first, then the package's own pages */
+.dir-row { display: grid; gap: 2px; padding: 7px 0 6px; border-top: 1px solid var(--line); }
+.ov-layer-head + .muted + .dir-row { margin-top: 4px; }
+.dir-name { justify-self: start; border: 0; background: none; padding: 0; cursor: pointer; font: 600 13px var(--mono); color: var(--ink); display: inline-flex; gap: 6px; align-items: center; }
+.dir-name:hover { color: var(--accent); text-decoration: underline; }
+.dir-row.agent .dir-name { font-family: var(--sans); color: var(--agent); }
+.dir-one { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.ov-layer.agents { border-style: dashed; border-color: var(--agent); }
+.rows-pkg-name { border: 0; background: none; padding: 0; cursor: pointer; }
+.rows-pkg-name:hover code { background: var(--accent-soft); }
+.rows-links { margin: 4px 0 2px; }
+.tp-pkgline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }

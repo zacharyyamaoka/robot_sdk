@@ -56,9 +56,12 @@ def load_journey(v: str):
 def main(v: str, query: str = "") -> int:
     steps = load_journey(v)
     out = OUT_ROOT / v
-    if out.exists():
-        shutil.rmtree(out)
-    (out / "_video").mkdir(parents=True)
+    # WHY not rmtree: links-fixture.png and swap-2x.png in this folder come from other tools and must survive a re-record.
+    out.mkdir(parents=True, exist_ok=True)
+    for old in list(out.glob("step-*.png")) + [out / n for n in ("hero.mp4", "hero.gif", "phone.png", "steps.json")]:
+        old.unlink(missing_ok=True)
+    shutil.rmtree(out / "_video", ignore_errors=True)
+    (out / "_video").mkdir()
     httpd = serve()
     url = f"http://127.0.0.1:{httpd.server_address[1]}/proposals/site-2026-11-24/{v}/index.html{query}"
     errors: list[str] = []

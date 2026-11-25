@@ -222,3 +222,8 @@ body { font-size: 14px; }
 .skill-block { grid-template-columns: minmax(0, 1fr); }
 .cat-table td.wrap { white-space: normal; }
 .cat-table td.wrap .chips { gap: 4px; }
+.links-cell { display: inline-flex; align-items: center; gap: 4px; }
+.cat-table td.links-td { overflow: visible; }
+.open-btn { font: 600 10.5px var(--sans); padding: 0 6px; line-height: 1.6; border-radius: 6px; border: 1px solid var(--ink); background: var(--ink); color: var(--bg); cursor: pointer; white-space: nowrap; }
+.panel-links { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.links-cell .pkg-links { flex-wrap: nowrap; }

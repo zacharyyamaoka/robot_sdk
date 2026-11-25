@@ -8,7 +8,7 @@ import "@shared/kit.css";
 import "./style.css";
 import { useData, useHashRoute } from "@shared/data.js";
 import { stats, LAYER_LABEL, LAYER_BLURB, LAYER_ORDER, USE_STATE_LABEL, shortType, sourceUrl, agentKpi } from "@shared/graph.js";
-import { PITCH, PITCH_2, LAYER_RULE, AGENT_RULE, REPO_URL, Install, SkillBlock, Provenance, PickPlaceStages, Plots } from "@shared/parts.jsx";
+import { PITCH, PITCH_2, LAYER_RULE, AGENT_RULE, REPO_URL, Install, SkillBlock, Provenance, PickPlaceStages, Plots, PkgLinks } from "@shared/parts.jsx";
 import { buildModel } from "./model.js";
 import { FacetRail, Table, applyFacets } from "./catalog.jsx";
 import { PackagePanel, TypePanel, UsePanel, AgentPanel } from "./panels.jsx";
@@ -30,6 +30,12 @@ function names(list, max = 2) {
   return <span className="names" title={list.join(", ")}><b>{list.length}</b> <span className="muted">{list.slice(0, max).join(", ")}{list.length > max ? ` +${list.length - max}` : ""}</span></span>;
 }
 
+// g5 (Zach): robot-sdk is a directory. Every package/viewer/agent row carries its own links, one click from the
+// table: the in-site drill-down ("Open", which bubbles to the row click) first, then GitHub · Site · PyPI · README.
+function LinksCell({ pkg, agent }) {
+  return <span className="links-cell"><button className="open-btn" data-testid={"open-" + (agent ? agent.id : pkg.id)} title="types, uses and neighbourhood">Open ›</button>{agent ? <PkgLinks agent={agent} compact /> : <PkgLinks pkg={pkg} compact />}</span>;
+}
+
 function specs(m) {
   const layerIdx = (l) => { const i = m.layers.indexOf(l); return i < 0 ? 99 : i; };
   return {
@@ -44,11 +50,12 @@ function specs(m) {
         { key: "id", label: "Package", width: 190, render: (r) => <span className="cell-id"><code>{r.id}</code>{r.role === "viewer" && <span className="badge viewer">viewer</span>}</span> },
         { key: "layer", label: "Layer", width: 104, sort: (r) => r.layerRank * 1000 + 0, render: (r) => <span className={"layer-pill l-" + r.layer}>{r.layerLabel}</span> },
         { key: "role", label: "Role", width: 70, hideWithPanel: true },
-        { key: "one_line", label: "What it is", cls: "ellip" },
+        { key: "one_line", label: "What it is", cls: "ellip", hideWithPanel: true },
         { key: "version", label: "Version", width: 70, cls: "mono", hideWithPanel: true },
         { key: "deps", label: "Deps", width: 54, num: true, defaultDir: "desc", title: "robot-sdk packages it requires (pyproject, extras included)" },
         { key: "uses", label: "Uses", width: 56, num: true, defaultDir: "desc", title: "robot_msgs type uses found in its code" },
         { key: "lint", label: "Lint", width: 64, render: (r) => <span className={"lint lint-" + r.lint}>{r.lint}</span> },
+        { key: "links", label: "Links", width: 304, sort: (r) => r.id, cls: "links-td", render: (r) => <LinksCell pkg={r.pkg} /> },
       ],
       groupBy: (r, sort) => (sort.key === "layer" ? { id: r.role === "viewer" ? "~viewer" : r.layer, label: r.role === "viewer" ? "viewers" : r.layerLabel, blurb: LAYER_BLURB[r.role === "viewer" ? "viewers" : r.layer] } : null),
     },
@@ -100,8 +107,9 @@ function specs(m) {
       columns: [
         { key: "name", label: "Agent", width: 210, render: (r) => <b>{r.name}</b> },
         { key: "objective", label: "Objective", cls: "ellip", hideWithPanel: true },
-        { key: "kpi", label: "KPI", width: 200, sort: (r) => r.kpi?.value ?? 0, render: (r) => { const k = agentKpi(r.agent); return k ? <span title={k.name}><b>{k.display}</b> <span className="muted small">{k.name.split(" ")[0]}</span></span> : <span className="faint">no status.json</span>; } },
+        { key: "kpi", label: "KPI", width: 200, hideWithPanel: true, sort: (r) => r.kpi?.value ?? 0, render: (r) => { const k = agentKpi(r.agent); return k ? <span title={k.name}><b>{k.display}</b> <span className="muted small">{k.name.split(" ")[0]}</span></span> : <span className="faint">no status.json</span>; } },
         { key: "status", label: "Status", width: 90, render: (r) => <span className={"tag status-" + r.status}>{r.status}</span> },
+        { key: "links", label: "Links", width: 230, sort: (r) => r.id, cls: "links-td", render: (r) => <LinksCell agent={r.agent} /> },
         { key: "builds_on", label: "Builds on", width: 280, cls: "wrap", sort: (r) => r.builds_on.length, render: (r) => <span className="chips">{r.builds_on.map((p) => <code key={p}>{p}</code>)}</span> },
       ],
     },

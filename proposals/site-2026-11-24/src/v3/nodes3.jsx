@@ -4,7 +4,7 @@
 import { createContext, useContext } from "react";
 import { Handle, Position, useStore } from "@xyflow/react";
 import { LAYER_BLURB, shortType, stats, agentKpi, fmtDate } from "@shared/graph.js";
-import { PITCH, PITCH_2, LAYER_RULE, AGENT_RULE, REPO_URL, Install, SkillBlock, Provenance, AgentCard, PLOTS } from "@shared/parts.jsx";
+import { PITCH, PITCH_2, LAYER_RULE, AGENT_RULE, REPO_URL, Install, SkillBlock, Provenance, AgentCard, PLOTS, PkgLinks } from "@shared/parts.jsx";
 import { pkgTypeSummary } from "./layout3.js";
 
 export const MapCtx = createContext(null);
@@ -105,6 +105,9 @@ export function Pkg3({ data }) {
         <button className="v3-mini nodrag" data-testid={`expand-pkg-${p.id}`} disabled={n === 0}
           onClick={(e) => { e.stopPropagation(); m.toggleExpand(p.id); }}>{data.expanded ? "fold" : "types ▾"}</button>
       </div>}
+      {/* Directory (gate g5): every package card carries its own way out, one click from the map. The in-site
+          drill-down (types ▾ above, the inspector on click) comes first; these chips come after it. */}
+      <PkgLinks pkg={p} compact={tier === "far"} className="v3-pkg-links" />
       {lit && <div className="v3-lit">{["produces", "consumes", "imports"].filter((k) => lit[k]).map((k) => <span key={k} className={"kind k-" + k}>{k} {lit[k]}</span>)}</div>}
       {tier === "near" && !data.expanded && !lit && <div className="v3-pkg-line">{p.one_line}</div>}
       {data.expanded && <div className="v3-pkg-types">
@@ -231,6 +234,7 @@ export function Agent3({ data }) {
   return (
     <div className={`v3-agent ${st}`} data-testid={`agent-${data.agent.id}`} onClick={(e) => { e.stopPropagation(); m.select({ kind: "agent", id: data.agent.id }); }}>
       <Handles />
+      <div className="v3-agent-links nodrag"><button className="v3-mini" onClick={(e) => { e.stopPropagation(); m.select({ kind: "agent", id: data.agent.id }); }}>details</button><PkgLinks agent={data.agent} /></div>
       <AgentCard agent={data.agent} graph={m.graph} />
     </div>
   );

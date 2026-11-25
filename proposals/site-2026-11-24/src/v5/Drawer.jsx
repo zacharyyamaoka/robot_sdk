@@ -2,7 +2,7 @@
 // its uses grouped by lint state (declared + verified / found in code, not declared / declared, not found), each a
 // shared UseRow with file:line linking to GitHub.
 import { useMemo, useState } from "react";
-import { UseRow, LAYER_RULE } from "@shared/parts.jsx";
+import { UseRow, LAYER_RULE, PkgLinks } from "@shared/parts.jsx";
 import { LAYER_LABEL, LAYER_BLURB, shortType, useState_, USE_STATE_LABEL, KIND_LABEL } from "@shared/graph.js";
 import { CovBar } from "./HealthMap.jsx";
 import { coverage, pct, plural } from "./derive.js";
@@ -64,9 +64,9 @@ function PackageView({ graph, d, id, typeFilter, onSelect }) {
         <div className="v5-meta small">
           <span className={"tag " + (p.lint === "fail" ? "bad" : p.lint === "pass" ? "ok" : "")}>lint {p.lint}</span>
           {p.declaration && <code>{p.declaration}</code>}
-          <a href={p.repo_url} target="_blank" rel="noreferrer">repo</a>
-          {p.pypi && <a href={`https://pypi.org/project/${p.pypi}/`} target="_blank" rel="noreferrer">pip install {p.pypi}</a>}
+          {p.pypi && <code>pip install {p.pypi}</code>}
         </div>
+        <PkgLinks pkg={p} />
       </div>
       <section>
         <h4>Depends on</h4>

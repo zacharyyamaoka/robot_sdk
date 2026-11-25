@@ -1,6 +1,6 @@
 // Side-panel bodies, one per row kind: the row's facts, its neighbourhood graph, and the UseRows behind the graph.
 import { useState } from "react";
-import { UseRow, AgentCard, AGENT_RULE } from "@shared/parts.jsx";
+import { UseRow, AgentCard, AGENT_RULE, PkgLinks } from "@shared/parts.jsx";
 import { LAYER_LABEL, LAYER_BLURB, USE_STATE_LABEL, KIND_LABEL, shortType, useState_, agentKpi } from "@shared/graph.js";
 import { EgoGraph } from "./ego.jsx";
 
@@ -57,9 +57,9 @@ export function PackagePanel({ m, row, onOpen, onUses, onReady }) {
           <span className="tag">v{p.version}</span>
           <span className="tag">PyPI <code>{p.pypi}</code></span>
           <span className={"tag " + (p.lint === "pass" ? "ok" : p.lint === "fail" ? "bad" : "")} title={p.declaration ? `declared in ${p.declaration}` : "no declaration file"}>lint {p.lint}</span>
-          <a href={p.repo_url} target="_blank" rel="noreferrer">repo ↗</a>
           {p.declaration && <a href={`${p.repo_url}/blob/main/${p.declaration}`} target="_blank" rel="noreferrer">{p.declaration} ↗</a>}
         </div>
+        <div className="panel-links"><span className="muted small">links</span><PkgLinks pkg={p} /></div>
         <p className="muted small layer-note">{LAYER_BLURB[p.layer]}</p>
       </header>
       <div className="kv">
@@ -158,6 +158,7 @@ export function AgentPanel({ m, row, onOpen, onReady }) {
         <div className="eyebrow">agent</div>
         <h2>{a.name}</h2>
       </header>
+      <div className="panel-links"><span className="muted small">links</span><PkgLinks agent={a} /></div>
       <AgentCard agent={a} graph={m.graph} />
       <p className="muted small rule">{AGENT_RULE}</p>
       <section className="panel-sec">

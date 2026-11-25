@@ -146,3 +146,9 @@ body { overflow-x: hidden; }
   .v1-foot { padding: 20px 16px 32px; }
   .copy-code { min-width: 0; max-width: 100%; } .copy-code pre { min-width: 0; }
 }
+
+/* directory links (gate g5): drill-down first, then the package's own pages */
+.v1-pcard-links { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding-top: 6px; border-top: 1px solid var(--line); margin-top: 2px; }
+.v1-drill { border-color: var(--consume); color: var(--consume); }
+.v1-agent-wrap { display: grid; gap: 8px; align-content: start; }
+.v1-agent-wrap .v1-pcard-links { border-top: 0; padding-top: 0; }

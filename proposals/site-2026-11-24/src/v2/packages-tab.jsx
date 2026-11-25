@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { ReactFlow, ReactFlowProvider, Background, Controls, Handle, Position } from "@xyflow/react";
 import { byId, layersOf, packageEdges, usesOfPackage, neighbourhood, LAYER_LABEL, LAYER_BLURB, stats } from "@shared/graph.js";
-import { nodeTypes as kitNodes, edgeStyle, edgeMarker, Legend } from "@shared/parts.jsx";
+import { nodeTypes as kitNodes, edgeStyle, edgeMarker, Legend, PkgLinks } from "@shared/parts.jsx";
 import { dagreLayout, wrappedRows } from "@shared/layout.js";
 import { KINDS, typeKey } from "./sw-model.js";
 import { markReady, FitOnChange, useNarrow } from "./util.js";
@@ -154,8 +154,8 @@ function PkgDetail({ graph, pkg, go }) {
         <span className="tag">v{pkg.version}</span>
         <span className={"tag " + (pkg.lint === "pass" ? "ok" : pkg.lint === "fail" ? "bad" : "")}>lint {pkg.lint}</span>
         {pkg.declaration && <code className="small">{pkg.declaration}</code>}
-        <a href={pkg.repo_url} target="_blank" rel="noreferrer" className="small">repo ↗</a>
       </div>
+      <PkgLinks pkg={pkg} />
       <h3>Depends on</h3>
       {deps.length ? <div className="pd-list">{deps.map((e) => (
         <button key={e.id} className="pill" onClick={() => go("packages", e.target)} data-testid={`pd-dep-${e.target}`}>
@@ -182,12 +182,15 @@ function PkgDetail({ graph, pkg, go }) {
   );
 }
 
+// The directory (hard gate g5): every package, viewer and agent with its in-site drill-down first (the name opens it
+// here: deps, dependants, types), then one click out to GitHub / Site (when it declares one) / PyPI / README.
 function Overview({ graph, collapsed, toggle, go }) {
   const s = stats(graph);
+  const agents = graph.agents || [];
   return (
-    <div className="pd">
-      <h2>{s.packages} packages in {layersOf(graph).length} layers</h2>
-      <p className="muted small">{s.libraries} libraries and {s.viewers} viewer{s.viewers === 1 ? "" : "s"}; {s.depEdges} dependency edges from each pyproject (robot-sdk packages only). Click a package to see what it depends on and which types it produces or consumes.</p>
+    <div className="pd" data-testid="directory">
+      <h2>Directory · {s.packages} packages in {layersOf(graph).length} layers</h2>
+      <p className="muted small">{s.libraries} libraries and {s.viewers} viewer{s.viewers === 1 ? "" : "s"}; {s.depEdges} dependency edges from each pyproject. Click a name to open it here (deps and the types it produces or consumes); the chips go to its own pages.</p>
       <div className="ov-layers">
         {layersOf(graph).map((l) => {
           const ps = graph.packages.filter((p) => p.layer === l);
@@ -196,10 +199,27 @@ function Overview({ graph, collapsed, toggle, go }) {
               <div className="ov-layer-head"><b>{LAYER_LABEL[l] || l}</b><span className="muted small">{ps.length}</span>
                 <button className="chip mini" onClick={() => toggle(l)} data-testid={`band-toggle-${l}`}>{collapsed.has(l) ? "expand" : "collapse"}</button></div>
               <div className="muted small">{LAYER_BLURB[l] || ""}</div>
-              <div className="ov-pkgs">{ps.map((p) => <button key={p.id} className={"pill" + (p.role === "viewer" ? " viewer" : "")} onClick={() => go("packages", p.id)} data-testid={`ov-pkg-${p.id}`}>{p.id}</button>)}</div>
+              {ps.map((p) => (
+                <div key={p.id} className={"dir-row" + (p.role === "viewer" ? " viewer" : "")} data-testid={`dir-${p.id}`}>
+                  <button className="dir-name" onClick={() => go("packages", p.id)} data-testid={`ov-pkg-${p.id}`}>{p.id}{p.role === "viewer" && <span className="tag viewer">viewer</span>}</button>
+                  <div className="dir-one">{p.one_line}</div>
+                  <PkgLinks pkg={p} compact />
+                </div>
+              ))}
             </div>
           );
         })}
+        {agents.length > 0 && <div className="ov-layer agents">
+          <div className="ov-layer-head"><b>agents</b><span className="muted small">{agents.length}</span></div>
+          <div className="muted small">Agents build on packages; a package never imports an agent.</div>
+          {agents.map((a) => (
+            <div key={a.id} className="dir-row agent" data-testid={`dir-${a.id}`}>
+              <button className="dir-name" onClick={() => go("agents")}>{a.name}</button>
+              <div className="dir-one">{a.objective}</div>
+              <PkgLinks agent={a} compact />
+            </div>
+          ))}
+        </div>}
       </div>
     </div>
   );

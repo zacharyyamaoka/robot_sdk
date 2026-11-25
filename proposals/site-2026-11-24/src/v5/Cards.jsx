@@ -1,7 +1,7 @@
 // Dashboard cards under the health map: agents, the last pick-and-place run, viewers, the skill for coding agents.
 import { useEffect, useState } from "react";
-import { AgentCard, AGENT_RULE, PLOTS, SkillBlock, Install } from "@shared/parts.jsx";
-import { fmtDate } from "@shared/graph.js";
+import { AgentCard, AGENT_RULE, PLOTS, SkillBlock, Install, PkgLinks } from "@shared/parts.jsx";
+import { fmtDate, LAYER_LABEL } from "@shared/graph.js";
 import { CovBar } from "./HealthMap.jsx";
 import { pct } from "./derive.js";
 
@@ -17,6 +17,7 @@ export function AgentsCard({ graph, onSelect }) {
         return (
           <div key={a.id} className="v5-agent">
             <AgentCard agent={a} graph={graph} compact />
+            <PkgLinks agent={a} />
             <div className="v5-agent-extra">
               {s.remit && <p className="small"><span className="muted">Remit:</span> {s.remit}</p>}
               {s.counter_kpi && <p className="small"><span className="muted">Counter-KPI:</span> {s.counter_kpi.name}: <b>{typeof s.counter_kpi.value === "number" ? s.counter_kpi.value.toFixed(4) : s.counter_kpi.value} {s.counter_kpi.unit}</b></p>}
@@ -94,7 +95,7 @@ export function ViewersCard({ graph, d, onSelect }) {
             <p className="small">{p.one_line}</p>
             {cov.total > 0 && <div className="v5-layercov"><CovBar cov={cov} thin /><span className="small muted">{cov.verified}/{cov.total} type uses declared ({pct(cov.verified, cov.total)}%)</span></div>}
             <p className="small">{dependants.length === 0 ? <><span className="v5-dot st-verified" /> Nothing depends on it, as the viewer rule requires.</> : <span className="bad">{dependants.length} packages depend on a viewer: {dependants.map((e) => e.source).join(", ")}</span>}</p>
-            <a className="small" href={p.repo_url} target="_blank" rel="noreferrer">{p.repo_url.replace("https://", "")}</a>
+            <PkgLinks pkg={p} />
           </div>);
       })}
     </section>
@@ -107,6 +108,45 @@ export function SkillCard() {
       <header><h2>For coding agents</h2><span className="muted small">skill/SKILL.md</span></header>
       <SkillBlock />
       <div className="v5-install-line"><span className="muted small">or just the packages</span><Install /></div>
+    </section>
+  );
+}
+
+// The directory: every package (by layer, viewers included) and every agent, one click to its repo, site (when it
+// declares one), PyPI and README. WHY (Zach, gate g5): robot-sdk is the entry point to the packages; the in-site
+// drill-down ("inspect", opens the drawer on the map) comes first, the external links after.
+export function DirectoryCard({ graph, d, onSelect }) {
+  const agents = graph.agents || [];
+  return (
+    <section className="v5-card v5-dir" id="directory" data-testid="card-directory">
+      <header><h2>Directory</h2><span className="muted small">{graph.packages.length} packages · {agents.length} agent{agents.length === 1 ? "" : "s"} · inspect opens it on the health map</span></header>
+      <div className="v5-dir-grid">
+        {d.layers.map((l) => (
+          <div key={l} className="v5-dir-layer">
+            <div className="v5-dir-lh">{LAYER_LABEL[l] || l}</div>
+            {graph.packages.filter((p) => p.layer === l).map((p) => {
+              const cov = d.pkgCov[p.id];
+              return (
+                <div key={p.id} className={"v5-dir-row" + (p.role === "viewer" ? " viewer" : "")} data-testid={`dir-${p.id}`}>
+                  <button className="v5-dir-inspect" onClick={() => onSelect({ kind: "pkg", id: p.id, scroll: true })} title="Inspect its types and uses on the health map">
+                    <code>{p.id}</code>{p.role === "viewer" && <span className="v5-viewer-tag small">viewer</span>}
+                    <span className="v5-dir-cov">{cov.total ? <><CovBar cov={cov} thin /><span>{cov.verified}/{cov.total}</span></> : <span>{d.typesByUse.filter((t) => t.package === p.id).length ? "defines types" : "no uses"}</span>}</span>
+                  </button>
+                  <div className="v5-dir-line small muted">{p.one_line}</div>
+                  <PkgLinks pkg={p} compact />
+                </div>);
+            })}
+          </div>))}
+        {agents.length > 0 && <div className="v5-dir-layer">
+          <div className="v5-dir-lh">agents</div>
+          {agents.map((a) => (
+            <div key={a.id} className="v5-dir-row agent" data-testid={`dir-${a.id}`}>
+              <button className="v5-dir-inspect" onClick={() => document.getElementById("agents")?.scrollIntoView({ behavior: "smooth" })} title="Its KPI and to-dos below"><b>{a.name}</b></button>
+              <div className="v5-dir-line small muted">{a.objective}</div>
+              <PkgLinks agent={a} compact />
+            </div>))}
+        </div>}
+      </div>
     </section>
   );
 }

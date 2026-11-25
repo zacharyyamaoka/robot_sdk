@@ -23,8 +23,8 @@ def _collapse(page):
     page.get_by_test_id("band-toggle-leaf").click()
 
 
-def _cards(page):
-    page.evaluate("document.getElementById('agents').scrollIntoView({block: 'start'})")
+def _directory(page):
+    page.evaluate("document.getElementById('directory').scrollIntoView({block: 'start'})")
 
 
 STEPS = [
@@ -32,5 +32,5 @@ STEPS = [
     {"label": "JointTrajectory", "caption": "Type edges on, JointTrajectory clicked: the map narrows to the packages that produce, consume or import it, each node shows its own declared share, and the drawer lists all 58 uses with file:line.", "act": _types, "wait": 1600},
     {"label": "Only gaps", "caption": "Only gaps dims everything already declared and verified, so the 190 uses found in code but not declared yet stand out (neutral grey, not red: red is reserved for lint failures).", "act": _gaps, "wait": 1600},
     {"label": "Collapse leaves", "caption": "The leaves layer folds into one aggregate node with its combined coverage bar; edges reroute to it, and expand restores it.", "act": _collapse, "wait": 1600},
-    {"label": "Agents and last run", "caption": "Below the map: the Trajectory Tracking Agent's KPI and to-dos from its status.json, and the last pick-and-place run on the simulated MuJoCo UR5e with its stages and plots.", "act": _cards, "wait": 1200},
+    {"label": "Directory: one click out", "caption": "The directory lists every package by layer, the traj_compare viewer and the agent: the name opens it on the health map first, then GitHub, PyPI and README are one click away on every row, and Site wherever a package declares one.", "act": _directory, "wait": 1200},
 ]

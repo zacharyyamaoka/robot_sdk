@@ -22,6 +22,15 @@ def _expand(page):
     btn.click()
 
 
+def _directory(page):
+    page.click("[data-testid=panel-close]")
+    page.click("[data-testid=tab-packages]")
+    page.evaluate("window.scrollTo(0, 0)")
+    page.wait_for_timeout(300)
+    # hover the viewer's GitHub chip: every row carries Open › then GitHub · PyPI · README (Site where declared)
+    page.locator("[data-testid='links-traj_compare'] a").first.hover()
+
+
 def _graph(page):
     page.click("[data-testid=panel-close]")
     page.click("[data-testid=tab-packages]")
@@ -36,5 +45,5 @@ STEPS = [
     {"label": "Open JointTrajectory", "caption": "Types tab, top row (58 uses): the side panel splits its users into producers, consumers and importers and draws them left, centre and right as a React Flow neighbourhood.", "act": _open_type, "wait": 1400},
     {"label": "Uses, declared or not", "caption": "One click filters the Uses tab to JointTrajectory's 58 rows; the state facet counts declared + verified against found-not-declared, and the opened row shows its kind, public flag and file:line.", "act": _filter_uses, "wait": 1400},
     {"label": "Expand a neighbour", "caption": "'+' on robot_controllers adds its own neighbours (its other types and what it requires) to the graph; '−' folds them back.", "act": _expand, "wait": 1400},
-    {"label": "Collapse a layer", "caption": "Packages → Graph: the full dependency graph in layer bands, with the leaf layer collapsed into one node whose edges are rerouted to it.", "act": _graph, "wait": 1500},
+    {"label": "Directory: one click out", "caption": "Back on the Packages catalog every row, the traj_compare viewer included, ends in Open › (its types and uses here) then GitHub, PyPI and README, plus Site where the package declares one; the Agents table and every side panel carry the same links.", "act": _directory, "wait": 1200},
 ]

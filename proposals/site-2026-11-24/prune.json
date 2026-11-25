@@ -1,0 +1,436 @@
+{
+  "written": "2026-11-24, after all five variants were built, recorded and gate-checked; criteria.json was frozen before the build (g5 added after the build at Zach's request, FRs unchanged)",
+  "boundary": "Five single-file React Flow builds on the real generated graph.json (robot_sdk main, 13 packages, 29 types, 253 uses, links from each package's robot-sdk.toml) and the real pick-and-place run (simulated MuJoCo plant). Recorded from the running builds. Not wired: no deploy, nothing applied to the live site or gh-pages; the 2x and links fixtures are TEST data used only through ?graph=.",
+  "defaultId": "v5",
+  "defaultWhy": "Commit Dashboard leads at 92/100: it is the only direction where the graph shows the one thing graph.json adds beyond today's site (declared + verified coverage per package and type) on the first screen, with a calm verdict, the commit stamp and a directory card; Type Switchboard is 3 points behind, so the call is fragile.",
+  "decisionHinge": "How much the landing page is for an outsider's first minute versus for Zach's own 'who uses this type, and is it declared?' question. Move 10 points from FR1 (relationships) to FR3 (first-minute understanding) and Commit Dashboard 90 and Layer Atlas 89 tie at the top while Type Switchboard drops to 85; leave weights as frozen and V5/V2 are co-leaders.",
+  "variants": [
+    {
+      "id": "v1",
+      "name": "Layer Atlas",
+      "accent": "#2f7d55",
+      "thesis": "A classic scroll landing page whose hero is the layer stack itself, one foldable React Flow diagram; types, viewers, the run, agents and the skill follow further down.",
+      "storyTitle": "Stack, type lens, fold, directory",
+      "bestWhen": "The visitor first needs 'what is robot-sdk and how is it layered': pitch, install and the stack land in one screen.",
+      "losesWhen": "The question is type-first at this density: the type lens is busy at 8 types and small with all 29.",
+      "decisions": [
+        {
+          "label": "Primary object",
+          "value": "The layer stack: bands bottom-up, vocabulary at the bottom, the viewer as its own band."
+        },
+        {
+          "label": "Navigation",
+          "value": "One long page with a sticky anchor nav; the diagram is the hero."
+        },
+        {
+          "label": "Graph role",
+          "value": "Hero of the page; a 'Packages + types' lens inserts the most-used types as a band."
+        },
+        {
+          "label": "Directory",
+          "value": "Package cards per layer below the hero: 'types & uses ↑' first, then GitHub · Site · PyPI · README."
+        }
+      ],
+      "keepParts": [
+        "band layout with waypoint routing (edges never cross a box)",
+        "type inspector who-table (prod / cons / imp / declared per package)",
+        "package cards with drill-down first, links after"
+      ],
+      "proof": [
+        "Recorded 6 steps on the real graph; the inspector lists JointTrajectory's 58 uses in 6 packages with file:line.",
+        "The first 2x swap crashed (same-row extra edge in stack.js); root-caused and fixed, then the gates re-ran green."
+      ],
+      "scores": {
+        "fr1": {
+          "score": 4,
+          "evidence": "Both graphs in one diagram (deps lens, types lens); the inspector's who-table gives produced/consumed/imported and declared+verified per package, rows carry file:line. The type band is crowded at 8 and small at 29.",
+          "confidence": "medium"
+        },
+        "fr2": {
+          "score": 4,
+          "evidence": "Lens switch + click on JointTrajectory = 2 actions; each band folds with edges re-routed and counted; Collapse all.",
+          "confidence": "high"
+        },
+        "fr3": {
+          "score": 5,
+          "evidence": "Step 1: pitch, install, 'See it pick and place' and the whole stack fit the 1440x900 first screen.",
+          "confidence": "high"
+        },
+        "fr4": {
+          "score": 5,
+          "evidence": "Nav names Stack, Types, Viewers, Example, Agents, For coding agents; all filled from real data.",
+          "confidence": "high"
+        },
+        "fr5": {
+          "score": 4,
+          "evidence": "Data-driven row-length search fits 1440 and 390 px; after a routing fix (an edge inside one row overran the row list) the 2x TEST swap renders 26 packages / 58 types with 0 errors; commit stamp only in the footer.",
+          "confidence": "medium"
+        }
+      },
+      "gateResults": {
+        "g1": {
+          "pass": true,
+          "evidence": "Every edge from graph.json; plant labelled simulated."
+        },
+        "g2": {
+          "pass": true,
+          "evidence": "Reads site/data/graph.json at runtime (stamp 'runtime'); the 2x TEST swap is in gates.json."
+        },
+        "g3": {
+          "pass": true,
+          "evidence": "One static index.html; opens from file:// on the embedded copy."
+        },
+        "g4": {
+          "pass": true,
+          "evidence": "@xyflow/react 12.12.0 stack diagram."
+        },
+        "g5": {
+          "pass": true,
+          "evidence": "13/13 GitHub repos and 4/4 fixture sites linked on the landing page (gates.json); agent card carries GitHub + README."
+        }
+      }
+    },
+    {
+      "id": "v2",
+      "name": "Type Switchboard",
+      "accent": "#3567b5",
+      "thesis": "The robot_msgs type is the front door: pick one and the page re-centres on who produces it, who consumes it and where in the code, because the type is the API.",
+      "storyTitle": "Land on the most-used type",
+      "bestWhen": "The visitor arrives with a question about one type; it is answered on landing and one click narrows it to file:line.",
+      "losesWhen": "The visitor wants the whole system first: the layer picture and the directory are a tab away and the pitch is one line.",
+      "decisions": [
+        {
+          "label": "Primary object",
+          "value": "One type (default: the most-used in the data, JointTrajectory today), routed as #/types/<name>."
+        },
+        {
+          "label": "Navigation",
+          "value": "App layout: type rail | switchboard | rows panel; tabs for Packages, Example, Agents, Skill."
+        },
+        {
+          "label": "Graph role",
+          "value": "The page itself, re-centred per type: producers left, consumers right, importers below."
+        },
+        {
+          "label": "Directory",
+          "value": "Packages tab side list 'Directory · 13 packages in 7 layers', name first (drill-in), then links."
+        }
+      ],
+      "keepParts": [
+        "the switchboard (columns by kind, group-by-layer, '+N types' second ring)",
+        "rows panel grouped by package with declared/verified counts",
+        "Example as a type path linking back to the switchboard"
+      ],
+      "proof": [
+        "Recorded 6 steps; 0 errors on the 2x TEST swap (26 packages, 506 uses)."
+      ],
+      "scores": {
+        "fr1": {
+          "score": 5,
+          "evidence": "Step 1 shows JointTrajectory's 3 producers, 4 consumers and 2 importers with row counts on each edge; the rows panel shows public/declared/verified and file:line; the Packages tab is a clean layer-banded dep graph.",
+          "confidence": "high"
+        },
+        "fr2": {
+          "score": 5,
+          "evidence": "Zero actions to the scenario's answer; chips (produces/consumes/imports, public only, declared only), group by layer and the second ring are one click each.",
+          "confidence": "high"
+        },
+        "fr3": {
+          "score": 3,
+          "evidence": "Pitch is a header line plus a dismissible intro card; no layer picture on the first screen.",
+          "confidence": "medium"
+        },
+        "fr4": {
+          "score": 4,
+          "evidence": "All six present as tabs, but the package directory is behind the Packages tab (landing DOM links 7/13 repos).",
+          "confidence": "high"
+        },
+        "fr5": {
+          "score": 5,
+          "evidence": "2x TEST swap renders with no errors; default type chosen from data; provenance shas in the header.",
+          "confidence": "high"
+        }
+      },
+      "gateResults": {
+        "g1": {
+          "pass": true,
+          "evidence": "All rows from graph.json uses; plant labelled simulated twice."
+        },
+        "g2": {
+          "pass": true,
+          "evidence": "Runtime fetch; 2x swap pass (gates.json)."
+        },
+        "g3": {
+          "pass": true,
+          "evidence": "One static index.html; file:// works."
+        },
+        "g4": {
+          "pass": true,
+          "evidence": "Switchboard and package graph are React Flow."
+        },
+        "g5": {
+          "pass": true,
+          "evidence": "Every package, the viewer and the agent are one click from the Packages-tab directory (and 'Package directory →' on the landing intro); 13/13 there."
+        }
+      }
+    },
+    {
+      "id": "v3",
+      "name": "Canvas Map",
+      "accent": "#8b5cf6",
+      "thesis": "The whole site is one zoomable React Flow map: the pitch, packages, types, the run, the agents and the skill are regions, so every relationship is spatial.",
+      "storyTitle": "Fly the map",
+      "bestWhen": "The visitor wants to see how everything connects in place, with layers and agents still visible around a lit type.",
+      "losesWhen": "The visitor wants to read: at map zoom (~0.5) cards, link chips and blurbs are 6-11 px until you zoom in.",
+      "decisions": [
+        {
+          "label": "Primary object",
+          "value": "The map; regions laid out in three data-driven columns."
+        },
+        {
+          "label": "Navigation",
+          "value": "Pan / zoom / fly-to from a floating top bar; minimap; semantic zoom in three steps."
+        },
+        {
+          "label": "Graph role",
+          "value": "The whole site; agent edges cross the map to the packages they build on."
+        },
+        {
+          "label": "Directory",
+          "value": "Every package card on the map carries compact GitHub · PyPI · README (+ Site); full size in the inspector."
+        }
+      ],
+      "keepParts": [
+        "lit produce/consume chips on every package for a focused type",
+        "pick-and-place stages chained by the type they hand over",
+        "legend strip that doubles as the show/hide switches"
+      ],
+      "proof": [
+        "Recorded 6 steps; 2x TEST swap pass; landing camera never zooms below 0.52."
+      ],
+      "scores": {
+        "fr1": {
+          "score": 4,
+          "evidence": "Clicking JointTrajectory lights 11/17 etc. on each package and the inspector groups uses with a lint summary (21 declared+verified / 37 found); at overview zoom labels are tiny.",
+          "confidence": "medium"
+        },
+        "fr2": {
+          "score": 4,
+          "evidence": "'Who uses JointTrajectory?' is one button; layers and regions collapse with aggregated edges; but the camera has to fly back for some actions.",
+          "confidence": "medium"
+        },
+        "fr3": {
+          "score": 3,
+          "evidence": "The 'What it is' node is readable on landing, but pan/zoom is a foreign way to read a landing page and most text needs zooming.",
+          "confidence": "medium"
+        },
+        "fr4": {
+          "score": 5,
+          "evidence": "All six are regions with fly-to buttons in the top bar.",
+          "confidence": "high"
+        },
+        "fr5": {
+          "score": 4,
+          "evidence": "2x swap pass, the map grows rightward instead of shrinking the pitch; stamp in the top bar; dagre leaves dead space.",
+          "confidence": "medium"
+        }
+      },
+      "gateResults": {
+        "g1": {
+          "pass": true,
+          "evidence": "All nodes/edges from data; plots captioned simulated."
+        },
+        "g2": {
+          "pass": true,
+          "evidence": "Runtime fetch; 2x swap pass."
+        },
+        "g3": {
+          "pass": true,
+          "evidence": "One static file."
+        },
+        "g4": {
+          "pass": true,
+          "evidence": "The whole site is a React Flow canvas."
+        },
+        "g5": {
+          "pass": true,
+          "evidence": "13/13 repos on the landing DOM; chips are small at map zoom (6-7 px) but one click."
+        }
+      }
+    },
+    {
+      "id": "v4",
+      "name": "Catalog",
+      "accent": "#b0611d",
+      "thesis": "Zach's standard catalog view as the landing page: every package, type, use and agent is a filterable row, and the graph is the neighbourhood of the row you picked.",
+      "storyTitle": "Rows first, graph per row",
+      "bestWhen": "The visitor has a specific question about a type, package or use: facets plus one click give the answer, its file:line and its neighbourhood.",
+      "losesWhen": "The visitor wants the big picture: the first screen is a table and the full graph sits behind a Table/Graph switch.",
+      "decisions": [
+        {
+          "label": "Primary object",
+          "value": "A catalog row; tabs Packages · Types · Uses · Agents · Example · Skill."
+        },
+        {
+          "label": "Navigation",
+          "value": "Facet rail + sortable table + resizable side panel (data-ui's <data-facets>/<data-views> in production)."
+        },
+        {
+          "label": "Graph role",
+          "value": "Depth-1 ego graph per row with +/− expand; full dep graph behind 'Graph'."
+        },
+        {
+          "label": "Directory",
+          "value": "A Links column on every Packages/Agents row: 'Open ›' first, then GitHub · Site · PyPI · README."
+        }
+      ],
+      "keepParts": [
+        "ego graph with +N expand / − fold and '+K more'",
+        "Uses tab: all 253 rows faceted by kind, public and declared state",
+        "Links column with Open › first"
+      ],
+      "proof": [
+        "Recorded 5 steps; 2x TEST swap pass."
+      ],
+      "scores": {
+        "fr1": {
+          "score": 4,
+          "evidence": "Types table shows producers/consumers/importers per type; ego graph splits JointTrajectory's users; the Uses tab carries public/state/file:line for all 253; no whole-type graph on landing.",
+          "confidence": "high"
+        },
+        "fr2": {
+          "score": 4,
+          "evidence": "Types tab + row click = 2 actions; facets narrow to declared vs found; +/− in the ego graph; layer collapse in Graph view.",
+          "confidence": "high"
+        },
+        "fr3": {
+          "score": 3,
+          "evidence": "Pitch, install and counts in a strip, then a table: credible but not a story.",
+          "confidence": "medium"
+        },
+        "fr4": {
+          "score": 5,
+          "evidence": "All six named as tabs; count chips open them.",
+          "confidence": "high"
+        },
+        "fr5": {
+          "score": 5,
+          "evidence": "Tables and facets scale linearly; 2x swap pass; stamp in the header.",
+          "confidence": "high"
+        }
+      },
+      "gateResults": {
+        "g1": {
+          "pass": true,
+          "evidence": "Rows are graph.json records."
+        },
+        "g2": {
+          "pass": true,
+          "evidence": "Runtime fetch; 2x swap pass."
+        },
+        "g3": {
+          "pass": true,
+          "evidence": "One static file."
+        },
+        "g4": {
+          "pass": true,
+          "evidence": "Ego graph and package graph are React Flow."
+        },
+        "g5": {
+          "pass": true,
+          "evidence": "13/13 repos and 4/4 fixture sites on the landing table."
+        }
+      }
+    },
+    {
+      "id": "v5",
+      "name": "Commit Dashboard",
+      "accent": "#9a5b00",
+      "thesis": "The landing page is a dashboard of the SDK at this commit: what is in it, how much of its type use is declared and verified, what the agents score and what the last real run measured.",
+      "storyTitle": "Verdict, health map, directory",
+      "bestWhen": "The question is 'is the stack healthy right now, where are the gaps, and where do I go next?'",
+      "losesWhen": "A newcomer wants a story: the pitch is short, the map is dense until a type is focused, and its lower half is below the fold.",
+      "decisions": [
+        {
+          "label": "Primary object",
+          "value": "The stack's state at this commit: verdict sentence, KPI tiles, commit strip."
+        },
+        {
+          "label": "Navigation",
+          "value": "Dashboard tiles, then the health map with a drawer, then cards (Directory, Agents, Last run, Viewers, Skill)."
+        },
+        {
+          "label": "Graph role",
+          "value": "A health map: dep graph with a declared-coverage bar per package, type overlay, 'Only gaps'."
+        },
+        {
+          "label": "Directory",
+          "value": "Directory card by layer: name opens it on the map first, then GitHub · Site · PyPI · README · Docs."
+        }
+      ],
+      "keepParts": [
+        "computed verdict line + KPI tiles",
+        "declared-coverage bar on nodes, bands and tiles",
+        "drawer grouping a type's uses by declared state with file:line"
+      ],
+      "proof": [
+        "Recorded 5 steps; 2x TEST swap pass; red only for declared-not-found (0 today)."
+      ],
+      "scores": {
+        "fr1": {
+          "score": 5,
+          "evidence": "The only direction that shows declared+verified coverage on the graph itself (21/58 on JointTrajectory, 7/28 on robot_trajectories); drawer groups uses by state with file:line; dep and type edges in one map.",
+          "confidence": "medium"
+        },
+        "fr2": {
+          "score": 4,
+          "evidence": "Type edges + click = 2 actions (or the drawer's type picker); Only gaps; per-layer collapse; the unfocused overlay is dense.",
+          "confidence": "medium"
+        },
+        "fr3": {
+          "score": 4,
+          "evidence": "First screen: title, pitch, install, a computed verdict, six tiles incl. the last run; the map starts below.",
+          "confidence": "medium"
+        },
+        "fr4": {
+          "score": 5,
+          "evidence": "Nav: Health map, Directory, Agents, Pick and place, Viewers, For coding agents.",
+          "confidence": "high"
+        },
+        "fr5": {
+          "score": 5,
+          "evidence": "Commit strip with generated time and 14 source shas; 2x swap pass; bands wrap by canvas width.",
+          "confidence": "high"
+        }
+      },
+      "gateResults": {
+        "g1": {
+          "pass": true,
+          "evidence": "Verdict and tiles computed from graph.json; last-run numbers parsed from pick_and_place.json text, labelled simulated."
+        },
+        "g2": {
+          "pass": true,
+          "evidence": "Runtime fetch; 2x swap pass."
+        },
+        "g3": {
+          "pass": true,
+          "evidence": "One static file."
+        },
+        "g4": {
+          "pass": true,
+          "evidence": "Health map is React Flow."
+        },
+        "g5": {
+          "pass": true,
+          "evidence": "13/13 repos and 4/4 fixture sites on the landing page via the Directory card."
+        }
+      }
+    }
+  ],
+  "checks": [
+    "Exactly five structural directions (primary object, navigation, graph role differ)",
+    "Same real graph.json, same pick-and-place run, same viewport and recorder",
+    "Criteria frozen before the build (criteria.json, commit 063832b); g5 added after, at Zach's request",
+    "Every score has evidence and confidence; gates separate"
+  ]
+}

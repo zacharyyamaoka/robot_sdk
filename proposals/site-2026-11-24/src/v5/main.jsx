@@ -16,7 +16,7 @@ import { PITCH, PITCH_2, REPO_URL, Install, Legend } from "@shared/parts.jsx";
 import { derive, pickSummary, pct, plural } from "./derive.js";
 import { HealthMap, CovBar } from "./HealthMap.jsx";
 import { Drawer } from "./Drawer.jsx";
-import { AgentsCard, LastRunCard, ViewersCard, SkillCard } from "./Cards.jsx";
+import { AgentsCard, LastRunCard, ViewersCard, SkillCard, DirectoryCard } from "./Cards.jsx";
 
 const TOP_N = 8;
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -96,7 +96,7 @@ function Tiles({ graph, d, ps, onSelect, setMode }) {
   const lintFail = s.lint.fail || 0;
   return (
     <div className="v5-tiles">
-      <Tile label="Packages" value={s.packages} testid="tile-packages" onClick={() => scrollTo("map")}
+      <Tile label="Packages" value={s.packages} testid="tile-packages" onClick={() => scrollTo("directory")}
         sub={`${s.libraries} libraries · ${s.viewers} viewer${s.viewers === 1 ? "" : "s"} · ${layersOf(graph).length} layers`} />
       <Tile label="Types joined on" value={<>{s.typesUsed}<small> / {s.types}</small></>} testid="tile-types"
         onClick={top ? () => onSelect({ kind: "type", id: top.id, scroll: true }) : undefined}
@@ -166,6 +166,7 @@ function App() {
           <a className="v5-logo" href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}><span className="v5-logo-mark" />robot-sdk</a>
           <div className="v5-nav-links">
             <button onClick={() => scrollTo("map")}>Health map</button>
+            <button onClick={() => scrollTo("directory")}>Directory</button>
             <button onClick={() => scrollTo("agents")}>Agents</button>
             <button onClick={() => scrollTo("run")}>Pick and place</button>
             <button onClick={() => scrollTo("viewers")}>Viewers</button>
@@ -216,6 +217,8 @@ function App() {
             <Drawer graph={g} d={d} sel={sel} onSelect={onSelect} collapsed={collapsed} onToggleLayer={toggleLayer} />
           </div>
         </section>
+
+        <DirectoryCard graph={g} d={d} onSelect={onSelect} />
 
         <div className="v5-cards">
           <AgentsCard graph={g} onSelect={onSelect} />

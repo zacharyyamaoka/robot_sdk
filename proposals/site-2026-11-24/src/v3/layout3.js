@@ -5,7 +5,7 @@ import { dagreLayout } from "@shared/layout.js";
 import { layersOf, packagesByLayer, packageEdges, typeEdges, LAYER_LABEL } from "@shared/graph.js";
 
 export const SZ = {
-  pkgW: 236, pkgH: 82, typeW: 230, typeH: 54, gap: 16, pad: 16, layerHead: 74, moduleHead: 34,
+  pkgW: 262, pkgH: 112, typeW: 230, typeH: 54, gap: 16, pad: 16, layerHead: 74, moduleHead: 34,
   regionHead: 78, regionPad: 30, regionGap: 120, stageW: 330, stageH: 320, stageGap: 96,
 };
 
@@ -91,7 +91,7 @@ export function buildLayout(graph, { collapsedLayers, collapsedRegions, expanded
       const items = pkgs.map((p) => {
         const ex = expanded.has(p.id);
         const n = ex ? pkgTypeSummary(graph, idx, p.id).length : 0;
-        return { id: p.id, w: ex ? 270 : SZ.pkgW, h: ex ? expandedPkgH(n) : SZ.pkgH, ex };
+        return { id: p.id, w: ex ? 290 : SZ.pkgW, h: ex ? expandedPkgH(n) : SZ.pkgH, ex };
       });
       const perRow = clamp(Math.ceil(Math.sqrt(items.length)), 1, mobile ? 2 : 4);
       const g = grid(items, perRow, SZ.gap);
@@ -182,7 +182,7 @@ export function buildLayout(graph, { collapsedLayers, collapsedRegions, expanded
   {
     const agents = graph.agents || [];
     const children = [];
-    const noteH = 170, aw = 440, ah = 600;
+    const noteH = 220, aw = 440, ah = 660;
     const perRow = mobile ? 1 : clamp(agents.length, 1, 3);
     const innerW = Math.max(perRow * (aw + 24) - 24, aw);
     children.push({ id: "note:agents", type: "agentNote", x: SZ.regionPad, y: SZ.regionHead, w: innerW, h: noteH, data: {} });
