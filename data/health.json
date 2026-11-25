@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-25T01:41:36-07:00",
- "graph_generated": "2026-11-25T01:41:30-07:00",
+ "generated": "2026-11-25T08:48:51+00:00",
+ "graph_generated": "2026-11-25T08:48:43+00:00",
  "checks": [
   {
    "id": "tests",
@@ -191,42 +191,6 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_reach"
-    }
-   }
-  },
-  {
-   "id": "robot_collision",
-   "kind": "package",
-   "state": "fail",
-   "checks": {
-    "tests": {
-     "state": "unknown",
-     "detail": "CI not readable: no public repo at github.com/zacharyyamaoka/robot_collision (404)"
-    },
-    "lint": {
-     "state": "pass",
-     "detail": "robot-sdk.toml matches the code",
-     "failures": []
-    },
-    "types": {
-     "state": "pass",
-     "detail": "3 declared + verified · 0 found, not declared · 0 missing",
-     "verified": 3,
-     "found": 0,
-     "missing": 0
-    },
-    "release": {
-     "state": "warn",
-     "detail": "pins ~=0.1.0; not on PyPI yet",
-     "pinned": "~=0.1.0",
-     "pypi_latest": null,
-     "satisfied": false,
-     "url": "https://pypi.org/project/robot-collision/"
-    },
-    "upstream": {
-     "state": "fail",
-     "detail": "no public repo at github.com/zacharyyamaoka/robot_collision (404)",
-     "url": "https://github.com/zacharyyamaoka/robot_collision"
     }
    }
   },
@@ -634,6 +598,41 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/like_keras"
+    }
+   }
+  },
+  {
+   "id": "robot_collision",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "unknown",
+     "detail": "CI not readable: pinned, but the GitHub repo is not reachable (kept from the last good graph)"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code (from the last good graph)",
+     "failures": []
+    },
+    "types": {
+     "state": "pass",
+     "detail": "3 declared + verified · 0 found, not declared · 0 missing",
+     "verified": 3,
+     "found": 0,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-collision/"
+    },
+    "upstream": {
+     "state": "fail",
+     "detail": "pinned, but the GitHub repo is not reachable (kept from the last good graph)"
     }
    }
   },
