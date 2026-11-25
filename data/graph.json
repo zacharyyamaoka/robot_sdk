@@ -1,8 +1,8 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-25T07:14:39+00:00",
+ "generated": "2026-11-25T07:27:53+00:00",
  "sources": {
-  "robot_sdk": "75fd9ca",
+  "robot_sdk": "071a75b",
   "robot_msgs": "3023fce",
   "robot_models": "61b292c",
   "robot_controllers": "3159fe9",
@@ -12,7 +12,7 @@
   "robot_autonomy": "e61abfe",
   "robot_metrics": "f953427",
   "robot_activity": "2ebea6e",
-  "traj_compare": "19c1d6c",
+  "traj_compare": "00ea6c9",
   "sim2real": "21f81b0",
   "robot_diagnostics": "2ab15cb",
   "like_keras": "f2995b0",
@@ -285,7 +285,7 @@
    "repo_url": "https://github.com/zacharyyamaoka/traj_compare",
    "role": "viewer",
    "layer": "viewers",
-   "one_line": "A/B trajectory comparison report; trajectory and grasp coverage viewers",
+   "one_line": "A/B trajectory comparison report; a runs workbench over many sites; trajectory and grasp coverage viewers",
    "summary": "Viewers on robot_msgs types, in three parts. Comparison: a turn-key A/B trajectory viewer that writes one static `report.html` (target vs sim vs real). Trajectory coverage (`traj_compare.coverage`: how much of a robot's joint limits, workspace and tool orientations a set of trajectories visits) and grasp coverage (`traj_compare.grasp_coverage`: how much of a gripper's jaw range, approach directions, rolls and offered area a set of GraspPose uses, and where the failures sat), each one payload feeding a data-ui workbench, Matplotlib, Viser and W&B; grasp coverage is also deployed as its own grasp dataset viewer (`grasp_viewer` link). Coverage of any list of dataclass records moved to its own package, dataclass_coverage.",
    "use_when": "Comparing runs (target vs sim vs real, before vs after), benchmark reports, \"how much of the space does this trajectory or grasp dataset cover?\". **Never write a bespoke trajectory plot or coverage page.**",
    "links": {
@@ -1730,6 +1730,16 @@
    "kind": "imports",
    "symbol": "traj_compare.dataset",
    "where": "src/traj_compare/dataset.py:74",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.compare.PoseTolerance",
+   "kind": "imports",
+   "symbol": "traj_compare.selection",
+   "where": "src/traj_compare/selection.py:26",
    "public": false,
    "declared": false,
    "verified": true

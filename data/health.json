@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-25T07:14:47+00:00",
- "graph_generated": "2026-11-25T07:14:39+00:00",
+ "generated": "2026-11-25T07:28:18+00:00",
+ "graph_generated": "2026-11-25T07:27:53+00:00",
  "checks": [
   {
    "id": "tests",
@@ -406,11 +406,11 @@
    "checks": {
     "tests": {
      "state": "fail",
-     "detail": "test.yml failed on main 19c1d6c",
-     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45553103168",
+     "detail": "test.yml failed on main 00ea6c9",
+     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45566746491",
      "workflow": "test.yml",
-     "sha": "19c1d6c",
-     "at": "2026-11-25T05:22:17Z"
+     "sha": "00ea6c9",
+     "at": "2026-11-25T07:15:43Z"
     },
     "lint": {
      "state": "pass",
@@ -420,9 +420,9 @@
     },
     "types": {
      "state": "pass",
-     "detail": "10 declared + verified · 6 found, not declared · 0 missing",
+     "detail": "10 declared + verified · 7 found, not declared · 0 missing",
      "verified": 10,
-     "found": 6,
+     "found": 7,
      "missing": 0
     },
     "release": {
@@ -508,11 +508,9 @@
      "missing": 0
     },
     "release": {
-     "state": "warn",
-     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "state": "unknown",
+     "detail": "pins ~=0.1.0; PyPI: URLError: _ssl.c:994: The handshake operation timed out",
      "pinned": "~=0.1.0",
-     "pypi_latest": null,
-     "satisfied": false,
      "url": "https://pypi.org/project/robot-diagnostics/"
     },
     "upstream": {
