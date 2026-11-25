@@ -110,3 +110,6 @@ need to maintain that information itself… its decentralized").
   page answers 200 with a bot challenge for any name.
 - README.md's layers and agents tables and skill/SKILL.md's packages table are generated from this file between
   `<!-- robot-sdk:… begin/end -->` markers (`python -m tools.sdk_graph readme`); a test fails when they are stale.
+- `upstream` (per package, optional, added 2026-11-24 by the refresh workflow): `"missing"` when the package is pinned in
+  robot_sdk but its GitHub repo is not reachable (e.g. not yet public). The package is then kept from the last good graph.
+  Absent means the repo was cloned and scanned.

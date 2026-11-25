@@ -36,6 +36,13 @@ def main() -> None:
         env = {**os.environ, "GIT_INDEX_FILE": str(Path(scratch) / "index")}
         git("--work-tree", str(BUILD), "add", "--all", "--force", ".", env=env)
         tree = git("write-tree", env=env)
+    # WHY fetch first (2026-11-24): the hourly refresh workflow also publishes gh-pages; building on a stale local branch
+    # made every hand publish after it a rejected non-fast-forward push. Start from the remote tip when there is one.
+    subprocess.run(["git", "-C", str(ROOT), "fetch", "-q", "origin", f"{BRANCH}:refs/remotes/origin/{BRANCH}"], capture_output=True)
+    remote = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "-q", "--verify", f"refs/remotes/origin/{BRANCH}"],
+                            capture_output=True, text=True).stdout.strip()
+    if remote:
+        git("update-ref", f"refs/heads/{BRANCH}", remote)
     parent = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "-q", "--verify", f"refs/heads/{BRANCH}"],
                             capture_output=True, text=True).stdout.strip()
     if parent and git("rev-parse", f"{parent}^{{tree}}") == tree:
