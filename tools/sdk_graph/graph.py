@@ -109,11 +109,14 @@ class Built:
     lints: dict[str, decl.Lint]
 
 
-def build(root: pathlib.Path = ROOT, sdk: pathlib.Path = SDK, overrides: dict[str, pathlib.Path] | None = None) -> Built:
-    """`overrides` maps a package id to a different checkout (the lint's mutation tests point one at a temp copy)."""
+def build(root: pathlib.Path = ROOT, sdk: pathlib.Path = SDK, overrides: dict[str, pathlib.Path] | None = None,
+          ids: list[str] | None = None) -> Built:
+    """`overrides` maps a package id to a different checkout (the lint's mutation tests point one at a temp copy).
+    `ids` names the package folders to scan instead of robot_sdk's pins (versions.py's Latest release: the tagged trees,
+    whose pyproject may carry an older PyPI name than the pin, e.g. robot_models v0.2.0 = robot-model-ladders)."""
     overrides = overrides or {}
     repo_of = lambda pkg: overrides.get(pkg, root / pkg)  # noqa: E731
-    ids = sdk_packages(root, sdk)
+    ids = list(ids) if ids is not None else sdk_packages(root, sdk)
     metas = {pkg: pyproject(repo_of(pkg)) for pkg in ids}
     pypi_to_id = {normalize(m["project"]["name"]): pkg for pkg, m in metas.items()}
     index = TypeIndex(root)

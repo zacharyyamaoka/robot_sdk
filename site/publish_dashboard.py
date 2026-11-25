@@ -77,6 +77,11 @@ if SWITCHER:
         (BUILD / variant / "index.html").write_text(page(variant, at_root=False))
 for name in ("graph.json", "pick_and_place.json"):
     shutil.copy2(ROOT / "site" / "data" / name, BUILD / "data" / name)
+for name in ("health.json", "versions.json"):  # the Health workspace and version picker (docs/site-data-schema.md)
+    if (ROOT / "site" / "data" / name).exists():
+        shutil.copy2(ROOT / "site" / "data" / name, BUILD / "data" / name)
+if (ROOT / "site" / "data" / "versions").is_dir():  # generated, gitignored: present after `python -m tools.sdk_graph versions`
+    shutil.copytree(ROOT / "site" / "data" / "versions", BUILD / "data" / "versions")
 shutil.copytree(ROOT / "site" / "media", BUILD / "media")
 (BUILD / ".nojekyll").touch()
 print(BUILD / "index.html")

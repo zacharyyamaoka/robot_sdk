@@ -99,3 +99,38 @@ Paths are relative to the data folder.
   when it was not recorded for that version (the UI says so; it never shows Live's health under another version).
 - `distributions` is information (what robot-sdk pins, when it changed); it does not add picker entries until a
   robot-sdk release tag exists.
+
+## As built (2026-11-24, clarifications; no field above changed)
+
+`tools/sdk_graph/health.py` and `versions.py`; tests: `tests/test_site_data.py` (fake fetchers, temp git repos, no
+network). Where the rules above were silent, this is what the files do:
+
+- **upstream** also asks GitHub (`GET /repos/<owner>/<repo>`), so a repo that was scanned from a local checkout but is
+  not public still fails: 404 or `private` → fail, `archived` → warn, no answer → unknown. graph.json's
+  `upstream: "missing"` → fail without asking.
+- **tests**: the repo's `default_branch` (main everywhere today). A repo that isn't public → unknown ("CI not
+  readable"); a test workflow with no run on that branch → none; a run that concluded `neutral`/`skipped`/
+  `action_required`/`stale` → warn; `startup_failure` counts as fail. Token: `GITHUB_TOKEN`, `GH_TOKEN`, then
+  `gh auth token`, else unauthenticated.
+- **release**: PyPI versions with at least one non-yanked file; pre-releases never satisfy a pin (pip's default).
+- **lint** carries `url` (the repo's `robot-sdk.toml` on GitHub) when the repo is public; `failures` are filled by
+  re-running the lint against the same checkouts (graph.json keeps only pass/fail), else empty.
+  **types** on fail carries `where` (file:line of the first declared use the code lacks).
+- **member state** follows the rule above literally: a member whose only non-pass check is `unknown` reads `pass`; the
+  cell still says unknown. A member with no pass/warn/fail check at all is `unknown`.
+- **Latest release health** (`versions/release/health.json`) has the same shape; its `checks[].what` say what changed:
+  tests = the run of the test workflow at the tagged commit (`head_sha`), release = the tagged version is on PyPI
+  (`tag`, `published`), lint/types = the tagged tree's own declaration.
+- **Latest release graph**: built by `graph.build(root=<the tagged trees>, ids=<tagged folders>)` from
+  `git archive <tag>`, so robot_msgs' types are the tagged ones; scanned by folder because a tag can predate the pinned
+  PyPI name (robot_models v0.2.0 is `robot-model-ladders`; its `pypi` field says so). `sources` = the tag shas plus
+  robot_sdk's live sha (its LAYERS are read live: robot-sdk itself has no release yet); `agents` = [].
+- **packages** entries (live, release and, additively, snapshots) carry `"dirty": true` when the source sha had
+  uncommitted changes; `sha` is always the bare 7-char sha.
+- **snapshots** skip any graph identical to Live's (it isn't a previous version); labels are `America/Vancouver` local
+  time (`published` stays UTC), with seconds added when two publishes share a minute.
+- **distributions**: one row per pin set (a pyproject commit that changed no pin and not the version is skipped);
+  `changed` is `{"robot-msgs": {"from": "~=0.3.0", "to": "~=0.3.1"}}`; `released` = a robot_sdk tag `v<version>` exists.
+- `site/data/versions/` is generated and gitignored; `health.json` and `versions.json` are tracked beside graph.json.
+  `tools/refresh` builds all three into `site/_build/data/` from the published graph, keeps the published bytes when
+  only timestamps changed (so an unchanged hour commits nothing), and leaves out a file whose build failed.

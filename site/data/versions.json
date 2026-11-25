@@ -1,0 +1,1147 @@
+{
+ "schema": "robot-sdk-versions/1",
+ "generated": "2026-11-24T22:14:41-07:00",
+ "default": "live",
+ "versions": [
+  {
+   "id": "live",
+   "label": "Live",
+   "kind": "live",
+   "ref": "main",
+   "summary": "every package at its main branch, refreshed hourly",
+   "graph": "graph.json",
+   "health": "health.json",
+   "generated": "2026-11-24T21:29:46-07:00",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "248f9f1"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_collision": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "19aa8d0"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "023b876"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    }
+   }
+  },
+  {
+   "id": "release",
+   "label": "Latest release",
+   "kind": "release",
+   "summary": "each package at its newest v* tag: 4 of 14 tagged; robot-sdk itself is not released yet",
+   "graph": "versions/release/graph.json",
+   "health": "versions/release/health.json",
+   "generated": "2026-11-24T22:14:40-07:00",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.0",
+     "ref": "v0.3.0",
+     "sha": "daa6e1b"
+    },
+    "robot_models": {
+     "version": "0.2.0",
+     "ref": "v0.2.0",
+     "sha": "486ecc2"
+    },
+    "robot_controllers": null,
+    "robot_reach": null,
+    "robot_collision": null,
+    "robot_thermal": null,
+    "robot_trajectories": null,
+    "robot_autonomy": null,
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "v0.1.0",
+     "sha": "2573912"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "v0.1.1",
+     "sha": "7680692"
+    },
+    "traj_compare": null,
+    "sim2real": null,
+    "robot_diagnostics": null,
+    "like_keras": null
+   }
+  },
+  {
+   "id": "snap-49836d0",
+   "label": "Nov 24, 21:48",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main 0a69f2a",
+   "graph": "versions/snap-49836d0/graph.json",
+   "health": null,
+   "generated": "2026-11-25T04:48:06+00:00",
+   "built_from": "0a69f2a",
+   "published": "2026-11-25T04:48:13Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "248f9f1"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "1105f65"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    },
+    "robot_collision": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "19aa8d0"
+    }
+   }
+  },
+  {
+   "id": "snap-2e28a4b",
+   "label": "Nov 24, 21:45",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main 5f81a08",
+   "graph": "versions/snap-2e28a4b/graph.json",
+   "health": null,
+   "generated": "2026-11-25T04:45:21+00:00",
+   "built_from": "5f81a08",
+   "published": "2026-11-25T04:45:27Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "248f9f1"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "1105f65"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    },
+    "robot_collision": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "19aa8d0"
+    }
+   }
+  },
+  {
+   "id": "snap-75c47a1",
+   "label": "Nov 24, 21:43",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main cbe11f2",
+   "graph": "versions/snap-75c47a1/graph.json",
+   "health": null,
+   "generated": "2026-11-25T04:43:07+00:00",
+   "built_from": "cbe11f2",
+   "published": "2026-11-25T04:43:13Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "248f9f1"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "1105f65"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    },
+    "robot_collision": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "19aa8d0"
+    }
+   }
+  },
+  {
+   "id": "snap-1e11289",
+   "label": "Nov 24, 21:34",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main 101156e",
+   "graph": "versions/snap-1e11289/graph.json",
+   "health": null,
+   "generated": "2026-11-25T04:34:44+00:00",
+   "built_from": "101156e",
+   "published": "2026-11-25T04:34:51Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "248f9f1"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "023b876"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    },
+    "robot_collision": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "19aa8d0"
+    }
+   }
+  },
+  {
+   "id": "snap-f3ca90f",
+   "label": "Nov 24, 21:27",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main dc405f7",
+   "graph": "versions/snap-f3ca90f/graph.json",
+   "health": null,
+   "generated": "2026-11-25T04:27:51+00:00",
+   "built_from": "dc405f7",
+   "published": "2026-11-25T04:27:58Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "248f9f1"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "023b876"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    }
+   }
+  },
+  {
+   "id": "snap-45a9082",
+   "label": "Nov 24, 21:26:35",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main dc405f7",
+   "graph": "versions/snap-45a9082/graph.json",
+   "health": null,
+   "generated": "2026-11-24T21:13:44-07:00",
+   "built_from": "dc405f7",
+   "published": "2026-11-25T04:26:35Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "39ca3ea"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "5ba36f8",
+     "dirty": true
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    }
+   }
+  },
+  {
+   "id": "snap-227b57e",
+   "label": "Nov 24, 21:26:20",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main dc405f7",
+   "graph": "versions/snap-227b57e/graph.json",
+   "health": null,
+   "generated": "2026-11-25T04:26:13+00:00",
+   "built_from": "dc405f7",
+   "published": "2026-11-25T04:26:20Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "248f9f1"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "023b876"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    }
+   }
+  },
+  {
+   "id": "snap-8dc3c12",
+   "label": "Nov 24, 21:23",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main 2302be3",
+   "graph": "versions/snap-8dc3c12/graph.json",
+   "health": null,
+   "generated": "2026-11-25T04:23:52+00:00",
+   "built_from": "2302be3",
+   "published": "2026-11-25T04:23:59Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "248f9f1"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "023b876"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    }
+   }
+  },
+  {
+   "id": "snap-8044693",
+   "label": "Nov 24, 21:22",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main 92ea040",
+   "graph": "versions/snap-8044693/graph.json",
+   "health": null,
+   "generated": "2026-11-25T04:22:24+00:00",
+   "built_from": "92ea040",
+   "published": "2026-11-25T04:22:30Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "248f9f1"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "023b876"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    }
+   }
+  },
+  {
+   "id": "snap-fb8f40d",
+   "label": "Nov 24, 21:17",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main 1369ae8",
+   "graph": "versions/snap-fb8f40d/graph.json",
+   "health": null,
+   "generated": "2026-11-25T04:17:48+00:00",
+   "built_from": "1369ae8",
+   "published": "2026-11-25T04:17:53Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "248f9f1"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "61b292c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "3159fe9"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "42a6c2a"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "928622d"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "e2cdd76"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "ac7ecf0"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f953427"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "01ab392"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "023b876"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "21f81b0"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "2ab15cb"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "a57ae51"
+    }
+   }
+  },
+  {
+   "id": "snap-a3a0557",
+   "label": "Nov 24, 21:12",
+   "kind": "snapshot",
+   "summary": "the live directory as published from main 9b1c15a",
+   "graph": "versions/snap-a3a0557/graph.json",
+   "health": null,
+   "generated": "2026-11-25T04:12:25+00:00",
+   "built_from": "9b1c15a",
+   "published": "2026-11-25T04:12:32Z",
+   "packages": {
+    "robot_msgs": {
+     "version": "0.3.1",
+     "ref": "main",
+     "sha": "23c1b0a"
+    },
+    "robot_models": {
+     "version": "0.3.0",
+     "ref": "main",
+     "sha": "9b47f1c"
+    },
+    "robot_controllers": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "7d22dc5"
+    },
+    "robot_reach": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "0168efc"
+    },
+    "robot_thermal": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "210041b"
+    },
+    "robot_trajectories": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "30cac5e"
+    },
+    "robot_autonomy": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "6a02658"
+    },
+    "robot_metrics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "7914d9d"
+    },
+    "robot_activity": {
+     "version": "0.1.1",
+     "ref": "main",
+     "sha": "71f1685"
+    },
+    "traj_compare": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "1cd3817"
+    },
+    "sim2real": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "f3b629c"
+    },
+    "robot_diagnostics": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "dc01ece"
+    },
+    "like_keras": {
+     "version": "0.1.0",
+     "ref": "main",
+     "sha": "38bbc97"
+    }
+   }
+  }
+ ],
+ "distributions": [
+  {
+   "version": "0.1.0",
+   "released": false,
+   "commit": "13403ba",
+   "date": "2026-11-24T21:31:43-07:00",
+   "subject": "robot-collision joins robot-sdk (leaf): pin, editable source, LAYERS; graph + README/skill tables regenerated from its own robot-sdk.toml; agents test grows with self-declared agents",
+   "pins": {
+    "robot-msgs": "~=0.3.1",
+    "robot-models-lib": "~=0.3.0",
+    "robot-controllers": "~=0.1.0",
+    "robot-reach": "~=0.1.0",
+    "robot-collision": "~=0.1.0",
+    "robot-thermal": "~=0.1.0",
+    "robot-trajectories": "~=0.1.0",
+    "robot-autonomy": "~=0.1.0",
+    "robot-metrics": "~=0.1.0",
+    "robot-activity": "~=0.1.1",
+    "traj-compare": "~=0.1.0",
+    "sim2real": "~=0.1.0",
+    "robot-diagnostics": "~=0.1.0",
+    "like_keras": "~=0.1.0"
+   },
+   "added": [
+    "robot-collision"
+   ],
+   "removed": [],
+   "changed": {}
+  },
+  {
+   "version": "0.1.0",
+   "released": false,
+   "commit": "83cbf48",
+   "date": "2026-11-24T20:57:45-07:00",
+   "subject": "viewers layer: traj-compare joins the SDK (pin, editable source, LAYERS, README row, skill row, PyPI publisher row 12)",
+   "pins": {
+    "robot-msgs": "~=0.3.1",
+    "robot-models-lib": "~=0.3.0",
+    "robot-controllers": "~=0.1.0",
+    "robot-reach": "~=0.1.0",
+    "robot-thermal": "~=0.1.0",
+    "robot-trajectories": "~=0.1.0",
+    "robot-autonomy": "~=0.1.0",
+    "robot-metrics": "~=0.1.0",
+    "robot-activity": "~=0.1.1",
+    "traj-compare": "~=0.1.0",
+    "sim2real": "~=0.1.0",
+    "robot-diagnostics": "~=0.1.0",
+    "like_keras": "~=0.1.0"
+   },
+   "added": [
+    "traj-compare"
+   ],
+   "removed": [],
+   "changed": {}
+  },
+  {
+   "version": "0.1.0",
+   "released": false,
+   "commit": "2db2ff4",
+   "date": "2026-11-23T14:04:52-07:00",
+   "subject": "Add robot-diagnostics (RobotDx) to robot-sdk: pin, checks layer, skill row, report",
+   "pins": {
+    "robot-msgs": "~=0.3.1",
+    "robot-models-lib": "~=0.3.0",
+    "robot-controllers": "~=0.1.0",
+    "robot-reach": "~=0.1.0",
+    "robot-thermal": "~=0.1.0",
+    "robot-trajectories": "~=0.1.0",
+    "robot-autonomy": "~=0.1.0",
+    "robot-metrics": "~=0.1.0",
+    "robot-activity": "~=0.1.1",
+    "sim2real": "~=0.1.0",
+    "robot-diagnostics": "~=0.1.0",
+    "like_keras": "~=0.1.0"
+   },
+   "added": [
+    "robot-diagnostics"
+   ],
+   "removed": [],
+   "changed": {}
+  },
+  {
+   "version": "0.1.0",
+   "released": false,
+   "commit": "4686035",
+   "date": "2026-11-23T13:10:11-07:00",
+   "subject": "Pin robot-msgs 0.3.1 and robot-models-lib 0.3.0 (release prep)",
+   "pins": {
+    "robot-msgs": "~=0.3.1",
+    "robot-models-lib": "~=0.3.0",
+    "robot-controllers": "~=0.1.0",
+    "robot-reach": "~=0.1.0",
+    "robot-thermal": "~=0.1.0",
+    "robot-trajectories": "~=0.1.0",
+    "robot-autonomy": "~=0.1.0",
+    "robot-metrics": "~=0.1.0",
+    "robot-activity": "~=0.1.1",
+    "sim2real": "~=0.1.0",
+    "like_keras": "~=0.1.0"
+   },
+   "added": [],
+   "removed": [],
+   "changed": {
+    "robot-msgs": {
+     "from": "~=0.3.0",
+     "to": "~=0.3.1"
+    },
+    "robot-models-lib": {
+     "from": "~=0.2.0",
+     "to": "~=0.3.0"
+    }
+   }
+  },
+  {
+   "version": "0.1.0",
+   "released": false,
+   "commit": "dfea2c2",
+   "date": "2026-11-23T11:18:00-07:00",
+   "subject": "robot-stack: pinned metapackage + editable workspace over the robot-* packages",
+   "pins": {
+    "robot-msgs": "~=0.3.0",
+    "robot-models-lib": "~=0.2.0",
+    "robot-controllers": "~=0.1.0",
+    "robot-reach": "~=0.1.0",
+    "robot-thermal": "~=0.1.0",
+    "robot-trajectories": "~=0.1.0",
+    "robot-autonomy": "~=0.1.0",
+    "robot-metrics": "~=0.1.0",
+    "robot-activity": "~=0.1.1",
+    "sim2real": "~=0.1.0",
+    "like_keras": "~=0.1.0"
+   },
+   "added": [],
+   "removed": [],
+   "changed": {}
+  }
+ ]
+}

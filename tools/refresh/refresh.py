@@ -12,12 +12,16 @@ WHY gh-pages, never main (2026-11-24): other lanes own site/data/graph.json on m
 committing generated JSON there would collide with their rebases. The published graph lives at the live site's
 data/graph.json, next to the page built from the same main commit.
 WHY stdlib only: the scanner is ast-only (never imports a package), so CI needs no install step.
+WHY health.json and versions.json ride along (2026-11-24, docs/site-data-schema.md): the site's Health workspace and
+version picker read them beside graph.json. They are built from the published graph (so a carried-over package shows
+its missing upstream), and a failure in either is logged and that file left out: it never stops the publish.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import shutil
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -110,6 +114,9 @@ def clone(repos: list[str]) -> tuple[dict[str, str], list[str]]:
             if done.returncode:
                 missing.append(repo)
                 continue
+            # WHY: a depth-1 clone carries no tags, and versions.json's Latest release reads each repo's newest v* tag.
+            run("git", "-C", str(path), "fetch", "--quiet", "--depth", "1", "origin", "+refs/tags/v*:refs/tags/v*",
+                cwd=ROOT, check=False, env={**os.environ, "GIT_TERMINAL_PROMPT": "0"})
         heads[repo] = run("git", "-C", str(path), "rev-parse", "--short=7", "HEAD").stdout.strip()
     return heads, missing
 
@@ -141,6 +148,69 @@ def content(graph: dict) -> dict:
     return {k: v for k, v in graph.items() if k != "generated"}
 
 
+STAMPS = ("generated", "graph_generated")
+
+
+def facts(value):
+    """A data file minus every timestamp of when it was built, at any depth (health.json, versions.json, versions/**)."""
+    if isinstance(value, dict):
+        return {k: facts(v) for k, v in value.items() if k not in STAMPS}
+    if isinstance(value, list):
+        return [facts(v) for v in value]
+    return value
+
+
+def keep_published_bytes(out: Path) -> None:
+    """Same facts as the published copy: keep its bytes, so an unchanged run commits nothing."""
+    rel = out.relative_to(BUILD).as_posix()
+    old = published(rel)
+    if old is None:
+        return
+    try:
+        if facts(json.loads(old)) == facts(json.loads(out.read_text(encoding="utf-8"))):
+            out.write_bytes(old)
+    except (json.JSONDecodeError, OSError, UnicodeDecodeError):
+        return
+
+
+def full_history() -> None:
+    """versions.json reads robot_sdk's pyproject history and gh-pages' history; CI's checkout is depth 1."""
+    if run("git", "rev-parse", "--is-shallow-repository", check=False).stdout.strip() == "true":
+        done = run("git", "fetch", "--quiet", "--unshallow", "origin", check=False)
+        if done.returncode:
+            print(f"could not unshallow robot_sdk: {done.stderr.strip()}; distributions list only what is here", file=sys.stderr)
+
+
+def last_line(done: subprocess.CompletedProcess) -> str:
+    return ((done.stderr or done.stdout).strip().splitlines() or [f"exit {done.returncode}"])[-1]
+
+
+def site_data(data: Path) -> list[str]:
+    """health.json, then versions.json + versions/ (which names health.json), into the built data folder. A failure is
+    logged and its file left out, so the publish still goes out with graph.json. Returns summary lines."""
+    lines = []
+    health = run(sys.executable, "-m", "tools.sdk_graph", "health", "--graph", str(data / "graph.json"),
+                 "--out", str(data / "health.json"), check=False)  # fmt: skip
+    if health.returncode:
+        (data / "health.json").unlink(missing_ok=True)  # never ship a stale copy (publish_dashboard copied site/data's)
+        lines.append(f"health.json left out: {last_line(health)}")
+    else:
+        lines.append(health.stdout.splitlines()[0].replace(str(SDK) + "/", ""))
+    versions = run(sys.executable, "-m", "tools.sdk_graph", "versions", "--data", str(data), check=False)
+    if versions.returncode:
+        (data / "versions.json").unlink(missing_ok=True)
+        shutil.rmtree(data / "versions", ignore_errors=True)
+        lines.append(f"versions.json left out: {last_line(versions)}")
+    else:
+        lines.append(versions.stdout.splitlines()[0].replace(str(SDK) + "/", ""))
+        if versions.stderr.strip():
+            lines += [f"  {line}" for line in versions.stderr.strip().splitlines()]
+    for out in sorted([data / "health.json", data / "versions.json", *(data / "versions").rglob("*.json")]):
+        if out.exists():
+            keep_published_bytes(out)
+    return lines
+
+
 def published(path: str) -> bytes | None:
     done = run("git", "show", f"origin/{BRANCH}:{path}", check=False)
     return done.stdout.encode() if done.returncode == 0 else None
@@ -160,7 +230,8 @@ def main(argv: list[str]) -> int:
     graph = json.loads(GRAPH.read_text(encoding="utf-8"))
     carried = carry_over(graph, last_good, missing)
 
-    run("git", "fetch", "--quiet", "origin", f"{BRANCH}:refs/remotes/origin/{BRANCH}", check=False)
+    full_history()
+    run("git", "fetch", "--quiet", "origin", f"+{BRANCH}:refs/remotes/origin/{BRANCH}", check=False)
     old = published("data/graph.json")
     out = BUILD / "data" / "graph.json"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -169,9 +240,10 @@ def main(argv: list[str]) -> int:
     else:
         out.write_text(json.dumps(graph, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     (BUILD / ".nojekyll").touch()
+    data_lines = site_data(out.parent)
 
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
-    lines = [f"lint exit {lint.returncode}", *(f"- {r} `{s}`" for r, s in heads.items())]
+    lines = [f"lint exit {lint.returncode}", *data_lines, *(f"- {r} `{s}`" for r, s in heads.items())]
     lines += [f"- {r}: missing upstream (no public repo to clone); "
               + ("kept from the last good graph" if r in carried else "not in the last good graph either") for r in missing]
     if "--publish" in argv:
