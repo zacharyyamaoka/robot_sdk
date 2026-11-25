@@ -2,7 +2,7 @@
 
 # Layer of each package, bottom to top. tools/check_layers.py enforces the rule
 # that a package imports only from layers below it (leaves never import each other),
-# and that no package depends on a viewer.
+# and that no package outside the viewers layer depends on a viewer.
 LAYERS = {
     "robot_msgs": "vocabulary",
     "robot_models": "models",
@@ -16,6 +16,7 @@ LAYERS = {
     "robot_activity": "leaf",
     "like_keras": "comms",
     "traj_compare": "viewers",
+    "robot_msg_viz": "viewers",
     "sim2real": "outer",
     "robot_diagnostics": "checks",
 }

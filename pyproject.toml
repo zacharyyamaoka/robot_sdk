@@ -30,8 +30,9 @@ dependencies = [
   "robot-autonomy~=0.1.0",
   "robot-metrics~=0.1.0",
   "robot-activity~=0.1.1",
-  # viewers - views of robot_msgs data; depend on robot_msgs (and leaves), and nothing depends on them
+  # viewers - views of robot_msgs data; depend on robot_msgs (and leaves, or another viewer), and no library depends on them
   "traj-compare~=0.1.0",
+  "robot-msg-viz~=0.1.0",
   # outer API - may import everything below
   "sim2real~=0.1.0",
   # checks - diagnostics on top of metrics and sim2real (those two only via its `stock` extra)
@@ -73,6 +74,7 @@ robot-autonomy = { path = "../robot_autonomy", editable = true }
 robot-metrics = { path = "../robot_metrics", editable = true }
 robot-activity = { path = "../robot_activity", editable = true }
 traj-compare = { path = "../traj_compare", editable = true }
+robot-msg-viz = { path = "../robot_msg_viz", editable = true }
 sim2real = { path = "../sim2real", editable = true }
 robot-diagnostics = { path = "../robot_diagnostics", editable = true }
 like_keras = { path = "../like_keras", editable = true }

@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-24T22:14:39-07:00",
- "graph_generated": "2026-11-24T21:29:46-07:00",
+ "generated": "2026-11-25T01:41:36-07:00",
+ "graph_generated": "2026-11-25T01:41:30-07:00",
  "checks": [
   {
    "id": "tests",
@@ -37,11 +37,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main 31218b0",
-     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45552075543",
+     "detail": "test.yml passed on main 3023fce",
+     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45559786153",
      "workflow": "test.yml",
-     "sha": "31218b0",
-     "at": "2026-11-25T05:13:32Z"
+     "sha": "3023fce",
+     "at": "2026-11-25T06:19:51Z"
     },
     "lint": {
      "state": "pass",
@@ -51,7 +51,7 @@
     },
     "types": {
      "state": "none",
-     "detail": "defines 31 shared types; uses none of them",
+     "detail": "defines 67 shared types; uses none of them",
      "verified": 0,
      "found": 0,
      "missing": 0
@@ -160,11 +160,11 @@
    "checks": {
     "tests": {
      "state": "fail",
-     "detail": "test.yml failed on main 42a6c2a",
-     "url": "https://github.com/zacharyyamaoka/robot_reach/actions/runs/45545273037",
+     "detail": "test.yml failed on main 940ada4",
+     "url": "https://github.com/zacharyyamaoka/robot_reach/actions/runs/45553107911",
      "workflow": "test.yml",
-     "sha": "42a6c2a",
-     "at": "2026-11-25T04:13:18Z"
+     "sha": "940ada4",
+     "at": "2026-11-25T05:22:19Z"
     },
     "lint": {
      "state": "pass",
@@ -319,11 +319,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main ac7ecf0",
-     "url": "https://github.com/zacharyyamaoka/robot_autonomy/actions/runs/45545281717",
+     "detail": "test.yml passed on main 0f68b89",
+     "url": "https://github.com/zacharyyamaoka/robot_autonomy/actions/runs/45571469033",
      "workflow": "test.yml",
-     "sha": "ac7ecf0",
-     "at": "2026-11-25T04:13:22Z"
+     "sha": "0f68b89",
+     "at": "2026-11-25T07:51:54Z"
     },
     "lint": {
      "state": "pass",
@@ -401,11 +401,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main 01ab392",
-     "url": "https://github.com/zacharyyamaoka/robot_activity/actions/runs/45545287660",
+     "detail": "test.yml passed on main 2ebea6e",
+     "url": "https://github.com/zacharyyamaoka/robot_activity/actions/runs/45553094059",
      "workflow": "test.yml",
-     "sha": "01ab392",
-     "at": "2026-11-25T04:13:25Z"
+     "sha": "2ebea6e",
+     "at": "2026-11-25T05:22:12Z"
     },
     "lint": {
      "state": "pass",
@@ -442,11 +442,11 @@
    "checks": {
     "tests": {
      "state": "fail",
-     "detail": "test.yml failed on main 1105f65",
-     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45548066984",
+     "detail": "test.yml failed on main 95da542",
+     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45577990587",
      "workflow": "test.yml",
-     "sha": "1105f65",
-     "at": "2026-11-25T04:37:34Z"
+     "sha": "95da542",
+     "at": "2026-11-25T08:37:58Z"
     },
     "lint": {
      "state": "pass",
@@ -456,9 +456,9 @@
     },
     "types": {
      "state": "pass",
-     "detail": "10 declared + verified · 6 found, not declared · 0 missing",
+     "detail": "10 declared + verified · 7 found, not declared · 0 missing",
      "verified": 10,
-     "found": 6,
+     "found": 7,
      "missing": 0
     },
     "release": {
@@ -473,6 +473,44 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/traj_compare"
+    }
+   }
+  },
+  {
+   "id": "robot_msg_viz",
+   "kind": "package",
+   "state": "warn",
+   "checks": {
+    "tests": {
+     "state": "none",
+     "detail": "the repo has no test workflow",
+     "url": "https://github.com/zacharyyamaoka/robot_msg_viz/actions"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_msg_viz/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "warn",
+     "detail": "0 declared + verified · 82 found, not declared · 0 missing: none of its type uses are declared",
+     "verified": 0,
+     "found": 82,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-msg-viz/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_msg_viz"
     }
    }
   },
@@ -565,11 +603,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main a57ae51",
-     "url": "https://github.com/zacharyyamaoka/like_keras/actions/runs/45545290091",
+     "detail": "test.yml passed on main f2995b0",
+     "url": "https://github.com/zacharyyamaoka/like_keras/actions/runs/45553099117",
      "workflow": "test.yml",
-     "sha": "a57ae51",
-     "at": "2026-11-25T04:13:27Z"
+     "sha": "f2995b0",
+     "at": "2026-11-25T05:22:15Z"
     },
     "lint": {
      "state": "pass",
@@ -606,11 +644,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main a71d0f2",
-     "url": "https://github.com/zacharyyamaoka/robot_sdk_agent/actions/runs/45548979259",
+     "detail": "test.yml passed on main 706387f",
+     "url": "https://github.com/zacharyyamaoka/robot_sdk_agent/actions/runs/45555249741",
      "workflow": "test.yml",
-     "sha": "a71d0f2",
-     "at": "2026-11-25T04:45:47Z"
+     "sha": "706387f",
+     "at": "2026-11-25T05:40:50Z"
     },
     "lint": {
      "state": "pass",
@@ -667,7 +705,7 @@
  ],
  "summary": {
   "pass": 2,
-  "warn": 10,
+  "warn": 11,
   "fail": 4,
   "unknown": 0
  }
