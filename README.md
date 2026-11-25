@@ -9,6 +9,8 @@ This package holds no code of its own. Each package keeps its own repo, its own 
 pip install robot-sdk
 ```
 
+**Docs: [robotsdk.dev](https://robotsdk.dev)**: every package, type and agent as a page, with each package's health. It is the gh-pages build ([zacharyyamaoka.github.io/robot_sdk](https://zacharyyamaoka.github.io/robot_sdk/)), served on the domain by a Cloudflare Worker ([`site/cloudflare/`](site/cloudflare/)). The hourly refresh updates both.
+
 ## For AI agents
 
 [`skill/SKILL.md`](skill/SKILL.md) is an agent skill (Claude Code / Codex format): an index of every package and what it's for, so a coding agent assembles new robotics work from these packages instead of rewriting it. Link the `skill/` folder into your agent's skills directory as `robot-sdk`.

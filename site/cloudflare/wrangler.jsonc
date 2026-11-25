@@ -1,0 +1,17 @@
+// robotsdk.dev: a Worker in front of this repo's GitHub Pages build (worker.js says why a proxy).
+// Deploy: pnpm --dir /home/bam/robot_sdk/site/cloudflare run deploy   Undo: wrangler rollback <version> (wrangler deployments list)
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "robotsdk",
+  // Not a secret (Cloudflare docs): lets CI deploy with only CLOUDFLARE_API_TOKEN.
+  "account_id": "c2747ee6a8842e150e38acc3d044adde",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-19",
+  // WHY workers_dev on: robotsdk.<account>.workers.dev keeps working if the custom domain breaks (same as robotmsgs.com).
+  "workers_dev": true,
+  // robotsdk.dev is a zone on this account (nameservers anirban/ligia); wrangler attaches the domains and certificates.
+  "routes": [
+    { "pattern": "robotsdk.dev", "custom_domain": true },
+    { "pattern": "www.robotsdk.dev", "custom_domain": true }
+  ]
+}

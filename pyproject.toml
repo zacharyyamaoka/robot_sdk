@@ -42,7 +42,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/zacharyyamaoka/robot_sdk"
+Homepage = "https://robotsdk.dev"
+Documentation = "https://robotsdk.dev"
 Repository = "https://github.com/zacharyyamaoka/robot_sdk"
 
 [build-system]
