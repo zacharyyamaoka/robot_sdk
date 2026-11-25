@@ -46,7 +46,7 @@ Look for these as sibling checkouts too. They are part of the same toolkit but a
 - **robotparts**: the parts catalogue (datasheets, SKUs, real arms such as the UR series). Its parts point at robot_models types.
 - **bam_robot_descriptions** (inside `bam_ws/src/core/`): composable robot descriptions (parts composed into a robot, CAD-simplified and full-fidelity tiers).
 - **pidtuna**: turns a robot description into tuned PD gains, analytic first, then measured on the robot.
-- **traj_compare**: a turn-key A/B trajectory comparison viewer that writes one static `report.html` (target vs sim vs real).
+- **traj_compare**: a turn-key A/B trajectory comparison viewer that writes one static `report.html` (target vs sim vs real), and the dataset coverage viewers, one payload feeding a data-ui page, Matplotlib, Viser and W&B: `traj_compare.coverage` (trajectories), `traj_compare.grasp_coverage` (grasps) and `traj_compare.record_coverage` (any list of dataclass records: each field against its declared `Value` range, class balance, missing values, "is more data still adding coverage?").
 - **dataclass_values**: `Value` / `Space`, the units-carrying values robot_msgs uses.
 
 ## The layer rule
