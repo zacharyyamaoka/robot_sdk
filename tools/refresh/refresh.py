@@ -67,8 +67,9 @@ def agent_repos() -> list[str]:
     repos, page = [], 1
     while True:
         body = _get(f"https://api.github.com/users/{OWNER.rsplit('/', 1)[1]}/repos?type=owner&per_page=100&page={page}")
-        if body is None:
-            raise SystemExit("could not list the owner's repos")
+        if body is None:  # the API is down or rate-limited: fall back to the agents the last good graph names
+            print("could not list the owner's repos; agents from the last good graph instead", file=sys.stderr)
+            return fallback_agents()
         batch = json.loads(body)
         repos += [r for r in batch if not r.get("fork") and not r.get("archived") and not r.get("private")]
         if len(batch) < 100:
@@ -85,6 +86,13 @@ def agent_repos() -> list[str]:
     with ThreadPoolExecutor(16) as pool:
         roles = list(pool.map(role, repos))
     return sorted(r["name"] for r, found in zip(repos, roles) if found == "agent")
+
+
+def fallback_agents() -> list[str]:
+    try:
+        return [a["id"] for a in json.loads(GRAPH.read_text(encoding="utf-8")).get("agents", [])]
+    except (OSError, json.JSONDecodeError, KeyError):
+        return []
 
 
 def listed_repos() -> list[str]:
