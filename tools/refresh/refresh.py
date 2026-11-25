@@ -18,6 +18,9 @@ from __future__ import annotations
 
 import json
 import os
+import urllib.error
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 import re
 import subprocess
 import sys
@@ -40,13 +43,52 @@ def run(*args: str, cwd: Path = SDK, env: dict | None = None, check: bool = True
     return done
 
 
-def listed_repos() -> list[str]:
-    """Every sibling repo the directory scans: robot_sdk's uv sources (the pins + viewers) and README's agents table."""
+def pinned_repos() -> list[str]:
+    """The packages: robot_sdk's uv sources (one per pin, viewers included)."""
     meta = tomllib.loads((SDK / "pyproject.toml").read_text(encoding="utf-8"))
-    repos = [Path(s["path"]).name for s in meta.get("tool", {}).get("uv", {}).get("sources", {}).values() if "path" in s]
-    readme = (SDK / "README.md").read_text(encoding="utf-8")
-    repos += re.findall(r"^\|[^|]+\|\s*`\.\./([^`/]+)/?`", readme, flags=re.M)
-    return list(dict.fromkeys(repos))
+    return [Path(s["path"]).name for s in meta.get("tool", {}).get("uv", {}).get("sources", {}).values() if "path" in s]
+
+
+def _get(url: str) -> bytes | None:
+    headers = {"User-Agent": "robot-sdk-refresh"}
+    token = os.environ.get("GITHUB_TOKEN")
+    if token and url.startswith("https://api.github.com/"):
+        headers["Authorization"] = f"Bearer {token}"
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=30) as response:
+            return response.read()
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return None
+
+
+def agent_repos() -> list[str]:
+    """The agents: the owner's public repos whose own robot-sdk.toml says role = "agent". WHY discovered on GitHub:
+    tools.sdk_graph finds agents among sibling checkouts (robot_sdk keeps no list of them), so CI must clone them first."""
+    repos, page = [], 1
+    while True:
+        body = _get(f"https://api.github.com/users/{OWNER.rsplit('/', 1)[1]}/repos?type=owner&per_page=100&page={page}")
+        if body is None:
+            raise SystemExit("could not list the owner's repos")
+        batch = json.loads(body)
+        repos += [r for r in batch if not r.get("fork") and not r.get("archived") and not r.get("private")]
+        if len(batch) < 100:
+            break
+        page += 1
+
+    def role(repo: dict) -> str | None:
+        body = _get(f"https://raw.githubusercontent.com/{OWNER.rsplit('/', 1)[1]}/{repo['name']}/{repo['default_branch']}/robot-sdk.toml")
+        try:
+            return tomllib.loads(body.decode("utf-8")).get("role") if body else None
+        except (tomllib.TOMLDecodeError, UnicodeDecodeError):
+            return None
+
+    with ThreadPoolExecutor(16) as pool:
+        roles = list(pool.map(role, repos))
+    return sorted(r["name"] for r, found in zip(repos, roles) if found == "agent")
+
+
+def listed_repos() -> list[str]:
+    return list(dict.fromkeys(pinned_repos() + agent_repos()))
 
 
 def clone(repos: list[str]) -> dict[str, str]:
@@ -75,7 +117,9 @@ def main(argv: list[str]) -> int:
     run(sys.executable, "-m", "tools.sdk_graph", "build")
     lint = run(sys.executable, "-m", "tools.sdk_graph", "check", check=False)
     print(lint.stdout, end="")
-    run(sys.executable, "site/build.py")
+    # The live page: the chosen dashboard (reads data/graph.json at runtime) when main has its publisher, else the old page.
+    builder = "site/publish_dashboard.py" if (SDK / "site" / "publish_dashboard.py").exists() else "site/build.py"
+    run(sys.executable, builder)
     graph = json.loads(GRAPH.read_text(encoding="utf-8"))
 
     run("git", "fetch", "--quiet", "origin", f"{BRANCH}:refs/remotes/origin/{BRANCH}", check=False)
