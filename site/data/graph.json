@@ -1,0 +1,647 @@
+{
+ "schema": "robot-sdk-graph/1",
+ "generated": "2026-11-24T20:40:27-07:00",
+ "sources": {
+  "seed": "hand-converted from site/data/domain.json (2026-11-23 verified facts); replaced by tools/sdk_graph"
+ },
+ "packages": [
+  {
+   "id": "robot_msgs",
+   "pypi": "robot-msgs",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_msgs",
+   "role": "library",
+   "layer": "vocabulary",
+   "one_line": "Frozen numpy-backed message dataclasses every package joins on",
+   "version": "0.3.1",
+   "deps": {
+    "required": [],
+    "extras": {
+     "viz": [],
+     "ros": [],
+     "rerun": [
+      "robot_msgs"
+     ],
+     "viser": [],
+     "test": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_models",
+   "pypi": "robot-models-lib",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_models",
+   "role": "library",
+   "layer": "models",
+   "one_line": "Generic models by type: actuators, arms, sensors, homing procedures",
+   "version": "0.3.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "contact": [],
+     "test": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_trajectories",
+   "pypi": "robot-trajectories",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_trajectories",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Trajectory kinds from limits and tasks, one JointTrajectory out",
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "test": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_reach",
+   "pypi": "robot-reach",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_reach",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Workspace and IK-branch reach of any arm, FK/IK passed in",
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "plot": [],
+     "viz": [],
+     "test": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_controllers",
+   "pypi": "robot-controllers",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_controllers",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Feed-forward/feedback controllers as black boxes plus a Layout",
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "bench": [],
+     "tracking": [],
+     "site": [],
+     "test": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_thermal",
+   "pypi": "robot-thermal",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_thermal",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Motor and board heat tracking with burst-limit decisions",
+   "version": "0.1.0",
+   "deps": {
+    "required": [],
+    "extras": {
+     "msgs": [
+      "robot_msgs"
+     ],
+     "test": [
+      "robot_msgs"
+     ],
+     "report": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_metrics",
+   "pypi": "robot-metrics",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_metrics",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Tracking, stop, lag, repeatability metrics over message streams",
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "viz": [],
+     "wandb": [],
+     "rerun": [],
+     "test": [],
+     "site": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_activity",
+   "pypi": "robot-activity",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_activity",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Per-robot and fleet activity, work queue, stalemate flags",
+   "version": "0.1.1",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "wandb": [],
+     "test": [],
+     "site": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_autonomy",
+   "pypi": "robot-autonomy",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_autonomy",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Counts human interventions per working hour; ranks causes",
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "wandb": [],
+     "test": [],
+     "oracle": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "like_keras",
+   "pypi": "like_keras",
+   "repo_url": "https://github.com/zacharyyamaoka/like_keras",
+   "role": "library",
+   "layer": "comms",
+   "one_line": "Components, ports and systems over dora; robot_msgs on the wire",
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "dora": [],
+     "test": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "sim2real",
+   "pypi": "sim2real",
+   "repo_url": "https://github.com/zacharyyamaoka/sim2real",
+   "role": "library",
+   "layer": "outer",
+   "one_line": "RobotTwin, calibrate() and fit/replay over real or simulated runs",
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "sim": [],
+     "vision": [],
+     "tracking": [],
+     "homing": [
+      "robot_models"
+     ],
+     "trajectories": [
+      "robot_trajectories"
+     ],
+     "test": [
+      "robot_models"
+     ]
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_diagnostics",
+   "pypi": "robot-diagnostics",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_diagnostics",
+   "role": "library",
+   "layer": "checks",
+   "one_line": "Diagnostics as pure functions: diagnose(config, data) -> Result",
+   "version": "0.1.0",
+   "deps": {
+    "required": [],
+    "extras": {
+     "stock": [
+      "robot_metrics",
+      "sim2real"
+     ],
+     "test": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "traj_compare",
+   "pypi": "traj-compare",
+   "repo_url": "https://github.com/zacharyyamaoka/traj_compare",
+   "role": "viewer",
+   "layer": "viewers",
+   "one_line": "A/B trajectory comparison and coverage viewers, one static report.html",
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {}
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  }
+ ],
+ "types": [
+  {
+   "id": "robot_msgs.trajectory.JointTrajectory",
+   "name": "JointTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "Timed joint positions/velocities; the join type",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.trajectory.JointLimits",
+   "name": "JointLimits",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "Per-joint velocity/acceleration/jerk/effort bounds",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.trajectory.PoseTrajectory",
+   "name": "PoseTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "Timed Cartesian poses (position, xyzw orientation)",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.sensor.JointState",
+   "name": "JointState",
+   "package": "robot_msgs",
+   "module": "robot_msgs.sensor",
+   "what": "Measured joint position, velocity, effort by name",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.control.ServoCommand",
+   "name": "ServoCommand",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Per-servo position/velocity/effort targets, SI",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.control.JointCommandSequence",
+   "name": "JointCommandSequence",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Stepwise joint commands with end conditions (homing)",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.manipulation.NamedPose",
+   "name": "NamedPose",
+   "package": "robot_msgs",
+   "module": "robot_msgs.manipulation",
+   "what": "Saved joint-group pose looked up by name",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.std.Header",
+   "name": "Header",
+   "package": "robot_msgs",
+   "module": "robot_msgs.std",
+   "what": "Float-second stamp and frame_id",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.std.DiagnosticRecord",
+   "name": "DiagnosticRecord",
+   "package": "robot_msgs",
+   "module": "robot_msgs.std",
+   "what": "One periodic health evaluation of a component",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.std.Metrics",
+   "name": "Metrics",
+   "package": "robot_msgs",
+   "module": "robot_msgs.std",
+   "what": "Named float metric values for a component path",
+   "docs_url": null
+  }
+ ],
+ "uses": [
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "homing simulator protocol: reset() -> JointState, tick() -> JointState (returned; imported for the protocol)",
+   "where": "src/robot_models/homing/protocols.py:31-33",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "consumes",
+   "symbol": "homing simulator tick(command: ServoCommand, dt, defines)",
+   "where": "src/robot_models/homing/protocols.py:33",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "HomingProcedure.plan(prior, so_far) -> JointCommandSequence | None",
+   "where": "src/robot_models/homing/protocols.py:67",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "JointSpace.from_limits(limits, ...)",
+   "where": "src/robot_trajectories/space.py:346",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "WaypointTrajectoryGenerator.__call__(points, limits, rate_hz)",
+   "where": "src/robot_trajectories/waypoint_trajectory_generator.py:323",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "every kind (burn_in_wiggle, pick_and_place, ...); README: 'Every kind returns a robot_msgs JointTrajectory'",
+   "where": "README.md:23",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "kernels.to_trajectory(...) -> JointTrajectory",
+   "where": "src/robot_trajectories/kernels.py:377",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "recipe.rebuild(...) -> JointTrajectory",
+   "where": "src/robot_trajectories/recipe.py:47",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_reach",
+   "type": "robot_msgs.manipulation.NamedPose",
+   "kind": "produces",
+   "symbol": "goals.to_named_pose(rec, joints) turns a solved rest-pose record into a NamedPose",
+   "where": "src/robot_reach/goals.py:849",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "LayoutController(trajectory, LayoutConfig) and JointTrajectory controllers; replace_input(message: JointTrajectory)",
+   "where": "src/robot_controllers/controllers/layout.py:181",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "Controller.tick(state: JointState, dt)",
+   "where": "src/robot_controllers/core.py:62",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "produces",
+   "symbol": "Controller.tick -> (ServoCommand, defines mapping)",
+   "where": "src/robot_controllers/core.py:62",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "stops(target, measured, ...) -> tuple[Stop, ...]",
+   "where": "src/robot_metrics/stops.py:154",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "alignment.align(reference, measured, rule=...)",
+   "where": "src/robot_metrics/alignment.py:94",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_activity",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "Observation.joints: JointState or Mapping[str, float] (duck-typed name + position)",
+   "where": "src/robot_activity/motion.py:16",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_autonomy",
+   "type": "robot_msgs.std.DiagnosticRecord",
+   "kind": "consumes",
+   "symbol": "sources.diagnostics.read_diagnostics: JSONL -> DiagnosticRecord.from_dict (only module importing robot_msgs)",
+   "where": "src/robot_autonomy/sources/diagnostics.py:35",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.Header",
+   "kind": "produces",
+   "symbol": "in-process backend's built-in record types",
+   "where": "src/like_keras/backends/inproc.py:717",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.DiagnosticRecord",
+   "kind": "produces",
+   "symbol": "in-process backend's built-in record types",
+   "where": "src/like_keras/backends/inproc.py:717",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.Metrics",
+   "kind": "produces",
+   "symbol": "in-process backend's built-in record types",
+   "where": "src/like_keras/backends/inproc.py:717",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "real-run ingest: every run read as a JointTrajectory at one door",
+   "where": "src/sim2real/real.py:26",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.manipulation.NamedPose",
+   "kind": "consumes",
+   "symbol": "named_poses(robot) / named_pose(name, group) return NamedPose",
+   "where": "src/sim2real/named_poses/__init__.py:36",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "twin builds JointTrajectory(t, joint_names, positions, velocities)",
+   "where": "src/sim2real/twin.py:699",
+   "public": true,
+   "declared": false,
+   "verified": true
+  }
+ ],
+ "agents": [
+  {
+   "id": "trajectory_tracking_agent",
+   "name": "Trajectory Tracking Agent",
+   "repo_url": "https://github.com/zacharyyamaoka/trajectory_tracking_agent",
+   "objective": "Lowest tool tracking error on a given trajectory, inside its gates (UR5e first)",
+   "builds_on": [
+    "robot_msgs",
+    "robot_controllers"
+   ],
+   "status": {
+    "schema": "ai-team-status/1",
+    "member": "Trajectory Tracking Agent",
+    "team": "Robot Team",
+    "remit": "make robots track a given trajectory more accurately, inside the gates (ruler v1, OBJECTIVES.md)",
+    "kpi": {
+     "name": "tool_track_rms_mm (best admissible, dev)",
+     "value": 0.031333594888818476,
+     "unit": "mm",
+     "direction": "down",
+     "target": null,
+     "level": "31 of 34 admissible",
+     "level_name": "ruler v1 \u00b7 ur5e_alone \u00b7 workspace/v2 dev",
+     "next_gate": "an admissible solution below 0.031 mm",
+     "on_track": true
+    },
+    "counter_kpi": {
+     "name": "holdout - dev of the best (mm; reporting only, never selected on)",
+     "value": -0.0006686573781421526,
+     "unit": "mm",
+     "owner": "Trajectory Tracking Agent"
+    },
+    "status": "idle",
+    "blocked_on": null,
+    "todo": {
+     "open": 4,
+     "done_7d": 20,
+     "top": [
+      "Make the identification gain-portable: fit the plant torque M(q)\u00b7\u00eb + kd\u00b7\u0117 + kp\u00b7e (the full inverse of the board loop, M from the given model) instead of kp\u00b7e + kd\u00b7\u0117, then check by running one fit at x1 and x4. Expect: if it works, one model for every rung; if not, friction here is loop-dependent and each rung keeps its own fit.",
+      "Identify from a dedicated calibration run (a rich excitation trajectory, its own runs only) instead of the dev records, so the identified model never sees the tasks it is scored on. Needs a way to run a non-dataset trajectory through the boundary without `deployment.plant()` (see Suggestions for Zach).",
+      "Test O1.1, the boundary ([specs/O1.1](specs/O1.1-the-boundary.md) has no test): run one short task with a controller whose `tick` returns a bare array, one whose command leaves out a joint, and a correct one; assert the first two fail `completed` with the wrapper's reason and the third completes, and that `tick` runs at the deployment's host rate (count its calls). Expect: O1.1 unverified \u2192 pass; no score moves."
+     ]
+    },
+    "links": {
+     "repo": "https://github.com/zacharyyamaoka/trajectory_tracking_agent",
+     "report": "PROGRESS.md",
+     "wandb": "Trajectory Tracking",
+     "vault": null
+    },
+    "updated_t": 1795563985.2978485
+   }
+  }
+ ]
+}
