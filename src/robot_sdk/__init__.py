@@ -8,6 +8,7 @@ LAYERS = {
     "robot_models": "models",
     "robot_controllers": "leaf",
     "robot_reach": "leaf",
+    "robot_collision": "leaf",
     "robot_thermal": "leaf",
     "robot_trajectories": "leaf",
     "robot_autonomy": "leaf",

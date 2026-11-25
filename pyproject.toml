@@ -24,6 +24,7 @@ dependencies = [
   # leaves - depend on core only, never on each other
   "robot-controllers~=0.1.0",
   "robot-reach~=0.1.0",
+  "robot-collision~=0.1.0",
   "robot-thermal~=0.1.0",
   "robot-trajectories~=0.1.0",
   "robot-autonomy~=0.1.0",
@@ -65,6 +66,7 @@ robot-msgs = { path = "../robot_msgs", editable = true }
 robot-models-lib = { path = "../robot_models", editable = true }
 robot-controllers = { path = "../robot_controllers", editable = true }
 robot-reach = { path = "../robot_reach", editable = true }
+robot-collision = { path = "../robot_collision", editable = true }
 robot-thermal = { path = "../robot_thermal", editable = true }
 robot-trajectories = { path = "../robot_trajectories", editable = true }
 robot-autonomy = { path = "../robot_autonomy", editable = true }

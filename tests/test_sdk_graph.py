@@ -215,7 +215,8 @@ def test_committed_graph_matches_the_schema():
                           "one_line", "summary", "links", "declaration", "lint"}  # fmt: skip
         assert set(a["builds_on"]) <= ids and a["id"] not in ids
         assert a["declaration"] == decl.FILE and "github" in a["links"]
-    assert [a["id"] for a in graph["agents"]] == ["trajectory_tracking_agent"]  # found by its own declaration
+    # WHY a subset, not equality: agents join by declaring themselves (role = "agent"), so the list grows without robot_sdk changing
+    assert "trajectory_tracking_agent" in [a["id"] for a in graph["agents"]]  # found by its own declaration
 
 
 # ------------------------------------------------------------------------------------------------ links (2026-11-24)
