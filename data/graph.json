@@ -1,8 +1,8 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-25T04:45:21+00:00",
+ "generated": "2026-11-25T04:48:06+00:00",
  "sources": {
-  "robot_sdk": "5f81a08",
+  "robot_sdk": "0a69f2a",
   "robot_msgs": "248f9f1",
   "robot_models": "61b292c",
   "robot_controllers": "3159fe9",
@@ -16,7 +16,7 @@
   "sim2real": "21f81b0",
   "robot_diagnostics": "2ab15cb",
   "like_keras": "a57ae51",
-  "robot_sdk_agent": "6ecacbf",
+  "robot_sdk_agent": "a71d0f2",
   "trajectory_tracking_agent": "8bf6fc8",
   "robot_collision": "19aa8d0"
  },
@@ -3255,33 +3255,33 @@
     "schema": "ai-team-status/1",
     "member": "Robot SDK Agent",
     "team": "Robot Team",
-    "remit": "keep robot-sdk a true, current directory of the robot-* packages, inside the gates (ruler v1, OBJECTIVES.md)",
+    "remit": "keep robot-sdk a true, current directory of the robot-* packages, inside the gates (ruler v2, OBJECTIVES.md)",
     "kpi": {
      "name": "max_stale_hours (worst listed repo: hours since the first push the live graph missed)",
      "value": 0.0,
      "unit": "h",
      "direction": "down",
      "target": 24,
-     "level": "5 of 9 gates",
-     "level_name": "ruler v1 · live directory",
+     "level": "5 of 10 gates",
+     "level_name": "ruler v2 · live directory",
      "next_gate": "ci_green",
      "on_track": true
     },
     "counter_kpi": {
      "name": "gates failed by the best solution",
-     "value": 4,
+     "value": 5,
      "unit": "gates",
      "owner": "Robot SDK Agent"
     },
     "status": "idle",
     "blocked_on": null,
     "todo": {
-     "open": 10,
-     "done_7d": 1,
+     "open": 11,
+     "done_7d": 2,
      "top": [
       "**Push-triggered refresh**: a tiny workflow in each package (`on: push: branches: [main]`) that sends",
-      "**Weekly discovery sweep**: list the owner's public repos, flag any whose pyproject names robot-msgs or which",
-      "**Dead-link PRs**: robotmsgs.com's per-type pages (`/types/<module>/<Type>/`) 404 for 13 types; either the"
+      "**Missing-upstream nudge**: when `upstream_public` is red for more than a day, open an issue on robot_sdk naming the package and its publish script. Expect: the gate's red time shrinks; the push itself stays Zach's.",
+      "**Weekly discovery sweep**: list the owner's public repos, flag any whose pyproject names robot-msgs or which"
      ]
     },
     "links": {
@@ -3290,7 +3290,7 @@
      "wandb": null,
      "vault": null
     },
-    "updated_t": 1795581105.5878384
+    "updated_t": 1795581936.5558994
    },
    "one_line": "Keeps robot-sdk a true, current directory of the robot-* packages",
    "summary": "A black-box agent: a frozen scorer measures how stale, true and complete the live robot-sdk directory is (freshness against each repo's main, the declaration lint, coverage of robot_msgs repos, dead links, CI and PyPI health, the live site), and a scored population of refresh mechanisms competes to keep every gate green.",
