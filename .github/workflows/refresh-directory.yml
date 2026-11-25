@@ -1,0 +1,33 @@
+# Keep the published directory current: clone every listed package and agent at main, regenerate graph.json,
+# lint every robot-sdk.toml, rebuild the landing page, and publish both to gh-pages when anything changed.
+# Solution 0 of the robot-sdk agent (github.com/zacharyyamaoka/robot_sdk_agent, solutions/s0); its frozen scorer
+# measures how stale, true and complete the live https://zacharyyamaoka.github.io/robot_sdk/data/graph.json is.
+# Never writes to main (other lanes own site/data/graph.json there); a red run = a lint failure, published anyway.
+name: refresh-directory
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  repository_dispatch:
+    types: [package-pushed]
+  push:
+    branches: [main]
+permissions:
+  contents: write
+concurrency:
+  group: refresh-directory
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Refresh and publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python tools/refresh/refresh.py --publish
