@@ -5,9 +5,11 @@
 // Adapter, not a fork: V2's TypesTab renders rail | switchboard | rows. Here `.types-tab` is display: contents, so its
 // three children join the kit's grid beside a panel switcher; the right column shows TypeActions (the functions that
 // take the type, and where to get one) by default and V2's rows panel as soon as you click into the switchboard.
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { TypesTab } from "../v2/types-tab.jsx";
-import { LAYER_LABEL } from "@shared/graph.js";
+import { buildSwitchboard, filterRows } from "../v2/sw-model.js";
+import { LAYER_LABEL, byId, usesOfType } from "@shared/graph.js";
+import { SW_NARROW_QUERY, narrowLayout, narrowHeight, narrowCss } from "./swnarrow.js";
 import { navigate, hrefTo } from "./route.js";
 import {
   consumersOf, producersOf, importersOf, groupByPackage, typeKey, resolveType, mostUsedType, typeById, typeSearch,
@@ -196,6 +198,71 @@ function useRowsAtVersion(rootRef, graph, sourceUrl) {
   }, [rootRef, graph, sourceUrl]);
 }
 
+// The switchboard on a phone (<= 640 px, V2's own breakpoint): the kit's layout (swnarrow.js) drawn over V2's nodes by a
+// scoped <style>, so no edge runs through a box it does not connect and no count sits under a box (kit check,
+// 2026-11-25). Inputs: V2's nodes as rendered (ids, V2 positions, sizes) — which also covers V2-internal state such as
+// an open "+N types" ring or an expanded layer — plus, for the canvas height, the layout of the default node set built
+// from props (graph, type, filters), so the height is right before V2's first fit. Writes `styleEl.textContent`
+// directly (no React state): it runs from a MutationObserver as V2 re-renders.
+function useNarrowSwitchboard(rootRef, styleRef, scope, graph, type, filters) {
+  const inputs = useRef(null);
+  inputs.current = { graph, type, filters };
+  const update = useRef(null);
+  update.current = () => {
+    const root = rootRef.current, st = styleRef.current;
+    if (!root || !st) return;
+    const narrow = typeof matchMedia === "function" && matchMedia(SW_NARROW_QUERY).matches;
+    const canvas = root.querySelector(".sw-canvas");
+    const paneW = canvas?.clientWidth || 0;
+    let css = "", zoom = null;
+    if (narrow && canvas && paneW > 80 && inputs.current.type) {
+      const { graph: g, type: t, filters: f } = inputs.current;
+      const sb = buildSwitchboard(t, { rows: filterRows(usesOfType(g, t.id), f), pkgById: byId(g.packages), groupByLayer: f.groupByLayer,
+        expanded: new Set(), ring: null, vertical: true, ringTypes: () => [] });
+      const paneH = narrowHeight(narrowLayout(sb.nodes.map((n) => ({ id: n.id, w: n.w, h: n.h }))), paneW);
+      const sel = `[data-k-sw="${scope}"]`;
+      // border-box canvas with 1 px borders: the pane inside is paneH tall
+      const rules = [`${sel} .sw-canvas{height:${paneH + 2}px!important;min-height:0!important;flex:none!important}`];
+      const v2 = [];
+      for (const el of canvas.querySelectorAll(".react-flow__node")) {
+        const m = /translate\(\s*(-?[\d.e+-]+)px\s*,\s*(-?[\d.e+-]+)px\s*\)/.exec(el.style.transform || "");
+        if (m && el.offsetWidth > 0) v2.push({ id: el.dataset.id, x: +m[1], y: +m[2], w: el.offsetWidth, h: el.offsetHeight });
+      }
+      if (v2.some((n) => n.id === "type")) {
+        const btn = [...canvas.querySelectorAll(".sw-ring-btn")].find((b) => b.textContent.trim() === "hide types");
+        const ring = btn ? "p:" + btn.dataset.testid.replace(/^sw-ring-/, "").replace("-", ":") : null;
+        const lay = narrowLayout(v2.map(({ id, w, h }) => ({ id, w, h })), ring);
+        if (lay) { const r = narrowCss(sel, lay, v2, paneW, paneH); rules.push(r.css); zoom = r.zoom; }
+      }
+      css = `@media ${SW_NARROW_QUERY} {\n${rules.join("\n")}\n}`;
+    }
+    if (st.textContent !== css) st.textContent = css;
+    if (zoom) root.dataset.swZoom = zoom.toFixed(3); else delete root.dataset.swZoom;
+  };
+  // before paint, in the same commit as V2's new nodes: the height is set before V2 fits
+  useLayoutEffect(() => { update.current(); }, [graph, type?.id, filters]);
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const run = () => update.current();
+    const mo = new MutationObserver((recs) => {
+      for (const r of recs) {
+        const el = r.target.nodeType === 1 ? r.target : r.target.parentElement;
+        if (!el || el === styleRef.current || el.classList.contains("react-flow__viewport") || !el.closest(".sw-canvas")) continue;
+        return run();
+      }
+    });
+    mo.observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ["style"], characterData: true });
+    const ro = new ResizeObserver(run);
+    const canvas = root.querySelector(".sw-canvas");
+    if (canvas) ro.observe(canvas);
+    const mq = typeof matchMedia === "function" ? matchMedia(SW_NARROW_QUERY) : null;
+    mq?.addEventListener("change", run);
+    run();
+    return () => { mo.disconnect(); ro.disconnect(); mq?.removeEventListener("change", run); };
+  }, []);
+}
+
 const DEFAULT_FILTERS = { show: { produces: true, consumes: true, imports: true }, publicOnly: false, declaredOnly: false, groupByLayer: false };
 
 // Props: graph, health, typeKey (a name or id, e.g. route.arg; default: the most used type), onOpenType(key),
@@ -209,7 +276,10 @@ export function TypeWorkspace({ graph, health, typeKey: key, onOpenType, onOpenP
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [panelState, setPanelState] = useState("actions");
   const rootRef = useRef(null);
+  const swStyleRef = useRef(null);
+  const swScope = useId().replace(/[^A-Za-z0-9_-]/g, "");
   useRowsAtVersion(rootRef, graph, sourceUrl);
+  useNarrowSwitchboard(rootRef, swStyleRef, swScope, graph, type, filters);
   const panel = panelProp ?? panelState;
   const setPanel = onPanel ?? setPanelState;
   useEffect(() => { setPanel("actions"); }, [type?.id]);
@@ -229,8 +299,9 @@ export function TypeWorkspace({ graph, health, typeKey: key, onOpenType, onOpenP
     else if (e.target.closest?.(".react-flow__node-type")) setPanel("actions");
   };
   return (
-    <div ref={rootRef} className={`k-types k-panel-${panel}${intro ? "" : " k-nointro"} ${className}`} style={{ "--k-types-h": typeof height === "number" ? height + "px" : height }} onClickCapture={onClickCapture} data-testid="type-workspace">
+    <div ref={rootRef} className={`k-types k-panel-${panel}${intro ? "" : " k-nointro"} ${className}`} style={{ "--k-types-h": typeof height === "number" ? height + "px" : height }} onClickCapture={onClickCapture} data-testid="type-workspace" data-k-sw={swScope}>
       <style>{healthCss(health)}</style>
+      <style ref={swStyleRef} data-k-sw-style="" />
       <TypesTab graph={graph} type={type} go={go} filters={filters} setFilters={setFilters} />
       <div className="k-types-ptabs" role="tablist">
         <button role="tab" aria-selected={panel === "actions"} className={"k-ptab" + (panel === "actions" ? " on" : "")} onClick={() => setPanel("actions")} data-testid="types-panel-actions">What can I do with it?</button>

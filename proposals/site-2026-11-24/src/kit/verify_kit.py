@@ -23,6 +23,60 @@ OUT = REPO / "reports/media/site-workspaces-2026-11-24/kit"
 PAGE = "/proposals/site-2026-11-24/kit/index.html"
 
 
+# The switchboard's geometry in screen space (CSS transforms and CSS `d` included): every edge sampled every 2 px with
+# getPointAtLength through its getScreenCTM against every node box it does not connect (endpoints from React Flow's
+# aria-label "Edge from A to B"), count labels overlapping a box, and the zoom controls over an edge / label / box.
+# WHY (kit check, 2026-11-25): at 390 px V2's phone layout ran 6 JointTrajectory edges and 1 JointState edge through
+# unrelated packages, hid counts under boxes and covered robot_diagnostics' arrowhead with the zoom controls.
+SW_TYPES = ["JointTrajectory", "JointState", "JointCommandSequence", "ServoCommand", "Pose"]
+SW_GEOMETRY_JS = r"""(root) => {
+  const c = root.querySelector("[data-testid='sw-canvas']");
+  const ins = (r, x, y, m = 1) => x > r.left + m && x < r.right - m && y > r.top + m && y < r.bottom - m;
+  const inter = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+  const nodes = [...c.querySelectorAll('.react-flow__node')].map((n) => ({ id: n.dataset.id, r: n.getBoundingClientRect() }));
+  const ctl = c.querySelector('.react-flow__controls')?.getBoundingClientRect();
+  const crossings = [], ctlEdges = [];
+  let edges = 0;
+  for (const g of c.querySelectorAll('.react-flow__edge')) {
+    const m = (g.getAttribute('aria-label') || '').match(/^Edge from (.+) to (.+)$/);
+    const ends = m ? [m[1], m[2]] : [];
+    const path = g.querySelector('path.react-flow__edge-path'); if (!path) continue;
+    edges++;
+    const L = path.getTotalLength(), ctm = path.getScreenCTM(), hit = new Set();
+    let onCtl = false;
+    for (let l = 0; l <= L; l += 2) {
+      const p = path.getPointAtLength(l).matrixTransform(ctm);
+      for (const n of nodes) if (!ends.includes(n.id) && !hit.has(n.id) && ins(n.r, p.x, p.y)) hit.add(n.id);
+      if (ctl && ins(ctl, p.x, p.y, 0)) onCtl = true;
+    }
+    for (const n of hit) crossings.push([g.dataset.id, n]);
+    if (onCtl) ctlEdges.push(g.dataset.id);
+  }
+  const labels = [...c.querySelectorAll('.sw-elabel')].map((l) => ({ id: l.dataset.testid, r: l.getBoundingClientRect() }));
+  const labelUnder = [];
+  for (const l of labels) for (const n of nodes) { const a = inter(l.r, n.r); if (a > 4) labelUnder.push([l.id, n.id, Math.round(a)]); }
+  const cr = c.getBoundingClientRect();
+  const tn = c.querySelector(".react-flow__node[data-id='type']");
+  return { edges, nodes: nodes.length, crossings, labelUnder, ctlEdges,
+    labelUnderCtl: ctl ? labels.filter((l) => inter(l.r, ctl) > 0).map((l) => l.id) : [],
+    nodeUnderCtl: ctl ? nodes.filter((n) => inter(n.r, ctl) > 4).map((n) => n.id) : [],
+    outside: nodes.filter((n) => n.r.left < cr.left - 1 || n.r.right > cr.right + 1 || n.r.top < cr.top - 1 || n.r.bottom > cr.bottom + 1).map((n) => n.id),
+    zoom: tn ? +(tn.getBoundingClientRect().width / tn.offsetWidth).toFixed(3) : null, canvas: [Math.round(cr.width), Math.round(cr.height)] };
+}"""
+
+
+def sw_clean(g):
+    return not (g["crossings"] or g["labelUnder"] or g["ctlEdges"] or g["labelUnderCtl"] or g["nodeUnderCtl"] or g["outside"])
+
+
+def sw_measure(page, type_name, settle=900):
+    page.evaluate(f"location.hash = '#/types/{type_name}'")
+    page.wait_for_timeout(settle)
+    page.locator("[data-testid='type-workspace'] [data-testid='sw-canvas']").first.scroll_into_view_if_needed()
+    page.wait_for_timeout(500)
+    return page.locator("[data-testid='type-workspace']").first.evaluate(SW_GEOMETRY_JS)
+
+
 class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -186,6 +240,11 @@ def main() -> int:
             page.wait_for_timeout(1200)
             r["shots"].append(shot(page, "16-pm-tree-agents", pm))
             page.locator("[data-testid='pm-agents']").uncheck()
+            # options remembered per page, not under one key every variant on the origin shares (kit check, 2026-11-25)
+            keys = page.evaluate("Object.keys(localStorage)")
+            r["storage_keys"] = keys
+            ok["pm_storage_key_per_page"] = "rsdk-kit-pm.v2:" + PAGE.replace("index.html", "") in keys and "rsdk-kit-pm.v2" not in keys
+            ok["dir_storage_key_per_page"] = "rsdk-kit-dir-mode:" + PAGE.replace("index.html", "") in keys and "rsdk-kit-dir-mode" not in keys
 
             # types: workspace + actions + search
             page.locator("[data-testid='type-workspace']").scroll_into_view_if_needed()
@@ -232,6 +291,46 @@ def main() -> int:
             page.wait_for_timeout(200)
             ok["compact_one_line_title"] = page.eval_on_selector_all("[data-testid^='dir-row-'] .k-dirc-one", "els => els.length > 0 && els.every(e => e.title && e.title === e.textContent)")
             page.locator("[data-testid='dir-mode-cards']").click()
+
+            # desktop switchboard: V2's own layout, no kit override, no edge through an unrelated box
+            sw_desk = {t: sw_measure(page, t) for t in SW_TYPES}
+            r["switchboard_1440"] = {t: {k: g[k] for k in ("edges", "crossings", "labelUnder", "zoom")} for t, g in sw_desk.items()}
+            ok["switchboard_1440_clean"] = all(not g["crossings"] and not g["labelUnder"] for g in sw_desk.values())
+            ok["switchboard_1440_no_override"] = page.evaluate("[...document.querySelectorAll('[data-k-sw-style]')].every((s) => !s.textContent)")
+            # V2's package names keep their underscore at 1x: the name box is tall enough for the descender
+            names = page.eval_on_selector_all("[data-testid='type-workspace'] .rf-pkg-name", "els => els.map(e => ({ t: e.textContent, sh: e.scrollHeight, ch: e.clientHeight, lh: parseFloat(getComputedStyle(e).lineHeight), fs: parseFloat(getComputedStyle(e).fontSize) }))")
+            r["switchboard_names"] = names
+            ok["switchboard_names_not_clipped"] = bool(names) and all(n["sh"] <= n["ch"] and n["lh"] >= 1.3 * n["fs"] for n in names)
+            page.evaluate("location.hash = '#/types/JointTrajectory'")
+            page.wait_for_timeout(600)
+            page.locator("[data-testid='type-workspace'] [data-testid='sw-node-cons-robot_metrics']").first.screenshot(path=str(OUT / "23-switchboard-name-1x.png"))
+            r["shots"].append("23-switchboard-name-1x.png")
+
+            # package map across a version switch with a package selected: every box drawn (V6 had to remount the map:
+            # shared packages stayed visibility:hidden), and a small version is not blown up (fit zoom capped at 1.2)
+            pmz = """() => { const c = document.querySelector("[data-testid='pm-canvas']"); const ns = [...c.querySelectorAll('.react-flow__node')];
+              return { zoom: +new DOMMatrix(getComputedStyle(c.querySelector('.react-flow__viewport')).transform).a.toFixed(3), h: Math.round(c.getBoundingClientRect().height), n: ns.length,
+                pkgs: c.querySelectorAll("[data-testid^='pm-node-']").length,
+                hidden: ns.filter((n) => getComputedStyle(n).visibility === 'hidden').map((n) => n.dataset.id) }; }"""
+            page.locator(pm).scroll_into_view_if_needed()
+            page.locator("[data-testid='pm-mode-tree']").click()
+            page.wait_for_timeout(1000)
+            page.locator("[data-testid='pm-node-robot_metrics']").click()
+            page.wait_for_timeout(400)
+            page.locator("[data-testid='version-picker']").click()
+            page.wait_for_timeout(300)
+            page.locator("[data-testid='vp-option-release']").click()
+            page.wait_for_timeout(1800)
+            pm_rel = page.evaluate(pmz)
+            r["shots"].append(shot(page, "24-pm-release-after-select", pm))
+            page.locator("[data-testid='pm-node-robot_metrics']").click()
+            page.wait_for_timeout(300)
+            page.evaluate("location.hash = '#/types/JointTrajectory'")
+            page.wait_for_timeout(1800)
+            pm_live = page.evaluate(pmz)
+            r["pm_version_switch"] = {"release": pm_rel, "back_to_live": pm_live}
+            ok["pm_version_switch_all_drawn"] = pm_rel["pkgs"] == len(release["packages"]) and pm_live["pkgs"] == len(graph["packages"]) and not pm_rel["hidden"] and not pm_live["hidden"]
+            ok["pm_small_version_zoom_capped"] = pm_rel["zoom"] <= 1.2001
             ok["no_console_errors_1440"] = not errors
             r["errors_1440"] = errors
             ctx.close()
@@ -270,6 +369,39 @@ def main() -> int:
                 pp.wait_for_timeout(700)
                 pp.screenshot(path=str(OUT / f"{name}.png"))
                 r["shots"].append(name + ".png")
+            # the top band's label sits inside the canvas, not under the toolbar (kit check, 2026-11-25)
+            pp.locator("[data-testid='package-map']").scroll_into_view_if_needed()
+            pp.wait_for_timeout(600)
+            band = pp.evaluate("""() => { const c = document.querySelector("[data-testid='pm-canvas']").getBoundingClientRect();
+              const l = document.querySelector("[data-testid='pm-canvas'] .k-pm-band-label").getBoundingClientRect(); return { text: document.querySelector("[data-testid='pm-canvas'] .k-pm-band-label").textContent, top: l.top - c.top }; }""")
+            r["phone_top_band_label"] = band
+            ok["phone_top_band_label_inside"] = band["top"] >= 2
+            # phone switchboard: the kit's layout over V2's nodes; 0 edges through an unrelated box, no count under a box,
+            # controls over nothing, every box inside the canvas — the five types, then V2-internal states (rings, layers)
+            sw_phone = {}
+            for t in SW_TYPES:
+                sw_phone[t] = sw_measure(pp, t)
+                pp.locator("[data-testid='type-workspace'] [data-testid='sw-canvas']").first.screenshot(path=str(OUT / f"36-phone-switchboard-{t}.png"))
+                r["shots"].append(f"36-phone-switchboard-{t}.png")
+            sw_measure(pp, "JointTrajectory")
+            W = "[data-testid='type-workspace'] "
+            for btn, name in [("sw-ring-cons-robot_metrics", "ring-consumer"), ("sw-ring-prod-traj_compare", "ring-producer"), ("sw-ring-imp-sim2real", "ring-import")]:
+                pp.locator(W + f"[data-testid='{btn}']").first.click()
+                pp.wait_for_timeout(900)
+                sw_phone["JointTrajectory+" + name] = pp.locator(W).first.evaluate(SW_GEOMETRY_JS)
+                pp.locator(W + f"[data-testid='{btn}']").first.click()
+                pp.wait_for_timeout(500)
+            pp.locator(W + "[data-testid='chip-group']").first.click()
+            pp.wait_for_timeout(900)
+            sw_phone["JointTrajectory+grouped"] = pp.locator(W).first.evaluate(SW_GEOMETRY_JS)
+            pp.locator(W + "[data-testid='chip-group']").first.click()
+            pp.wait_for_timeout(600)
+            r["switchboard_390"] = {k: {f: g[f] for f in ("edges", "nodes", "crossings", "labelUnder", "ctlEdges", "nodeUnderCtl", "outside", "zoom", "canvas")} for k, g in sw_phone.items()}
+            ok["phone_switchboard_no_edge_through_box"] = all(not g["crossings"] for g in sw_phone.values())
+            ok["phone_switchboard_labels_clear"] = all(not g["labelUnder"] for g in sw_phone.values())
+            ok["phone_switchboard_controls_clear"] = all(not (g["ctlEdges"] or g["labelUnderCtl"] or g["nodeUnderCtl"]) for g in sw_phone.values())
+            ok["phone_switchboard_fits_canvas"] = all(not g["outside"] for g in sw_phone.values())
+            ok["phone_switchboard_readable"] = all(g["zoom"] >= 0.7 for t, g in sw_phone.items() if t in SW_TYPES)
             ok["phone_no_sideways_scroll_after"] = pp.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth") <= 0
             ok["no_console_errors_390"] = not perr
             r["errors_390"] = perr

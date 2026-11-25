@@ -128,7 +128,21 @@ async function run(graph, { children, edges, meta, options, grouped, bandKeys, b
     };
   });
   const width = out.width + dx;
-  return { nodes, edges: edgesOut, groups, bands: grouped === "bands" ? bandsFrom(nodes, bandKeys, width, compact) : [], width, height: out.height };
+  const bands = grouped === "bands" ? bandsFrom(nodes, bandKeys, width, compact) : [];
+  // WHY (kit check, 2026-11-25): on a phone (compact) a band's label strip sits 18 px above its first row, so the top
+  // band began above y = 0 ("viewers" was drawn under the toolbar) and the bottom band ran past the layout's height.
+  // Everything moves down until the topmost box (band, group, node, label) starts at TOP, and the height covers the
+  // lowest one. The desktop layouts already start inside ELK's padding: they are left as they are.
+  const TOP = 4;
+  const boxes = [...bands, ...groups, ...nodes, ...edgesOut.map((e) => e.labelBox).filter(Boolean)];
+  const minY = Math.min(...boxes.map((b) => b.y)), maxY = Math.max(...boxes.map((b) => b.y + (b.h ?? 0)));
+  const dy = boxes.length && minY < TOP ? TOP - minY : 0;
+  if (dy) {
+    for (const b of [...bands, ...groups, ...nodes]) b.y += dy;
+    for (const e of edgesOut) { e.points = e.points.map((p) => ({ x: p.x, y: p.y + dy })); if (e.labelBox) e.labelBox = { ...e.labelBox, y: e.labelBox.y + dy }; }
+  }
+  const height = Math.max(out.height + dy, boxes.length ? maxY + dy + TOP : 0);
+  return { nodes, edges: edgesOut, groups, bands, width, height };
 }
 
 // ---- tree: package deps (pyproject), dependants above their dependencies -------------------------------------------

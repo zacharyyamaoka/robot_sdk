@@ -8,7 +8,7 @@ through `useSite()`.
 
 ```bash
 cd /home/bam/robot_sdk/proposals/site-2026-11-24 && VARIANT=kit npx vite build      # -> kit/index.html, the demo page
-uv run -q --with playwright python /home/bam/robot_sdk/proposals/site-2026-11-24/src/kit/verify_kit.py   # 40 checks + screenshots
+uv run -q --with playwright python /home/bam/robot_sdk/proposals/site-2026-11-24/src/kit/verify_kit.py   # 53 checks + screenshots
 ```
 
 The demo (`kit/index.html`, source `demo.jsx`) renders every component on the real data; deep links work there too
@@ -91,15 +91,22 @@ PyPI page, robot-sdk.toml) or, for lint failures and checks without a url, the d
 `<Directory graph health mode onMode onOpenPackage onOpenAgent showAgents />`: Cards (V1 "The layers") ⇄ Compact (V5),
 grouped by layer with the layer blurb, viewers and agents included; per package name, version, one_line, health, type
 counts and `PkgLinks` (GitHub, Site where declared, PyPI, README, Docs). Compact cuts one_line with an ellipsis and
-keeps the full text in its `title`. Mode remembered in localStorage (`rsdk-kit-dir-mode`) unless controlled.
+keeps the full text in its `title`. Mode remembered in localStorage unless controlled, under `storageKey` (default
+`rsdk-kit-dir-mode:<page path>`, so variants on one origin do not share it; `pagePathKey(base)` builds such a key).
 `data-testid="dir-mode-cards" / "dir-mode-compact"`.
 
 ### Package map — `packagemap.jsx`, `layout.js`
 
-`<PackageMap graph health height="auto" maxHeight={720} narrowMinZoom={0.75} narrowMaxHeight={1400} options onOptions onOpenPackage onOpenType onSelect caption toolbarExtra />`.
+`<PackageMap graph health height="auto" maxHeight={720} narrowMinZoom={0.75} narrowMaxHeight={1400} options onOptions onOpenPackage onOpenType onSelect caption toolbarExtra storageKey />`.
 Toolbar: Tree | Pipeline (`pm-mode-tree`, `pm-mode-pipeline`), imports (not public) · package deps · agents · group by
-layer (`pm-group-by-layer`) · health. Options remembered (`rsdk-kit-pm.v2`) unless controlled
-(`{ mode, groupByLayer, deps, agents, imports, health, byMode }`).
+layer (`pm-group-by-layer`) · health. Options remembered unless controlled
+(`{ mode, groupByLayer, deps, agents, imports, health, byMode }`), under `storageKey` (default
+`rsdk-kit-pm.v2:<page path>`: one key per page, so the gallery's variants on one origin no longer share it).
+
+- **Fit**: fit-to-view never zooms in past `PM_FIT_MAX_ZOOM` (1.2), centred; with `height="auto"` a small map (Latest
+  release's 4 packages) gets a canvas its height at that zoom instead of a 2x blow-up.
+- **Version switch**: nodes state their size, `measured` and handles, so a package both versions share is drawn the
+  moment the new layout lands (it used to stay `visibility: hidden`: empty bands). No remount (`key`) needed.
 
 - **Each mode has its own "group by layer" and "package deps"** (`PM_MODE_DEFAULTS`): tree grouped with deps, pipeline
   ungrouped without (grouped, the layer order fights the type flow). Switching modes restores that mode's last choice
@@ -111,7 +118,8 @@ layer (`pm-group-by-layer`) · health. Options remembered (`rsdk-kit-pm.v2`) unl
   itself when the layout is wider (the pipeline; a shade marks the right edge); the page never scrolls sideways. Drag
   and pinch are off there so a finger scrolls the page, and a "Whole map" button under the canvas
   (`pm-fit-toggle`) flips to fit-to-width for the overview. `narrowMinZoom={0}` keeps fit-to-width everywhere.
-  Measured on today's graph at 390 px: tree 0.75 (fits the width), pipeline 0.75 (530 px wide, scrolls).
+  Measured on today's graph at 390 px: tree 0.75 (fits the width), pipeline 0.75 (530 px wide, scrolls). A band's label
+  strip sits above its first row there; the layout is shifted so the top band's label is inside the canvas.
 
 - **tree**: package deps from pyproject, viewers on top, vocabulary at the bottom. Group by layer on → full-width layer
   bands (ELK partitions; a layer with more than 4 packages gets several rows); off → a plain layered tree.
@@ -129,6 +137,15 @@ layer (`pm-group-by-layer`) · health. Options remembered (`rsdk-kit-pm.v2`) unl
   V2's `TypesTab` imported unchanged (rail | switchboard | rows) beside a right-hand panel that opens on **"What can I do
   with it?"** and flips to V2's rows panel when you click into the switchboard. Health marks the switchboard's package
   nodes. An unknown `typeKey` (e.g. missing in an older version) is said, not swapped silently.
+- **On a phone (≤ 640 px, V2's own breakpoint)** the switchboard is laid out by the kit (`swnarrow.js`): producers
+  above the type, consumers below, import-only below those, two boxes per row around a central gap that carries one
+  trunk per kind; each edge branches off in the gap beside its own row with its count on that branch. Drawn over V2's
+  nodes by a scoped `<style>` (node transforms, CSS `d` on the edge paths, label transforms), so V2's state, clicks,
+  focus styling, "+N types" rings and layer groups all keep working and are laid out too; V2's viewport, zoom buttons
+  and fit stay V2's. The canvas height follows the layout; the zoom controls sit in a strip at the bottom left that
+  nothing is drawn in. Measured on today's graph at 390 px: 0 edges through an unrelated box for every one of the 31
+  types (V2's layout: 6 on JointTrajectory, 1 on JointState), no count under a box, zoom 0.71 (was 0.57). Desktop is
+  V2's layout untouched (no override above 640 px). `narrowLayout(nodes, ringParent)` returns the geometry.
 - `<TypeActions graph typeId health sourceUrl onOpenType onOpenPackage limit />`: functions that take the type (symbol,
   package + health, `JointTrajectory, JointState → TrackingResult`, file:line at the version's ref), "Where to get one"
   (producers) and the packages that only import it. Several on one page are fine: heading ids are per instance
@@ -166,6 +183,11 @@ readable zoom and scrolls inside itself, see Package map). No duplicate ids on a
 - Only the top-level data files are embedded at build time; opened from `file://`, Latest release and snapshots are
   listed but disabled with the reason.
 - Snapshots record no health (versions.json `health: null`); every health view says so for them.
+- The phone switchboard overrides V2's geometry with CSS, so the DOM's own `d` attributes and node `style.transform`
+  still hold V2's numbers: measure what is drawn (`getPointAtLength` / `getScreenCTM`, `getBoundingClientRect`), as
+  verify_kit does. The kit layout is mapped into the viewport V2's fit gives at the current canvas size, so after a
+  resize that V2 did not refit for (V2 refits on a node change or its fit button), the drawing can sit off-centre until
+  the next refit.
 - V2's own rows panel (inside TypeWorkspace, imported unchanged) renders its file:line links at `main`; TypeWorkspace
   re-points each one at the version's ref through `sourceUrl` (a MutationObserver on the panel), so the Rows tab,
   TypeActions, TypeSearch and `site.sourceUrl` all link the release tag or snapshot sha. Without a `sourceUrl` prop the

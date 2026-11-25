@@ -13,6 +13,15 @@ export const store = {
   set(k, v) { try { localStorage.setItem(k, v); } catch { /* per-viewer convenience only */ } },
 };
 
+// WHY per page (kit check, 2026-11-25): a key shared by every variant served from the same origin (the gallery's
+// /v6/ … /v10/, the kit demo) let a toggle in one prototype change the others. Kit components default to
+// `<base>:<page path>`; an explicit key is used as given.
+export function pagePathKey(base) {
+  let path = "";
+  try { path = location.pathname.replace(/index\.html$/, ""); } catch { /* no location: one shared key */ }
+  return path ? `${base}:${path}` : base;
+}
+
 // useStoredState("rsdk-kit-dir-mode", "cards", ["cards", "compact"]) — remembered per viewer, falls back silently.
 export function useStoredState(key, initial, allowed) {
   const [v, setV] = useState(() => { const s = store.get(key); return s != null && (!allowed || allowed.includes(s)) ? s : initial; });
@@ -73,10 +82,10 @@ function AgentCardSmall({ health, a, onOpenAgent, compact }) {
   );
 }
 
-// Props: graph, health (or null), mode/onMode (optional; else remembered), onOpenPackage(id), onOpenAgent(id),
-// showAgents = true, title.
-export function Directory({ graph, health, mode: modeProp, onMode, onOpenPackage, onOpenAgent, showAgents = true, title = "Directory", className = "" }) {
-  const [stored, setStored] = useStoredState("rsdk-kit-dir-mode", "cards", ["cards", "compact"]);
+// Props: graph, health (or null), mode/onMode (optional; else remembered under storageKey, default
+// "rsdk-kit-dir-mode:<page path>"), onOpenPackage(id), onOpenAgent(id), showAgents = true, title.
+export function Directory({ graph, health, mode: modeProp, onMode, onOpenPackage, onOpenAgent, showAgents = true, title = "Directory", storageKey, className = "" }) {
+  const [stored, setStored] = useStoredState(storageKey || pagePathKey("rsdk-kit-dir-mode"), "cards", ["cards", "compact"]);
   const mode = modeProp ?? stored;
   const setMode = onMode ?? setStored;
   const layers = [...layersOf(graph)];

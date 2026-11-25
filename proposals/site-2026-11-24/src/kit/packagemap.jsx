@@ -12,7 +12,7 @@ import { LAYER_LABEL } from "@shared/graph.js";
 import { layoutPackages, roundedPath } from "./layout.js";
 import { healthOf, HEALTH_LABEL, GLUE, usesOfPackageCounts } from "./model.js";
 import { HealthDot } from "./health.jsx";
-import { store } from "./directory.jsx";
+import { store, pagePathKey } from "./directory.jsx";
 
 const H = (p) => <Handle {...p} isConnectable={false} />;
 const Hidden = () => (<><H type="target" position={Position.Top} id="t" /><H type="source" position={Position.Bottom} id="s" /></>);
@@ -73,6 +73,21 @@ function ElkEdge({ id, data, style, markerEnd }) {
   </>);
 }
 
+// WHY width/height/handles on every node (kit check, 2026-11-25): React Flow hides a node until it is measured, and a
+// node object built afresh (each layout) carries no `measured`, so it is re-measured only when its "initialised" flag
+// flips. After a version switch with a package selected, the packages present in both versions (same id, same size)
+// could miss that flip inside one batched render: never re-measured, left at visibility:hidden, so Latest release drew
+// empty bands (V6 remounted the map per version to dodge it). Nodes that state their own size (`measured` too: React
+// Flow resolves a queued fitView only once every node counts as measured, and a kept DOM node is never re-measured)
+// and their handle positions are initialised the moment they are adopted, whatever the measuring order. (Handles are
+// hidden; ElkEdge draws ELK's points, so their exact place does not matter.)
+function sized(w, h, handles = true) {
+  return { width: w, height: h, measured: { width: w, height: h }, ...(handles ? { handles: [
+    { id: "t", type: "target", position: Position.Top, x: w / 2, y: 0, width: 1, height: 1 },
+    { id: "s", type: "source", position: Position.Bottom, x: w / 2, y: h, width: 1, height: 1 },
+  ] } : {}) };
+}
+
 const nodeTypes = { kpkg: PkgNode, kagent: AgentNode, kband: BandNode, kgroup: GroupNode };
 const edgeTypes = { kelk: ElkEdge };
 const EDGE_COLOR = { flow: "#3567b5", imports: "#8a9099", dep: "#6b7280", extra: "#6b7280", builds: "#8b5cf6" };
@@ -97,7 +112,10 @@ export function switchMode(opts, mode) {
 }
 // v2 key: the v1 key may hold a pipeline grouped by the old shared default.
 const PM_KEY = "rsdk-kit-pm.v2";
-function loadOpts() { try { return pmOptions(JSON.parse(store.get(PM_KEY) || "{}")); } catch { return pmOptions(); } }
+// WHY per page (kit check, 2026-11-25): one key shared by every variant served from the same origin (the gallery's
+// /v6/ … /v10/, the kit demo), so a toggle in one prototype changed the others. The default key is namespaced by the
+// page path (pagePathKey); an explicit `storageKey` prop is used as given.
+function loadOpts(key) { try { return pmOptions(JSON.parse(store.get(key) || "{}")); } catch { return pmOptions(); } }
 
 // Toolbar: Tree | Pipeline, then V1's checkboxes plus group by layer and health.
 export function PackageMapToolbar({ opts, set, children }) {
@@ -122,6 +140,9 @@ export function PackageMapToolbar({ opts, set, children }) {
 
 // A canvas narrower than this is a phone: compact layout, readable zoom, native scrolling.
 export const PM_NARROW = 560;
+// WHY a cap (kit check, 2026-11-25): fit-to-view had none, so a small graph (Latest release: 4 packages) was blown up to
+// about 2x. The fit never zooms in past this; a small map is drawn at it, centred, and an auto-height canvas shrinks to it.
+export const PM_FIT_MAX_ZOOM = 1.2;
 const PAD = 4;
 
 function Inner({ graph, health, opts, selected, setSelected, onOpenPackage, onOpenType, onLayout, height, maxHeight, narrowMinZoom, narrowMaxHeight }) {
@@ -166,15 +187,18 @@ function Inner({ graph, health, opts, selected, setSelected, onOpenPackage, onOp
     if (!lay) return;
     const t = setTimeout(() => {
       if (zoom) rf.setViewport({ x: Math.round((innerW - lay.width * zoom) / 2), y: PAD, zoom });
-      else rf.fitView({ padding: 0.05, duration: 250 });
+      else rf.fitView({ padding: 0.05, maxZoom: PM_FIT_MAX_ZOOM, duration: 250 });
     }, 30);
     return () => clearTimeout(t);
   }, [lay, height, width, zoom, innerW]);
   // height="auto": as tall as the layout needs at this width (fit to width), within [320, maxHeight]; on a narrow
   // canvas at its readable zoom, as tall as the layout (at most narrowMaxHeight; beyond that it scrolls inside).
   // (+2: the canvas's own 1 px borders; the canvas is border-box)
+  // (fit-to-width, auto: the height the layout takes at min(width fit, PM_FIT_MAX_ZOOM), so a small map is not given a
+  // tall canvas it can never fill)
   const h = height === "auto"
-    ? (lay && width ? (zoom ? Math.min(narrowMaxHeight, innerH + 2 + (sideways ? 12 : 0)) : Math.round(Math.min(maxHeight, Math.max(320, (width * lay.height) / lay.width + 24)))) : 480)
+    ? (lay && width ? (zoom ? Math.min(narrowMaxHeight, innerH + 2 + (sideways ? 12 : 0))
+      : Math.round(Math.min(maxHeight, Math.max(320, lay.height * Math.min(PM_FIT_MAX_ZOOM, width / lay.width) + 24)))) : 480)
     : height;
   // WHY overflow per axis: a box that can scroll even 2 px in a direction latches a phone swipe in that direction, so
   // a vertical swipe on a map that fits its height scrolled nothing (measured 2026-11-24); only an overflowing axis scrolls.
@@ -202,21 +226,21 @@ function Inner({ graph, health, opts, selected, setSelected, onOpenPackage, onOp
   const nodes = useMemo(() => {
     if (!lay) return [];
     const out = [];
-    for (const b of lay.bands) out.push({ id: b.id, type: "kband", position: { x: b.x, y: b.y }, data: { ...b }, draggable: false, selectable: false, zIndex: -2, style: { width: b.w, height: b.h } });
-    for (const g of lay.groups) out.push({ id: g.id, type: "kgroup", position: { x: g.x, y: g.y }, data: { ...g }, draggable: false, selectable: false, zIndex: -2, style: { width: g.w, height: g.h } });
+    for (const b of lay.bands) out.push({ id: b.id, type: "kband", position: { x: b.x, y: b.y }, data: { ...b }, draggable: false, selectable: false, zIndex: -2, style: { width: b.w, height: b.h }, ...sized(b.w, b.h, false) });
+    for (const g of lay.groups) out.push({ id: g.id, type: "kgroup", position: { x: g.x, y: g.y }, data: { ...g }, draggable: false, selectable: false, zIndex: -2, style: { width: g.w, height: g.h }, ...sized(g.w, g.h, false) });
     for (const n of lay.nodes) {
       const m = opts.health ? healthOf(health, n.key) : null;
       const healthTitle = m ? `health: ${HEALTH_LABEL[m.state]}` + Object.entries(m.checks || {}).filter(([, c]) => ["fail", "warn"].includes(c.state)).map(([k, c]) => `\n· ${k}: ${c.detail}`).join("") : "";
       const dim = near ? !near.ns.has(n.id) : false, hot = selected === n.id;
       if (n.kind === "agent") {
-        out.push({ id: n.id, type: "kagent", position: { x: n.x, y: n.y }, draggable: false, data: { agent: n.ref, w: n.w, h: n.h, state: m?.state, dim, hot }, style: { width: n.w, height: n.h } });
+        out.push({ id: n.id, type: "kagent", position: { x: n.x, y: n.y }, draggable: false, data: { agent: n.ref, w: n.w, h: n.h, state: m?.state, dim, hot }, style: { width: n.w, height: n.h }, ...sized(n.w, n.h) });
         continue;
       }
       const p = n.ref, c = pkgCounts[p.id] || {};
       const sub = lay.mode === "pipeline" ? `produces ${c.produces || 0} · consumes ${c.consumes || 0}` : `v${p.version} · ${LAYER_LABEL[p.layer] || p.layer}`;
       out.push({ id: n.id, type: "kpkg", position: { x: n.x, y: n.y }, draggable: false,
         data: { pkg: p, w: n.w, h: n.h, sub, state: m?.state, healthTitle, dim, hot, onOpen: hot && onOpenPackage ? () => onOpenPackage(p.id) : null },
-        style: { width: n.w, height: n.h } });
+        style: { width: n.w, height: n.h }, ...sized(n.w, n.h) });
     }
     return out;
   }, [lay, health, opts.health, near, selected, pkgCounts, onOpenPackage]);
@@ -273,14 +297,16 @@ function Inner({ graph, health, opts, selected, setSelected, onOpenPackage, onOp
 // narrowMaxHeight = 1400 (its auto height cap),
 // options/onOptions (optional: controlled { mode, groupByLayer, deps, agents, imports, health, byMode }; else
 // remembered; a partial set is completed by pmOptions, so { mode: "pipeline" } is ungrouped),
-// onOpenPackage(id), onOpenType(typeId), onSelect(pkgId|null), caption = true, toolbarExtra (node).
-export function PackageMap({ graph, health, height = "auto", maxHeight = 720, narrowMinZoom = 0.75, narrowMaxHeight = 1400, options: optsProp, onOptions, onOpenPackage, onOpenType, onSelect, caption = true, toolbarExtra, className = "" }) {
-  const [optsState, setOptsState] = useState(loadOpts);
+// onOpenPackage(id), onOpenType(typeId), onSelect(pkgId|null), caption = true, toolbarExtra (node),
+// storageKey (optional: the localStorage key for uncontrolled options; default "rsdk-kit-pm.v2:<page path>").
+export function PackageMap({ graph, health, height = "auto", maxHeight = 720, narrowMinZoom = 0.75, narrowMaxHeight = 1400, options: optsProp, onOptions, onOpenPackage, onOpenType, onSelect, caption = true, toolbarExtra, storageKey, className = "" }) {
+  const key = storageKey || pagePathKey(PM_KEY);
+  const [optsState, setOptsState] = useState(() => loadOpts(key));
   const opts = optsProp ? pmOptions(optsProp) : optsState;
   const set = useCallback((patch) => {
     if (onOptions) onOptions({ ...opts, ...patch });
-    if (!optsProp) setOptsState((o) => { const n = { ...o, ...patch }; store.set(PM_KEY, JSON.stringify(n)); return n; });
-  }, [opts, optsProp, onOptions]);
+    if (!optsProp) setOptsState((o) => { const n = { ...o, ...patch }; store.set(key, JSON.stringify(n)); return n; });
+  }, [opts, optsProp, onOptions, key]);
   const [selected, setSel] = useState(null);
   const setSelected = (id) => { setSel(id); onSelect?.(id ? id.replace(/^(pkg|agent):/, "") : null); };
   const [lay, setLay] = useState(null);

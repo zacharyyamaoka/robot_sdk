@@ -25,6 +25,10 @@
 .k-types .sw-pkg { position: relative; }
 .k-types .sw-pkg::after { content: ""; position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
 .k-types .rows-pkg-name::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: transparent; }
+/* WHY (kit check, 2026-11-25): V2's package names (@shared .rf-pkg-name: font shorthand = line-height normal, overflow
+   hidden) clipped the underscore at 1x, so "robot_metrics" read "robot metrics". A taller line box keeps the
+   descender inside the clip at 1x and 2x; the ellipsis for long names stays. */
+.k-types .rf-pkg-name { line-height: 1.4; padding-bottom: 1px; }
 
 /* tablet / phone: one column — the switchboard, then the answer, then the type list */
 @media (max-width: 1099px) {
@@ -38,6 +42,12 @@
   .k-types .sw-canvas { min-height: 420px; flex: none; height: 420px; }
 }
 @media (max-width: 640px) {
+  /* The phone switchboard (swnarrow.js) keeps a strip at the bottom of the canvas free: the zoom controls lie in it,
+     in a row at the bottom left, so they never cover an edge or its arrowhead (V2 stacked them bottom right, over
+     robot_diagnostics' arrowhead, kit check 2026-11-25); the React Flow attribution keeps the bottom right. */
+  .k-types .react-flow__panel.react-flow__controls { flex-direction: row; left: 0; right: auto; bottom: 0; margin: 6px 8px; }
+  .k-types .react-flow__controls button { border-bottom: 0; border-right: 1px solid var(--line); }
+  .k-types .react-flow__controls button:last-child { border-right: 0; }
   .k-types .intro { grid-template-columns: minmax(0, 1fr); padding: 12px 34px 12px 14px; }
   .k-types .intro-actions .copy-code { flex-wrap: wrap; }
   .k-types .centre { padding: 10px 12px; }
