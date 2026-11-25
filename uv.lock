@@ -1044,7 +1044,7 @@ provides-extras = ["contact", "test"]
 [[package]]
 name = "robot-msgs"
 version = "0.3.1"
-source = { editable = "../robot_msgs" }
+source = { editable = "/home/bam/robot_msgs" }
 dependencies = [
     { name = "dataclass-values" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -1115,6 +1115,7 @@ dependencies = [
     { name = "robot-thermal" },
     { name = "robot-trajectories" },
     { name = "sim2real" },
+    { name = "traj-compare" },
 ]
 
 [package.dev-dependencies]
@@ -1140,6 +1141,7 @@ requires-dist = [
     { name = "robot-thermal", editable = "../robot_thermal" },
     { name = "robot-trajectories", editable = "../robot_trajectories" },
     { name = "sim2real", editable = "../sim2real" },
+    { name = "traj-compare", editable = "../traj_compare" },
 ]
 
 [package.metadata.requires-dev]
@@ -1215,6 +1217,34 @@ requires-dist = [
     { name = "weave", marker = "extra == 'tracking'", specifier = "==0.54.1" },
 ]
 provides-extras = ["sim", "vision", "tracking", "homing", "trajectories", "test"]
+
+[[package]]
+name = "traj-compare"
+version = "0.1.0"
+source = { editable = "../traj_compare" }
+dependencies = [
+    { name = "dataclass-values" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "robot-msgs" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "dataclass-values", specifier = ">=0.1.0" },
+    { name = "matplotlib", marker = "extra == 'plot'", specifier = ">=3.8" },
+    { name = "mcap", marker = "extra == 'export'", specifier = ">=1.2" },
+    { name = "numpy", specifier = ">=1.26" },
+    { name = "pyarrow", marker = "extra == 'export'", specifier = ">=15" },
+    { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },
+    { name = "rerun-sdk", marker = "extra == 'rerun'", specifier = "==0.40.0" },
+    { name = "robot-msgs", editable = "/home/bam/robot_msgs" },
+    { name = "robot-msgs", extras = ["rerun"], marker = "extra == 'rerun'", editable = "/home/bam/robot_msgs" },
+    { name = "scipy", marker = "extra == 'test'", specifier = ">=1.10" },
+    { name = "viser-3d-viewer", marker = "extra == 'viser'", editable = "/home/bam/viser-3d-viewer" },
+    { name = "wandb", marker = "extra == 'wandb'", specifier = ">=0.19" },
+]
+provides-extras = ["test", "rerun", "export", "plot", "viser", "wandb"]
 
 [[package]]
 name = "typing-extensions"
