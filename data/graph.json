@@ -1,6 +1,6 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-25T19:29:02+00:00",
+ "generated": "2026-11-25T23:42:08+00:00",
  "sources": {
   "robot_sdk": "ea8b6db",
   "robot_msgs": "8827f5f",
@@ -12,13 +12,13 @@
   "robot_autonomy": "0f68b89",
   "robot_metrics": "f953427",
   "robot_activity": "2ebea6e",
-  "traj_compare": "15e9f4b",
-  "robot_msg_viz": "cc61028",
+  "traj_compare": "e413020",
+  "robot_msg_viz": "c2d166d",
   "sim2real": "7355462",
   "robot_diagnostics": "2ab15cb",
-  "like_keras": "72de480",
+  "like_keras": "7d942f9",
   "robot_sdk_agent": "706387f",
-  "trajectory_tracking_agent": "4dab947",
+  "trajectory_tracking_agent": "751483d",
   "robot_collision": "19aa8d0"
  },
  "packages": [
@@ -2176,7 +2176,7 @@
    "type": "robot_msgs.compare.PoseTolerance",
    "kind": "imports",
    "symbol": "traj_compare.dataset",
-   "where": "src/traj_compare/dataset.py:74",
+   "where": "src/traj_compare/dataset.py:75",
    "public": false,
    "declared": false,
    "verified": true
@@ -2196,7 +2196,7 @@
    "type": "robot_msgs.compare.Tolerances",
    "kind": "consumes",
    "symbol": "traj_compare.dataset.write_dataset_report",
-   "where": "src/traj_compare/dataset.py:1953",
+   "where": "src/traj_compare/dataset.py:1963",
    "public": true,
    "declared": false,
    "verified": true
@@ -2296,7 +2296,7 @@
    "type": "robot_msgs.trajectory.JointTrajectory",
    "kind": "consumes",
    "symbol": "traj_compare.dataset.Run.measured",
-   "where": "src/traj_compare/dataset.py:126",
+   "where": "src/traj_compare/dataset.py:127",
    "public": true,
    "declared": true,
    "verified": true
@@ -2306,7 +2306,7 @@
    "type": "robot_msgs.trajectory.JointTrajectory",
    "kind": "consumes",
    "symbol": "traj_compare.dataset.Run.reference",
-   "where": "src/traj_compare/dataset.py:125",
+   "where": "src/traj_compare/dataset.py:126",
    "public": true,
    "declared": true,
    "verified": true
@@ -2316,7 +2316,7 @@
    "type": "robot_msgs.trajectory.JointTrajectory",
    "kind": "consumes",
    "symbol": "traj_compare.rerun_target_run.target_vs_run_blueprint",
-   "where": "src/traj_compare/rerun_target_run.py:661",
+   "where": "src/traj_compare/rerun_target_run.py:683",
    "public": true,
    "declared": false,
    "verified": true
@@ -2326,7 +2326,7 @@
    "type": "robot_msgs.trajectory.JointTrajectory",
    "kind": "consumes",
    "symbol": "traj_compare.rerun_target_run.write_target_vs_run_rrd",
-   "where": "src/traj_compare/rerun_target_run.py:672",
+   "where": "src/traj_compare/rerun_target_run.py:694",
    "public": true,
    "declared": false,
    "verified": true
@@ -2346,7 +2346,7 @@
    "type": "robot_msgs.trajectory.JointTrajectory",
    "kind": "produces",
    "symbol": "traj_compare.dataset.Run.series",
-   "where": "src/traj_compare/dataset.py:146",
+   "where": "src/traj_compare/dataset.py:147",
    "public": true,
    "declared": true,
    "verified": true
@@ -2366,7 +2366,7 @@
    "type": "robot_msgs.trajectory.PoseTrajectory",
    "kind": "consumes",
    "symbol": "traj_compare.rerun_target_run.target_vs_run_blueprint",
-   "where": "src/traj_compare/rerun_target_run.py:662",
+   "where": "src/traj_compare/rerun_target_run.py:684",
    "public": true,
    "declared": false,
    "verified": true
@@ -2376,7 +2376,7 @@
    "type": "robot_msgs.trajectory.PoseTrajectory",
    "kind": "consumes",
    "symbol": "traj_compare.rerun_target_run.write_target_vs_run_rrd",
-   "where": "src/traj_compare/rerun_target_run.py:676",
+   "where": "src/traj_compare/rerun_target_run.py:698",
    "public": true,
    "declared": false,
    "verified": true
