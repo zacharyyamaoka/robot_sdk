@@ -1,22 +1,22 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-25T04:12:25+00:00",
+ "generated": "2026-11-25T04:17:48+00:00",
  "sources": {
-  "robot_sdk": "9b1c15a",
-  "robot_msgs": "23c1b0a",
-  "robot_models": "9b47f1c",
-  "robot_controllers": "7d22dc5",
-  "robot_reach": "0168efc",
-  "robot_thermal": "210041b",
-  "robot_trajectories": "30cac5e",
-  "robot_autonomy": "6a02658",
-  "robot_metrics": "7914d9d",
-  "robot_activity": "71f1685",
-  "traj_compare": "1cd3817",
-  "sim2real": "f3b629c",
-  "robot_diagnostics": "dc01ece",
-  "like_keras": "38bbc97",
-  "trajectory_tracking_agent": "12c8f44"
+  "robot_sdk": "1369ae8",
+  "robot_msgs": "248f9f1",
+  "robot_models": "61b292c",
+  "robot_controllers": "3159fe9",
+  "robot_reach": "42a6c2a",
+  "robot_thermal": "928622d",
+  "robot_trajectories": "e2cdd76",
+  "robot_autonomy": "ac7ecf0",
+  "robot_metrics": "f953427",
+  "robot_activity": "01ab392",
+  "traj_compare": "023b876",
+  "sim2real": "21f81b0",
+  "robot_diagnostics": "2ab15cb",
+  "like_keras": "a57ae51",
+  "trajectory_tracking_agent": "8bf6fc8"
  },
  "packages": [
   {
@@ -26,6 +26,13 @@
    "role": "library",
    "layer": "vocabulary",
    "one_line": "Frozen numpy-backed message dataclasses every package joins on",
+   "summary": "The standard robot data types (ROS's geometry, sensor, trajectory and vision messages) as frozen Python dataclasses, *with* the functions between them: pose offsets, trajectory interpolation and resampling, point projection, depth to point cloud. `.show()` (Rerun) and `.plot()` (matplotlib) on every type. ROS 2 / bag export as an extra. Strict semver: additive changes only.",
+   "use_when": "Any pose, transform, joint state, trajectory, limit, image or point cloud. **Never define your own Pose or Trajectory.**",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_msgs",
+    "pypi": "https://pypi.org/project/robot-msgs/",
+    "site": "https://robotmsgs.com"
+   },
    "version": "0.3.1",
    "deps": {
     "required": [],
@@ -49,6 +56,14 @@
    "role": "library",
    "layer": "models",
    "one_line": "Generic models by type: actuators, arms, sensors, homing procedures",
+   "summary": "Generic physical models of part *types* (servos, arms, conveyors, end effectors, sensors), each a ladder of models from ideal to learned (M0 ideal → M1 datasheet → M2 Coulomb + viscous → M3 friction …). Every rung states its parameters, equation and references. No maker, no SKU. Imports robot_msgs and numpy only.",
+   "use_when": "What parameters a model of an actuator or arm needs, which friction or dynamics model to use, how parameter names map.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_models",
+    "pypi": "https://pypi.org/project/robot-models-lib/",
+    "docs": "https://github.com/zacharyyamaoka/robot_models/tree/main/docs/peps",
+    "issues": "https://github.com/zacharyyamaoka/robot_models/issues"
+   },
    "version": "0.3.0",
    "deps": {
     "required": [
@@ -69,6 +84,14 @@
    "role": "library",
    "layer": "leaf",
    "one_line": "Feed-forward/feedback controllers as black boxes plus a Layout",
+   "summary": "Controllers as black boxes: a robot_msgs message in, a `ServoCommand` out, `controller.tick(state, dt)`. Joint trajectory controller (Python and C++), joint impedance. Each benchmarked on a ladder of rungs (free motion, fast motion, impacts, pushes, replanning, host stalls) for performance and cost.",
+   "use_when": "Tracking a trajectory, impedance or compliance, choosing a controller, host vs board control.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_controllers",
+    "pypi": "https://pypi.org/project/robot-controllers/",
+    "site": "https://zacharyyamaoka.github.io/robot-controllers/",
+    "docs": "https://github.com/zacharyyamaoka/robot_controllers/blob/main/docs/CONTRACT.md"
+   },
    "version": "0.1.0",
    "deps": {
     "required": [
@@ -91,6 +114,12 @@
    "role": "library",
    "layer": "leaf",
    "one_line": "Workspace and IK-branch reach of any arm, FK/IK passed in",
+   "summary": "Reachability of any arm in Cartesian and joint space, from FK and IK passed in as pure functions. Reach maps, joint maps, IK branches, orientations; save results, view them in viser. Example arms built in: pendulum, RR, five-bar, 3-DOF shoulder, UR5e. Loads URDFs.",
+   "use_when": "Workspace, \"can the arm reach X\", IK branch choice, placing a robot or a bin, arm sizing.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_reach",
+    "pypi": "https://pypi.org/project/robot-reach/"
+   },
    "version": "0.1.0",
    "deps": {
     "required": [
@@ -112,6 +141,12 @@
    "role": "library",
    "layer": "leaf",
    "one_line": "Motor and board heat tracking with burst-limit decisions",
+   "summary": "Running servo motors above their continuous rating in short bursts, safely. v1: an I²t burst budget per drive plus a hard cut on board temperature. v2: a lumped thermal network per drive, fed by logged current, with a Kalman observer. Standard library at runtime.",
+   "use_when": "Motor or board heat, burst limits, duty cycles, how hard a joint may be pushed.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_thermal",
+    "pypi": "https://pypi.org/project/robot-thermal/"
+   },
    "version": "0.1.0",
    "deps": {
     "required": [],
@@ -135,6 +170,13 @@
    "role": "library",
    "layer": "leaf",
    "one_line": "Trajectory kinds from limits and tasks, one JointTrajectory out",
+   "summary": "A signal library for robot motion. Every trajectory kind is a `TrajectoryGenerator`: a plain function `f(JointSpace, numbers/points/poses) → JointTrajectory`, inside the limits and at rest at both ends. ~80 kinds: moves, waypoints (joint and Cartesian), random waypoints, pick and place, chirps, multisines, PRBS, step trains, PID tuning, friction ID, ISO 9283 tests, workspace sweeps, moving targets. `chain` / `split` to compose. The legs inside a kind are timed by a `WaypointTrajectoryGenerator` (points + joint limits in, a JointTrajectory out: minimum_jerk, trapezoid, ruckig, ruckig_pro, toppra as plugins), passed as `waypoint_generator=`. The robot (limits, FK/IK, dynamics, collision) is injected via `JointSpace`.",
+   "use_when": "Generating any motion: test trajectories, excitation for system ID, pick-and-place paths, tuning signals, benchmarks.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_trajectories",
+    "pypi": "https://pypi.org/project/robot-trajectories/",
+    "docs": "https://github.com/zacharyyamaoka/robot_trajectories/tree/main/docs/peps"
+   },
    "version": "0.1.0",
    "deps": {
     "required": [
@@ -154,6 +196,12 @@
    "role": "library",
    "layer": "leaf",
    "one_line": "Counts human interventions per working hour; ranks causes",
+   "summary": "The Robot Autonomy Agent: working hours between human interventions, from every source (chat asks, logs, faults, tickets), with the causes ranked as a to-do list.",
+   "use_when": "Measuring and driving down human interventions; autonomy KPIs.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_autonomy",
+    "pypi": "https://pypi.org/project/robot-autonomy/"
+   },
    "version": "0.1.0",
    "deps": {
     "required": [
@@ -175,6 +223,14 @@
    "role": "library",
    "layer": "leaf",
    "one_line": "Tracking, stop, lag, repeatability metrics over message streams",
+   "summary": "Performance metrics for robot parts: tracking error, stop error, lag, repeatability, with units. Works on a whole recording or a live feed, with identical numbers. Runs group into rungs, stations and deployments; pass/fail targets (objectives) are kept apart from the maths. Shaped like torchmetrics.",
+   "use_when": "Scoring any run: target vs real, sim vs real, before vs after, pass/fail gates.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_metrics",
+    "pypi": "https://pypi.org/project/robot-metrics/",
+    "site": "https://zacharyyamaoka.github.io/robot_metrics/",
+    "changelog": "https://github.com/zacharyyamaoka/robot_metrics/blob/main/CHANGELOG.md"
+   },
    "version": "0.1.0",
    "deps": {
     "required": [
@@ -198,6 +254,15 @@
    "role": "library",
    "layer": "leaf",
    "one_line": "Per-robot and fleet activity, work queue, stalemate flags",
+   "summary": "The Robot Activity Agent: measures whether each robot is doing useful work (claimed, active, moving), keeps a work queue moving, flags stalemates and gives every idle second a reason.",
+   "use_when": "Fleet or robot utilisation, uptime dashboards, work queues.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_activity",
+    "pypi": "https://pypi.org/project/robot-activity/",
+    "site": "https://zacharyyamaoka.github.io/robot_activity/",
+    "dashboard": "https://zacharyyamaoka.github.io/robot_activity/dashboard.html",
+    "changelog": "https://github.com/zacharyyamaoka/robot_activity/blob/main/CHANGELOG.md"
+   },
    "version": "0.1.1",
    "deps": {
     "required": [
@@ -219,6 +284,12 @@
    "role": "viewer",
    "layer": "viewers",
    "one_line": "A/B trajectory comparison and coverage viewers, one static report.html",
+   "summary": "The viewers, on robot_msgs types: a turn-key A/B trajectory comparison viewer that writes one static `report.html` (target vs sim vs real), and the dataset coverage viewers, one payload feeding a data-ui page, Matplotlib, Viser and W&B: `traj_compare.coverage` (trajectories) and `traj_compare.grasp_coverage` (grasps). Coverage of any list of dataclass records (each field against its declared `Value` range, class balance, missing values, \"is more data still adding coverage?\") moved to its own package, dataclass_coverage.",
+   "use_when": "Comparing runs (target vs sim vs real, before vs after), benchmark reports, \"how much of the space does this dataset cover?\". **Never write a bespoke trajectory plot or coverage page.**",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/traj_compare",
+    "pypi": "https://pypi.org/project/traj-compare/"
+   },
    "version": "0.1.0",
    "deps": {
     "required": [
@@ -245,6 +316,13 @@
    "role": "library",
    "layer": "outer",
    "one_line": "RobotTwin, calibrate() and fit/replay over real or simulated runs",
+   "summary": "The outer API on top of everything: digital twins (`RobotTwin`), one-click `.calibrate()` (configure → fit → tune → measure routines), MuJoCo simulation, and dashboards of how close each twin is to its real hardware. May import every package above.",
+   "use_when": "Twins, calibration, system identification, sim-vs-real comparison, the one-call API over a whole robot.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/sim2real",
+    "pypi": "https://pypi.org/project/sim2real/",
+    "docs": "https://github.com/zacharyyamaoka/sim2real/tree/main/docs/peps"
+   },
    "version": "0.1.0",
    "deps": {
     "required": [
@@ -275,6 +353,12 @@
    "role": "library",
    "layer": "checks",
    "one_line": "Diagnostics as pure functions: diagnose(config, data) -> Result",
+   "summary": "Robot Diagnostics (RobotDx). Diagnostics as checks: a diagnostic = a metric + a threshold, with a registry, records (ROS `DiagnosticStatus` shape), roll-ups and ~33 stock checks: tracking and stop error, ISO 9283, frequency response, fidelity, coverage, feedback, health, camera, events. Stdlib-only core; the stock maths (numpy, robot_metrics, sim2real) is the `stock` extra, imported lazily. The io-diagnostics app (dashboard, device tree) uses it.",
+   "use_when": "Is this robot, joint or sensor healthy? Pass/fail checks on runs, health dashboards, turning a metric into an alarm.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_diagnostics",
+    "pypi": "https://pypi.org/project/robot-diagnostics/"
+   },
    "version": "0.1.0",
    "deps": {
     "required": [],
@@ -296,6 +380,13 @@
    "role": "library",
    "layer": "comms",
    "one_line": "Components, ports and systems over dora; robot_msgs on the wire",
+   "summary": "The communication API: components with ports, systems that wire them from outside, deployments in one process or across the network. dora-rs is the first transport. (Design in progress: check `docs/CONTRACT.md`.)",
+   "use_when": "Connecting robot components, sensors and processes; dataflows.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/like_keras",
+    "pypi": "https://pypi.org/project/like_keras/",
+    "docs": "https://github.com/zacharyyamaoka/like_keras/blob/main/docs/CONTRACT.md"
+   },
    "version": "0.1.0",
    "deps": {
     "required": [
@@ -3126,7 +3217,16 @@
      "vault": null
     },
     "updated_t": 1795563985.2978485
-   }
+   },
+   "one_line": "Makes a robot track a given trajectory more accurately, with a scored population of every controller it tried",
+   "summary": null,
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/trajectory_tracking_agent",
+    "site": "https://zacharyyamaoka.github.io/trajectory_tracking_agent/",
+    "docs": "https://github.com/zacharyyamaoka/trajectory_tracking_agent/blob/main/docs/CONTRACT.md"
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
   }
  ]
 }
