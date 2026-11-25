@@ -74,7 +74,9 @@ def main():
         "boundary": prune["boundary"],
         "axes": crit["axes"],
         "requirements": crit["requirements"],
-        "hardGates": crit["hardGates"],
+        # WHY the mapping: criteria.r2.json (frozen) states each gate as a `test`; the deck shell requires a `why`. The gate's
+        # own test sentence is shown as its reason, so the frozen file stays untouched.
+        "hardGates": [{**g, "why": g.get("why") or g["test"]} for g in crit["hardGates"]],
         "variants": variants,
         "checks": prune.get("checks", []),
     }

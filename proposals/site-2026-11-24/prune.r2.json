@@ -1,0 +1,486 @@
+{
+ "written": "2026-11-25, after all five round-2 variants were built, recorded and gate-checked (d7bc188) and re-recorded on the fixed kit; criteria.r2.json was frozen before any variant existed (4807629, 2026-11-24 21:58 MST)",
+ "boundary": "Recorded before robot_msg_viz joined the directory (83e81b7): the live site now reads 15 packages and 67 types (its 82 import rows add the 36 types only it views), so live numbers differ from these captions. Five single-file React Flow builds on one shared kit (src/kit, 75fd9ca + fixes bf2705a), all reading the real site/data/graph.json (14 packages, 31 types, 256 uses, 2 agents at recording time), health.json (tests on main, declaration lint, types, release vs pin, repo: 4 failing, 10 warnings, 2 passing) and versions.json (Live, Latest release from v* tags = 4 of 14 packages, 11 gh-pages snapshots) at runtime, plus the real pick-and-place run (simulated MuJoCo plant). Recorded from the running builds in headless Chrome at 1440 x 900 and 390 x 844. Applied to the live site behind the Site design switcher; nothing is the shipped single page yet.",
+ "defaultId": "v6",
+ "defaultWhy": "V6 Repo leads at 96/100: it opens on your V2 type view with 'What can I do with it?' beside it (zero actions for JointTrajectory, 't' for any other type), carries health on every screen (header pill, red tab counter, a PR-style checks box) and puts the version picker where GitHub's branch picker is, so nothing has to be learned. V7 Workbench, V8 Type Search and V10 Docs tie 4 points behind at 92, each for a different reader, so the lead is real but not large.",
+ "decisionHinge": "Who the site is for first. All five max out types and versions, so the gap comes from health framing, the package views and the first minute. Moving weight around barely moves V6: with health weighted above types (swap FR1 and FR2) it is still 96 to V9's 90; only if the outsider's first minute weighed as much as types (FR6 30, FR1 10) does V10 Docs tie it at 92 as the public front door. The real hinge is taste rather than score: whether a GitHub look-alike reads as familiar or as a site pretending to have issues, stars and PRs it doesn't — if the latter, V8 Type Search (cleanest type-first home) or V10 Docs (cleanest first minute) is the pick at 92.",
+ "variants": [
+  {
+   "id": "v6",
+   "name": "Repo",
+   "accent": "#0969da",
+   "thesis": "Zero relearning: the site looks and moves like the GitHub repo page you already live in, the workspaces are the repo tabs, and the version picker IS GitHub's branch/tag picker.",
+   "storyTitle": "Repo tabs, branch picker, checks box",
+   "bestWhen": "The reader already knows GitHub: tabs with counters, the branch picker, a PR-style checks box and a file table read instantly, and health shows on every screen.",
+   "losesWhen": "Width is tight: GitHub's right column takes ~300 px at 1440, so the type list folds and the package map shrinks while a package is open; the GitHub look can suggest issues, stars and PRs that aren't there.",
+   "decisions": [
+    {
+     "label": "Workspace navigation",
+     "value": "GitHub's underline repo tabs with counters: Types · Packages · Directory · Health (red failing count) · Agents · Run · For coding agents; keys t / w / g+letter."
+    },
+    {
+     "label": "Home screen",
+     "value": "The Types workspace on JointTrajectory (V2 switchboard + 'What can I do with it?') beside GitHub's right column: About (pitch, install, links), Releases (every version, click to switch), Health."
+    },
+    {
+     "label": "Version model",
+     "value": "GitHub's branch/tag button top right; the Releases box lists every version; off Live a yellow banner lists what is not in this version and what changed."
+    },
+    {
+     "label": "Health surface",
+     "value": "A pull request's checks box ('Some checks were not successful', ✓/✗/● rows with Details links to the CI run) above the kit's HealthBoard; red counter on the tab and a pill in the header."
+    }
+   ],
+   "keepParts": [
+    "Health as the PR checks box with Details links, plus the red Health tab counter",
+    "Directory Compact as GitHub's file table (one folder row per layer, version and status columns)",
+    "The right column: About, a clickable Releases list, and a per-package column with its five checks and type links"
+   ],
+   "proof": [
+    "Recorded 6 steps on real data: JointTrajectory answered on landing (36 functions take it, 16 return one), traj_compare's tests failing at 1105f65 with its CI run one click away, Latest release showing 4 of 14 packages.",
+    "Builder's own headless check 27/27: Latest release survives Types → Directory → Health → Types; Back walks health → directory → types (release) → types (Live); t, w and g d keys work."
+   ],
+   "scores": {
+    "fr1": {
+     "score": 5,
+     "evidence": "Step 1 lands on JointTrajectory with 'What can I do with it?' listing functions by package with health dot and file:line (targets.py:225 …) — zero actions; 't' (Go to type) answers any other type, including 'JointTrajectory ->'.",
+     "confidence": "high"
+    },
+    "fr2": {
+     "score": 5,
+     "evidence": "Header pill '4 failing · 10 warnings · 2 passing' and a red 4 on the Health tab on every screen; step 6 is a PR checks box, failing first, each row with Details to its CI run; nodes in the type and package views carry health dots.",
+     "confidence": "high"
+    },
+    "fr3": {
+     "score": 5,
+     "evidence": "Branch/tag picker top right beside the GitHub icon; step 4 on Latest release: banner lists the 10 packages not in this version and 24 fewer types, the tree shows only the 4 tagged packages; Releases box shows the current version.",
+     "confidence": "high"
+    },
+    "fr4": {
+     "score": 5,
+     "evidence": "Tabs one click apart; version, selected type/package, tree mode and expanded health row all live in the URL and survive tab switches and Back; on a phone the tabs scroll and the picker stays top right (phone switchboard routed cleanly on the fixed kit).",
+     "confidence": "medium"
+    },
+    "fr5": {
+     "score": 4,
+     "evidence": "Step 5: the package map runs full width (zoom 0.77) with group by layer off reading as a plain tree; pipeline one click; Directory Compact is a file table, Cards the kit's. The kit's pipeline still has upward edges from type cycles.",
+     "confidence": "medium"
+    },
+    "fr6": {
+     "score": 4,
+     "evidence": "Pitch is the repo description line on every screen and the About box carries install and 'The real pick and place · 6 stages' one click away, but the switchboard dominates the first screen.",
+     "confidence": "high"
+    }
+   },
+   "gateResults": {
+    "g1": {
+     "pass": true,
+     "evidence": "graph.json, health.json and versions.json fetched at runtime (gates_r2 network log); the build-time copy serves file://."
+    },
+    "g2": {
+     "pass": true,
+     "evidence": "Types, Packages (tree, pipeline, group by layer), Directory (Cards, Compact), Health, Agents, Run and For coding agents all reachable by their data-ws entries."
+    },
+    "g3": {
+     "pass": true,
+     "evidence": "Picker at x=1294, GitHub icon at x=1384 beside it (top right, linking https://github.com/zacharyyamaoka/robot_sdk); Live is the default; Latest release changed the data (#/?v=release)."
+    },
+    "g4": {
+     "pass": true,
+     "evidence": "No whole-map zoom / fly-to canvas as a page; graphs are the kit's switchboard and package map inside workspaces (judged from the stills)."
+    },
+    "g5": {
+     "pass": true,
+     "evidence": "Directory links: GitHub 15/15, PyPI 15/15, Site 5/5."
+    },
+    "g6": {
+     "pass": true,
+     "evidence": "Console errors 0 at 1440 x 900 on landing and every workspace; phone overflow 0 px at 390; phone switchboard 0 edges through unrelated boxes."
+    }
+   }
+  },
+  {
+   "id": "v7",
+   "name": "Workbench",
+   "accent": "#007acc",
+   "thesis": "One selection, every lens: pick JointTrajectory or a package once and every workspace shows it, inside a VS Code window; health is a Problems panel one keystroke (Ctrl+J) away.",
+   "storyTitle": "Explorer, editor tabs, Problems",
+   "bestWhen": "An engineer who lives in VS Code and comes back daily: several types and packages open as tabs, a split editor to compare, versions in the status bar, problems always one key away.",
+   "losesWhen": "A first-time outsider, especially on a phone: the chrome is dense, the pitch is a one-line strip, and in a split at 1440 with the Explorer open the package map is fitted small.",
+   "decisions": [
+    {
+     "label": "Workspace navigation",
+     "value": "VS Code's activity bar (Types, Packages, Directory, Health with a badge, Agents, Run, For coding agents) and editor tabs with preview/pin/close and Split Editor."
+    },
+    {
+     "label": "Home screen",
+     "value": "Explorer open (layers → packages → their types, agents last) and the most-used type, JointTrajectory, in the editor; a dismissable welcome strip with pitch + install."
+    },
+    {
+     "label": "Version model",
+     "value": "The status-bar branch item opens the picker and the bar turns amber off Live; the Explorer gets git letters (D, A, M) and a 'Changes vs Live' section; a 'Live ↔ Latest release' diff tab."
+    },
+    {
+     "label": "Health surface",
+     "value": "A Problems panel (Ctrl+J): one row per failing or warning check, grouped by package, filter and 'only the selection', evidence link per row; counts in the status bar on every screen."
+    }
+   ],
+   "keepParts": [
+    "The Problems panel with per-check evidence links and status-bar counts",
+    "Selection that follows the active editor across every workspace (?sel=), ringing and tagging the type's packages on the map",
+    "The 'Live ↔ version' diff tab comparing graph.json and health per package"
+   ],
+   "proof": [
+    "Recorded 6 steps: JointTrajectory on landing, Ctrl+P 'JointTrajectory ->' listing 36 functions, traj_compare's page with the failing CI run, Latest release with the amber bar and D/M decorations, a split of the type beside the ungrouped tree with its 7 packages ringed, and Problems.",
+    "Builder's headless check 15/15: version kept across workspaces, Back, deep links incl. a package missing from the release, side-bar width and Problems height survive a reload, Ctrl+B / Ctrl+J."
+   ],
+   "scores": {
+    "fr1": {
+     "score": 5,
+     "evidence": "Step 1 lands on JointTrajectory with 'What can I do with it?' (36 take it, 16 return one) at zero actions; Ctrl+P accepts 'JointTrajectory ->'; Explorer TYPES section lists all 31 with use counts.",
+     "confidence": "high"
+    },
+    "fr2": {
+     "score": 5,
+     "evidence": "Status bar '⊗ 4 ⚠ 17 ⓘ 1' on every screen, a badge on the Health activity icon, failing packages red in the Explorer; step 6: Health board failing first plus Problems with per-check evidence links (CI run, PyPI).",
+     "confidence": "high"
+    },
+    "fr3": {
+     "score": 5,
+     "evidence": "Step 4: the status bar turns amber on Latest release, the Explorer marks D/M per package, and the 'Live ↔ Latest release' tab shows 14→4 packages, 31→7 types, 256→18 uses side by side; the top-right picker sits beside the GitHub icon.",
+     "confidence": "high"
+    },
+    "fr4": {
+     "score": 5,
+     "evidence": "Activity bar one click per workspace; selection (?sel=) and version follow every workspace; deep links and Back verified; on a phone the activity bar becomes a top row, the Explorer a drawer and Problems a bottom sheet (phone switchboard routed cleanly on the fixed kit).",
+     "confidence": "medium"
+    },
+    "fr5": {
+     "score": 3,
+     "evidence": "Step 5: in a split the ungrouped tree is fitted into a ~560 px group, so labels and tags are tiny; full-width Packages reads fine; Directory is the kit's Cards/Compact.",
+     "confidence": "medium"
+    },
+    "fr6": {
+     "score": 3,
+     "evidence": "The pitch is a one-line welcome strip with install and 'See it pick and place'; it is present on the first screen but competes with dense IDE chrome.",
+     "confidence": "high"
+    }
+   },
+   "gateResults": {
+    "g1": {
+     "pass": true,
+     "evidence": "graph.json, health.json and versions.json fetched at runtime (gates_r2 network log); the build-time copy serves file://."
+    },
+    "g2": {
+     "pass": true,
+     "evidence": "Types, Packages (tree, pipeline, group by layer), Directory (Cards, Compact), Health, Agents, Run and For coding agents all reachable by their data-ws entries."
+    },
+    "g3": {
+     "pass": true,
+     "evidence": "Picker at x=1323, GitHub icon at x=1404 beside it (top right, linking https://github.com/zacharyyamaoka/robot_sdk); Live is the default; Latest release changed the data (#/types/JointTrajectory?v=release)."
+    },
+    "g4": {
+     "pass": true,
+     "evidence": "No whole-map zoom / fly-to canvas as a page; graphs are the kit's switchboard and package map inside workspaces (judged from the stills)."
+    },
+    "g5": {
+     "pass": true,
+     "evidence": "Directory links: GitHub 15/15, PyPI 15/15, Site 5/5."
+    },
+    "g6": {
+     "pass": true,
+     "evidence": "Console errors 0 at 1440 x 900 on landing and every workspace; phone overflow 0 px at 390; phone switchboard 0 edges through unrelated boxes."
+    }
+   }
+  },
+  {
+   "id": "v8",
+   "name": "Type Search",
+   "accent": "#5b4a8b",
+   "thesis": "robot-sdk is a functional library, so the front door is a Hoogle-style type search: 'JointTrajectory ->' lists everything you can do with one, and the package map opens as the pipeline of who feeds whom.",
+   "storyTitle": "Search by type, Hoogle rows, pipeline",
+   "bestWhen": "You already have a type in hand (a JointTrajectory, a JointState) and want the functions that take or return it, and whether their packages pass — for any type, in one query.",
+   "losesWhen": "A first-time visitor who knows no type names: the home page is deliberately sparse (the example chips and most-used types soften this), and Health is the kit's board without its own framing.",
+   "decisions": [
+    {
+     "label": "Workspace navigation",
+     "value": "A segmented control under the search bar (Search · Types · Packages · Directory · Health · Agents · Run · For coding agents); one search box on every workspace."
+    },
+    {
+     "label": "Home screen",
+     "value": "A large search box with example queries (JointTrajectory ->, -> JointTrajectory, JointLimits -> JointTrajectory, robot_controllers), the most-used types and a one-line pitch + install."
+    },
+    {
+     "label": "Version model",
+     "value": "The kit's picker top right; off Live the same query also runs on Live and each row is marked 'not in Latest release — new on Live'."
+    },
+    {
+     "label": "Health surface",
+     "value": "Every result row carries its package's health dot; the package page lists failing checks first with evidence; Health is the kit's board; a pill in the header."
+    }
+   ],
+   "keepParts": [
+    "The two-line Hoogle result row and the arrow-query grammar, with +pkg / -pkg scoping",
+    "Per-row 'not in this version' / 'only in this version' annotations against Live",
+    "The package page beside the pipeline: checks failing first, 'gets from' / 'feeds' with the types passed"
+   ],
+   "proof": [
+    "Recorded 6 steps: one click on 'JointTrajectory ->' lists 36 functions in 4 packages with signature, health dot, kind badges and file:line; Latest release shows robot_metrics' 4 and dims the 32 Live-only rows.",
+    "Builder's headless check 27/27: version kept across 8 workspaces, Back restores the previous query, / focuses search, ↑↓ Enter opens a row."
+   ],
+   "scores": {
+    "fr1": {
+     "score": 5,
+     "evidence": "Step 2: one click on the 'JointTrajectory ->' chip (or typing it) lists 36 functions as 'name :: JointTrajectory → ·' with package + health dot, public / declared+verified badges and file:line; arrow queries answer 'where to get one' too; every type in a row is a link.",
+     "confidence": "high"
+    },
+    "fr2": {
+     "score": 4,
+     "evidence": "Header pill '4 failing · 10 warnings · 2 passing' on every screen and a health dot on every result row; step 6 is the kit's board, failing first with evidence; Health is a tab you go to.",
+     "confidence": "high"
+    },
+    "fr3": {
+     "score": 5,
+     "evidence": "Step 4: on Latest release only robot_metrics' 4 functions take a JointTrajectory, and the 32 Live rows are listed dimmed as 'not in Latest release — new on Live'; banner with Back to Live; picker beside the GitHub icon.",
+     "confidence": "high"
+    },
+    "fr4": {
+     "score": 5,
+     "evidence": "Segmented workspaces one click apart, the query and version survive switches, Back steps through queries, deep links work; the phone home is a clean search page.",
+     "confidence": "high"
+    },
+    "fr5": {
+     "score": 4,
+     "evidence": "Packages opens in pipeline mode (robot_msgs hidden) with tree one click away and group by layer; step 5 shows the tree beside a package page, so the map is narrower; Directory is the kit's Cards/Compact.",
+     "confidence": "medium"
+    },
+    "fr6": {
+     "score": 4,
+     "evidence": "Phone and desktop home: pitch, pip install with Copy and 'See it pick and place →' under the search box, quiet and uncrowded; the run result itself is one click away.",
+     "confidence": "high"
+    }
+   },
+   "gateResults": {
+    "g1": {
+     "pass": true,
+     "evidence": "graph.json, health.json and versions.json fetched at runtime (gates_r2 network log); the build-time copy serves file://."
+    },
+    "g2": {
+     "pass": true,
+     "evidence": "Types, Packages (tree, pipeline, group by layer), Directory (Cards, Compact), Health, Agents, Run and For coding agents all reachable by their data-ws entries."
+    },
+    "g3": {
+     "pass": true,
+     "evidence": "Picker at x=1293, GitHub icon at x=1382 beside it (top right, linking https://github.com/zacharyyamaoka/robot_sdk); Live is the default; Latest release changed the data (#/?v=release)."
+    },
+    "g4": {
+     "pass": true,
+     "evidence": "No whole-map zoom / fly-to canvas as a page; graphs are the kit's switchboard and package map inside workspaces (judged from the stills)."
+    },
+    "g5": {
+     "pass": true,
+     "evidence": "Directory links: GitHub 15/15, PyPI 15/15, Site 5/5."
+    },
+    "g6": {
+     "pass": true,
+     "evidence": "Console errors 0 at 1440 x 900 on landing and every workspace; phone overflow 0 px at 390; phone switchboard 0 edges through unrelated boxes."
+    }
+   }
+  },
+  {
+   "id": "v9",
+   "name": "Buildfarm",
+   "accent": "#b25c00",
+   "thesis": "Health is the home: a members × checks matrix, failing first, with versions as columns side by side, so what passes and what changed between versions is one glance; every other workspace uses the same health colours.",
+   "storyTitle": "Health matrix, versions as columns",
+   "bestWhen": "The question is 'what is broken right now, and what changed in the release?' — one screen for a maintainer or someone checking CI.",
+   "losesWhen": "A newcomer who wants to explore by type: the home is a dense table, JointTrajectory is one or two actions away, and on a phone the version columns swipe sideways inside the table.",
+   "decisions": [
+    {
+     "label": "Workspace navigation",
+     "value": "A left sidebar with counts (Health · Types · Packages · Directory · Agents · Run · For coding agents), pitch + install + a 'Jump to a type' box on top; draggable, foldable, a drawer on phones."
+    },
+    {
+     "label": "Home screen",
+     "value": "The health matrix: packages grouped by layer then agents × Tests, Declaration, Types, Release, Repo; filter chips Failing / Warnings / All."
+    },
+    {
+     "label": "Version model",
+     "value": "Versions are matrix columns (Live | Latest release | newest snapshot) with version and type-use counts, cells that differ from Live in purple; clicking a column header or the picker focuses that version everywhere."
+    },
+    {
+     "label": "Health surface",
+     "value": "The home itself, plus a one-line summary bar on every workspace ('✗ 4 failing · ⚠ 10 · ✓ 2 — Live') that jumps to Health with that filter."
+    }
+   ],
+   "keepParts": [
+    "The health matrix with version columns side by side (matrix.jsx)",
+    "The full-width package page (pkgpage.jsx) with checks, versions, type API and deps",
+    "The summary bar on every workspace plus the sidebar's health badge and type jump box"
+   ],
+   "proof": [
+    "Recorded 6 steps: home matrix 16 members × 5 checks, JointTrajectory via the jump box (36 functions), robot_controllers' job page, Latest release focused (0 failing, 4 warnings on the tagged trees), the ungrouped tree, Failing filter with evidence.",
+    "Builder's headless check: all 7 workspaces keep ?v=release, Back twice, pipeline → tree → Back, a dragged 320 px sidebar survives reload, opens from file://."
+   ],
+   "scores": {
+    "fr1": {
+     "score": 4,
+     "evidence": "Step 2: two actions from home (type in the sidebar's jump box, Enter) give the 36 functions with file:line and health; the Types workspace opens on the most-used type, but the first screen is health, not types.",
+     "confidence": "high"
+    },
+    "fr2": {
+     "score": 5,
+     "evidence": "Step 1 is the matrix itself, failing first within each layer, each cell's detail on hover and evidence on click; the summary bar is on every workspace and the switchboard and tree are coloured by health.",
+     "confidence": "high"
+    },
+    "fr3": {
+     "score": 5,
+     "evidence": "Step 1 already shows Live | Latest release | Nov 24 21:48 as columns with versions and use counts, differing cells purple; step 4 focuses Latest release and the checks switch to the tagged trees.",
+     "confidence": "high"
+    },
+    "fr4": {
+     "score": 5,
+     "evidence": "Sidebar one click per workspace, version and last package/type kept, deep links (?mode=pipeline) and Back verified; phone: sidebar becomes a drawer, the matrix scrolls inside itself with no page overflow.",
+     "confidence": "high"
+    },
+    "fr5": {
+     "score": 4,
+     "evidence": "Step 5: full-width ungrouped tree readable, jobs-by-health list under it; pipeline and group by layer one click; Directory is the kit's Cards/Compact.",
+     "confidence": "medium"
+    },
+    "fr6": {
+     "score": 3,
+     "evidence": "Pitch and pip install sit compact at the top of the sidebar with 'See it pick and place', but the dense matrix is what lands first.",
+     "confidence": "high"
+    }
+   },
+   "gateResults": {
+    "g1": {
+     "pass": true,
+     "evidence": "graph.json, health.json and versions.json fetched at runtime (gates_r2 network log); the build-time copy serves file://."
+    },
+    "g2": {
+     "pass": true,
+     "evidence": "Types, Packages (tree, pipeline, group by layer), Directory (Cards, Compact), Health, Agents, Run and For coding agents all reachable by their data-ws entries."
+    },
+    "g3": {
+     "pass": true,
+     "evidence": "Picker at x=1297, GitHub icon at x=1386 beside it (top right, linking https://github.com/zacharyyamaoka/robot_sdk); Live is the default; Latest release changed the data (#/?v=release)."
+    },
+    "g4": {
+     "pass": true,
+     "evidence": "No whole-map zoom / fly-to canvas as a page; graphs are the kit's switchboard and package map inside workspaces (judged from the stills)."
+    },
+    "g5": {
+     "pass": true,
+     "evidence": "Directory links: GitHub 15/15, PyPI 15/15, Site 5/5."
+    },
+    "g6": {
+     "pass": true,
+     "evidence": "Console errors 0 at 1440 x 900 on landing and every workspace; phone overflow 0 px at 390; phone switchboard 0 edges through unrelated boxes."
+    }
+   }
+  },
+  {
+   "id": "v10",
+   "name": "Docs",
+   "accent": "#2e8555",
+   "thesis": "Every package and every type is a page with a stable URL, the directory is the docs sidebar, and versions behave like versioned docs (Docusaurus, docs.ros.org).",
+   "storyTitle": "Overview, a page per type, versioned docs",
+   "bestWhen": "Someone arrives with a name or a link and wants a bookmarkable page at a given version; reading and learning the library; anyone who knows ROS 2 docs.",
+   "losesWhen": "You want the whole system at a glance or to compare across packages: the home is prose and cards, type pages are long (the switchboard is below the fold), and the chrome leaves less width for big graphs.",
+   "decisions": [
+    {
+     "label": "Workspace navigation",
+     "value": "A Docusaurus navbar (Types · Packages · Directory · Health · Agents · Run · For coding agents), Ctrl-K search, a collapsible docs sidebar and a right 'On this page' table of contents."
+    },
+    {
+     "label": "Home screen",
+     "value": "An Overview page: pitch, install, the real run, the layer rule, then 'Start from a type' cards for the most-used types."
+    },
+    {
+     "label": "Version model",
+     "value": "A Docusaurus-style dropdown with the kit's popover; switching keeps the page, the sidebar rebuilds for that version, a page missing from a version says why, numbers carry '(Live: N)'."
+    },
+    {
+     "label": "Health surface",
+     "value": "A top announcement bar on every page plus a count badge on the Health menu; README-style shields per package page; the kit's board on Health."
+    }
+   ],
+   "keepParts": [
+    "The package page: README-style shields for the five checks, a function list by module with file:line, a small 'Required by / Requires' graph",
+    "Version handling: 'not in this version' pages, '(Live: N)' deltas, the sidebar rebuilt per version",
+    "Ctrl-K search over types, functions and packages with arrow queries and section deep links (?s=)"
+   ],
+   "proof": [
+    "Recorded 6 steps: Overview, one click on the JointTrajectory card answering takes / returns in two columns with file:line and health, robot_controllers' shields, Latest release with the sidebar shrunk to 4 packages and 7 types, the ungrouped tree, Health.",
+    "Builder's headless check: ?v=release kept across Packages, Health and the sidebar; Back walks four states; a section deep link opens at that section; sidebar width and fold survive reload."
+   ],
+   "scores": {
+    "fr1": {
+     "score": 5,
+     "evidence": "Step 2: one click on the JointTrajectory card opens a page that starts with 'What can I do with it?': 36 functions in 4 packages take it, 16 in 3 return one, each with file:line and its package's health dot; Ctrl-K takes 'JointTrajectory ->'.",
+     "confidence": "high"
+    },
+    "fr2": {
+     "score": 4,
+     "evidence": "Announcement bar '4 failing · 10 warnings · 2 passing — See what is failing' and a Health badge on every page; package pages carry check shields with evidence; Health is the kit's board, failing first.",
+     "confidence": "high"
+    },
+    "fr3": {
+     "score": 5,
+     "evidence": "Step 4: on Latest release the sidebar rebuilds to 4 packages and 7 types, the banner reads 10 packages not in this version, the type page shows '7 uses (Live: 58)'; picker beside the GitHub icon.",
+     "confidence": "high"
+    },
+    "fr4": {
+     "score": 5,
+     "evidence": "Navbar one click per workspace, the version and page survive, every page and section deep-links, Back verified; phone: the sidebar is a drawer and 'On this page' a collapsible.",
+     "confidence": "high"
+    },
+    "fr5": {
+     "score": 3,
+     "evidence": "Step 5: the ungrouped tree reads fine, but the grouped tree fitted into the ~1090 px content column renders at ~0.6 zoom (names ~7 px); Directory is the kit's Cards/Compact.",
+     "confidence": "medium"
+    },
+    "fr6": {
+     "score": 5,
+     "evidence": "Step 1: the Overview leads with the pitch, pip install with Copy, the package/type counts and the real run, then 'Start from a type' cards — nothing competes with it.",
+     "confidence": "high"
+    }
+   },
+   "gateResults": {
+    "g1": {
+     "pass": true,
+     "evidence": "graph.json, health.json and versions.json fetched at runtime (gates_r2 network log); the build-time copy serves file://."
+    },
+    "g2": {
+     "pass": true,
+     "evidence": "Types, Packages (tree, pipeline, group by layer), Directory (Cards, Compact), Health, Agents, Run and For coding agents all reachable by their data-ws entries."
+    },
+    "g3": {
+     "pass": true,
+     "evidence": "Picker at x=1308, GitHub icon at x=1388 beside it (top right, linking https://github.com/zacharyyamaoka/robot_sdk); Live is the default; Latest release changed the data (#/?v=release)."
+    },
+    "g4": {
+     "pass": true,
+     "evidence": "No whole-map zoom / fly-to canvas as a page; graphs are the kit's switchboard and package map inside workspaces (judged from the stills)."
+    },
+    "g5": {
+     "pass": true,
+     "evidence": "Directory links: GitHub 15/15, PyPI 15/15, Site 5/5."
+    },
+    "g6": {
+     "pass": true,
+     "evidence": "Console errors 0 at 1440 x 900 on landing and every workspace; phone overflow 0 px at 390; phone switchboard 0 edges through unrelated boxes."
+    }
+   }
+  }
+ ],
+ "checks": [
+  "Exactly five structural directions: navigation, home screen, version model and health surface differ per variant",
+  "Same real graph.json, health.json, versions.json and pick-and-place run; same shared kit; same viewports and recorder",
+  "Criteria frozen before the build (criteria.r2.json, commit 4807629); no criterion changed after",
+  "Every score has evidence and confidence; hard gates reported separately and never averaged in",
+  "Totals Σ(weight × score / 5): V6 96 · V7 92 · V8 92 · V10 92 · V9 88"
+ ]
+}
