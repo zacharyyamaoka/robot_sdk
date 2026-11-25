@@ -1,0 +1,77 @@
+{
+  "title": "Pick and place on a UR5e, assembled from robot-sdk",
+  "plant": "simulated (MuJoCo UR5e): MuJoCo Menagerie universal_robots_ur5e/ur5e.xml, its own PD position servos",
+  "stages": [
+    {
+      "package": "robot_reach",
+      "call": "robot_reach.robots.ur5e()",
+      "input_type": "UR5e DH parameters",
+      "output_type": "robot_reach.Arm",
+      "one_line_result": "6 joints, closed-form IK with 8 branches; tool at home (-0.492, -0.133, 0.488) m"
+    },
+    {
+      "package": "robot_reach",
+      "call": "robot_reach.reach_map(arm, positions, orientations)",
+      "input_type": "Arm + 4 tool points x 1 orientation",
+      "output_type": "robot_reach.ReachMap",
+      "one_line_result": "all 4 reachable tool-down; working IK branches pick 8, place 8, above pick 8, above place 8 (of 8)"
+    },
+    {
+      "package": "robot_trajectories",
+      "call": "robot_trajectories.pick_and_place(space, pick, place, lift_m, waypoint_generator)",
+      "input_type": "JointSpace + 2 tool points",
+      "output_type": "robot_msgs JointTrajectory",
+      "one_line_result": "5.35 s, 2675 samples at 500 Hz, 8 segments; tool path 1.077 m; peak joint speed 79.9 deg/s (minimum_jerk, 30 % of the limit)"
+    },
+    {
+      "package": "robot_controllers",
+      "call": "robot_controllers.controller(\"joint_trajectory_controller\").build(trajectory).tick(state, dt)",
+      "input_type": "JointTrajectory, then JointState each tick",
+      "output_type": "robot_msgs ServoCommand each tick",
+      "one_line_result": "2924 ticks at 500 Hz on the simulated (MuJoCo) UR5e, status 'done'; median tick 12 us; peak servo torque 39.5 N.m (shoulder_lift)"
+    },
+    {
+      "package": "robot_metrics",
+      "call": "robot_metrics.Collection([Alias(ErrorStat), Alias(StopStat), ...]).fold(Run)",
+      "input_type": "Run{target, state: JointTrajectory; tool/target, tool/state: PoseTrajectory}",
+      "output_type": "dict of values with units",
+      "one_line_result": "tool error RMS 9.15 mm, max 12.28 mm; worst joint tracking shoulder_lift max 0.90 deg; worst stop error shoulder_lift 0.839 deg"
+    },
+    {
+      "package": "robot_diagnostics",
+      "call": "robot_diagnostics.evaluate(\"stock.stop_error\", DEFAULTS[\"servo.stop_error\"], [Trajectory])",
+      "input_type": "robot_diagnostics Trajectory per joint",
+      "output_type": "robot_diagnostics Result (DiagnosticStatus shape)",
+      "one_line_result": "FAIL: worst ur5e/shoulder_lift p90 0.814 deg vs limit 0.206 deg (3/6 joints pass)"
+    }
+  ],
+  "skipped": [
+    {
+      "package": "robot_thermal",
+      "why": "its burst budget needs a per-drive rule (I_cont, I_peak, kt) from a datasheet; no package has one for the UR5e's drives, and inventing one is an artificial guard"
+    },
+    {
+      "package": "sim2real",
+      "why": "a RobotTwin is calibrated against recorded hardware runs; there are none for a UR5e"
+    }
+  ],
+  "media": [
+    "media/pick_and_place_tool_path.png",
+    "media/pick_and_place_joints.png",
+    "media/pick_and_place_tracking_error.png"
+  ],
+  "run": {
+    "date": "2026-11-23T15:18:51-07:00",
+    "runtime_s": 1.63,
+    "mujoco": "3.11.0",
+    "git": {
+      "robot_sdk": "c1f4f64",
+      "robot_msgs": "cf3709b-dirty",
+      "robot_reach": "72a29f8-dirty",
+      "robot_trajectories": "aad4cd9-dirty",
+      "robot_controllers": "20daa37",
+      "robot_metrics": "68e0d3e",
+      "robot_diagnostics": "d4454fe"
+    }
+  }
+}
