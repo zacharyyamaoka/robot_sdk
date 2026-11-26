@@ -1,9 +1,9 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-25T17:53:17+00:00",
+ "generated": "2026-11-26T02:23:11+00:00",
  "sources": {
-  "robot_sdk": "ea8b6db",
-  "robot_msgs": "daa6e1b",
+  "robot_sdk": "116ab6c",
+  "robot_msgs": "cc40339",
   "robot_models": "486ecc2",
   "robot_metrics": "2573912",
   "robot_activity": "7680692"
@@ -15,13 +15,15 @@
    "repo_url": "https://github.com/zacharyyamaoka/robot_msgs",
    "role": "library",
    "layer": "vocabulary",
-   "one_line": "Standard robot message types as frozen Python dataclasses, with the helper functions ROS messages never had.",
-   "summary": null,
-   "use_when": null,
+   "one_line": "Frozen numpy-backed message dataclasses every package joins on",
+   "summary": "The standard robot data types (ROS's geometry, sensor, trajectory and vision messages) as frozen Python dataclasses, *with* the functions between them: pose offsets, trajectory interpolation and resampling, point projection, depth to point cloud. `.show()` (Rerun) and `.plot()` (matplotlib) on every type. ROS 2 / bag export as an extra. Strict semver: additive changes only.",
+   "use_when": "Any pose, transform, joint state, trajectory, limit, image or point cloud. **Never define your own Pose or Trajectory.**",
    "links": {
-    "github": "https://github.com/zacharyyamaoka/robot_msgs"
+    "github": "https://github.com/zacharyyamaoka/robot_msgs",
+    "pypi": "https://pypi.org/project/robot-msgs/",
+    "site": "https://robotmsgs.com"
    },
-   "version": "0.3.0",
+   "version": "0.3.2",
    "deps": {
     "required": [],
     "extras": {
@@ -34,14 +36,14 @@
      "test": []
     }
    },
-   "declaration": null,
-   "lint": "undeclared",
+   "declaration": "robot-sdk.toml",
+   "lint": "pass",
    "languages": [
     {
      "id": "python",
      "status": "full",
      "where": "src/robot_msgs",
-     "evidence": "93 modules"
+     "evidence": "94 modules"
     }
    ]
   },
