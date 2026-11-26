@@ -192,8 +192,8 @@ def build() -> str:
     run_meta = (f'Plant: {esc(pipeline.get("plant", ""))}. Ran {esc(run.get("date", "")[:10])} in {esc(run.get("runtime_s", ""))} s.'
                 if pipeline else "")
 
-    counts = (f'<b>{len(packages)}</b> packages · <b>{len(graph.get("types", []))}</b> shared types · '
-              f'<b>{len(graph.get("uses", []))}</b> type uses, scanned from the code')
+    counts = (f'<b class="n-packages">{len(packages)}</b> packages · <b class="n-types">{len(graph.get("types", []))}</b> shared types · '
+              f'<b class="n-uses">{len(graph.get("uses", []))}</b> type uses, scanned from the code')
     # What the browser needs to draw a card the build did not have (see the TEMPLATE's "late cards" script).
     card_data = json.dumps({"media": media, "layers": {k: v[0] for k, v in LAYER_HEAD.items()}, "order": LAYER_ORDER},
                            separators=(",", ":")).replace("</", "<\\/")
@@ -437,7 +437,7 @@ try{var t=localStorage.getItem('rsdk-theme');if(t)document.documentElement.datas
 <div class="hero-copy">
 <p class="eyebrow">Robotics backend in plain Python · open source, MIT</p>
 <h1 class="wordmark">@@LOGO@@<span>robot-sdk</span></h1>
-<p class="lead">Assemble, don't rewrite. @@N@@ small robotics packages that all speak one vocabulary of robot types, so a new robot task is mostly plugging together parts that already work.</p>
+<p class="lead">Assemble, don't rewrite. <span class="n-packages">@@N@@</span> small robotics packages that all speak one vocabulary of robot types, so a new robot task is mostly plugging together parts that already work.</p>
 <p class="sub">Messages, models, controllers, reach, collision, thermal limits, trajectories, metrics, viewers and sim-to-real calibration.
 Each package keeps its own repo, PyPI name and release schedule; <code>robot-sdk</code> is the one install that pins a set known to work together, the way a ROS release does.</p>
 <div class="install"><code>pip install robot-sdk</code><button class="copy" type="button" data-copy="pip install robot-sdk">Copy</button></div>
@@ -583,6 +583,9 @@ ln -s $PWD/robot_sdk/skill ~/.claude/skills/robot-sdk</code></pre></div>
   fetch('data/graph.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (g) {
     var grid = document.querySelector('.pk-grid');
     if (!g || !g.packages || !grid) return;
+    [['n-packages', g.packages], ['n-types', g.types], ['n-uses', g.uses]].forEach(function (pair) {  // the counts too
+      if (pair[1]) document.querySelectorAll('.' + pair[0]).forEach(function (el) { el.textContent = pair[1].length; });
+    });
     var rank = function (layer) { var i = CARD.order.indexOf(layer); return i < 0 ? CARD.order.length : i; };
     g.packages.forEach(function (p) {
       if (document.getElementById('pkg-' + p.id)) return;
