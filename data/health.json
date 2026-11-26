@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-26T08:35:24+00:00",
- "graph_generated": "2026-11-26T08:35:11+00:00",
+ "generated": "2026-11-26T19:08:31+00:00",
+ "graph_generated": "2026-11-26T19:08:20+00:00",
  "checks": [
   {
    "id": "tests",
@@ -42,11 +42,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main 7f08d8a",
-     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45756884863",
+     "detail": "test.yml passed on main d8ff06d",
+     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45854037563",
      "workflow": "test.yml",
-     "sha": "7f08d8a",
-     "at": "2026-11-26T04:42:17Z"
+     "sha": "d8ff06d",
+     "at": "2026-11-26T15:56:42Z"
     },
     "lint": {
      "state": "pass",
@@ -56,7 +56,7 @@
     },
     "types": {
      "state": "none",
-     "detail": "defines 82 shared types; uses none of them",
+     "detail": "defines 92 shared types; uses none of them",
      "verified": 0,
      "found": 0,
      "missing": 0
@@ -470,11 +470,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main ecf0abb",
-     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45757054402",
+     "detail": "test.yml passed on main 6524578",
+     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45850258995",
      "workflow": "test.yml",
-     "sha": "ecf0abb",
-     "at": "2026-11-26T04:43:56Z"
+     "sha": "6524578",
+     "at": "2026-11-26T15:33:24Z"
     },
     "lint": {
      "state": "pass",
@@ -484,9 +484,9 @@
     },
     "types": {
      "state": "pass",
-     "detail": "10 declared + verified · 12 found, not declared · 0 missing",
+     "detail": "10 declared + verified · 17 found, not declared · 0 missing",
      "verified": 10,
-     "found": 12,
+     "found": 17,
      "missing": 0
     },
     "release": {
@@ -528,9 +528,9 @@
     },
     "types": {
      "state": "warn",
-     "detail": "0 declared + verified · 128 found, not declared · 0 missing: none of its type uses are declared",
+     "detail": "0 declared + verified · 145 found, not declared · 0 missing: none of its type uses are declared",
      "verified": 0,
-     "found": 128,
+     "found": 145,
      "missing": 0
     },
     "release": {

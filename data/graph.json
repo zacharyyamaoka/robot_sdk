@@ -1,9 +1,9 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-26T08:35:11+00:00",
+ "generated": "2026-11-26T19:08:20+00:00",
  "sources": {
   "robot_sdk": "74c3278",
-  "robot_msgs": "7f08d8a",
+  "robot_msgs": "d8ff06d",
   "robot_models": "61b292c",
   "robot_controllers": "04d0d58",
   "robot_reach": "6d1fcba",
@@ -12,8 +12,8 @@
   "robot_autonomy": "0f68b89",
   "robot_metrics": "f953427",
   "robot_activity": "2ebea6e",
-  "traj_compare": "ecf0abb",
-  "robot_msg_viz": "3461069",
+  "traj_compare": "6524578",
+  "robot_msg_viz": "39f526a",
   "sim2real": "7355462",
   "robot_diagnostics": "2ab15cb",
   "like_keras": "7d942f9",
@@ -36,7 +36,7 @@
     "pypi": "https://pypi.org/project/robot-msgs/",
     "site": "https://robotmsgs.com"
    },
-   "version": "0.4.0",
+   "version": "0.6.0",
    "deps": {
     "required": [],
     "extras": {
@@ -56,7 +56,7 @@
      "id": "python",
      "status": "full",
      "where": "src/robot_msgs",
-     "evidence": "106 modules"
+     "evidence": "119 modules"
     }
    ]
   },
@@ -396,7 +396,7 @@
      "id": "python",
      "status": "full",
      "where": "src/traj_compare",
-     "evidence": "33 modules"
+     "evidence": "34 modules"
     }
    ]
   },
@@ -430,7 +430,7 @@
      "id": "python",
      "status": "full",
      "where": "src/robot_msg_viz",
-     "evidence": "29 modules"
+     "evidence": "30 modules"
     }
    ]
   },
@@ -795,6 +795,70 @@
    "docs_url": null
   },
   {
+   "id": "robot_msgs.fiducial.FiducialArray",
+   "name": "FiducialArray",
+   "package": "robot_msgs",
+   "module": "robot_msgs.fiducial",
+   "what": "`header` is the image's: its `stamp` is the capture time (mid-exposure when known) and its `frame_id` the camera's optical frame, so a solver can join the markers to the robot's `JointState` at the same stamp and to the camera's `CameraInfo` by frame",
+   "docs_url": "https://robotmsgs.com/types/fiducial/FiducialArray/"
+  },
+  {
+   "id": "robot_msgs.fiducial.FiducialBoard",
+   "name": "FiducialBoard",
+   "package": "robot_msgs",
+   "module": "robot_msgs.fiducial",
+   "what": "A board of `cols` × `rows`, `header.frame_id` its frame",
+   "docs_url": "https://robotmsgs.com/types/fiducial/FiducialBoard/"
+  },
+  {
+   "id": "robot_msgs.fiducial.FiducialDetection",
+   "name": "FiducialDetection",
+   "package": "robot_msgs",
+   "module": "robot_msgs.fiducial",
+   "what": "One marker in one image",
+   "docs_url": "https://robotmsgs.com/types/fiducial/FiducialDetection/"
+  },
+  {
+   "id": "robot_msgs.fiducial.FiducialMap",
+   "name": "FiducialMap",
+   "package": "robot_msgs",
+   "module": "robot_msgs.fiducial",
+   "what": "`mounts`, one per marker; a marker key ``(dictionary, id)`` appears once (two physical copies of one marker cannot be told apart by a detector, so a map refuses them)",
+   "docs_url": "https://robotmsgs.com/types/fiducial/FiducialMap/"
+  },
+  {
+   "id": "robot_msgs.fiducial.FiducialMount",
+   "name": "FiducialMount",
+   "package": "robot_msgs",
+   "module": "robot_msgs.fiducial",
+   "what": "One marker, placed: `pose` is ``T_parent_marker``, the marker frame (`marker_object_points`) in `header.frame_id` — a robot link, a board, the world",
+   "docs_url": "https://robotmsgs.com/types/fiducial/FiducialMount/"
+  },
+  {
+   "id": "robot_msgs.fiducial.FiducialPose",
+   "name": "FiducialPose",
+   "package": "robot_msgs",
+   "module": "robot_msgs.fiducial",
+   "what": "`pose` is ``T_camera_marker``: the marker frame (`marker_object_points`) in the enclosing `FiducialArray`'s camera frame (``header.frame_id``, the optical frame: x right, y down, z forward)",
+   "docs_url": "https://robotmsgs.com/types/fiducial/FiducialPose/"
+  },
+  {
+   "id": "robot_msgs.fiducial.FiducialTrack",
+   "name": "FiducialTrack",
+   "package": "robot_msgs",
+   "module": "robot_msgs.fiducial",
+   "what": "`pose` is the marker frame in the enclosing `FiducialTrackArray`'s frame",
+   "docs_url": "https://robotmsgs.com/types/fiducial/FiducialTrack/"
+  },
+  {
+   "id": "robot_msgs.fiducial.FiducialTrackArray",
+   "name": "FiducialTrackArray",
+   "package": "robot_msgs",
+   "module": "robot_msgs.fiducial",
+   "what": "`header.stamp` is the estimate's time, `header.frame_id` the frame every pose is in (the robot base, the world)",
+   "docs_url": "https://robotmsgs.com/types/fiducial/FiducialTrackArray/"
+  },
+  {
    "id": "robot_msgs.geometry.Accel",
    "name": "Accel",
    "package": "robot_msgs",
@@ -897,6 +961,22 @@
    "module": "robot_msgs.manipulation",
    "what": "Pairwise allowed-contact matrix over named bodies (robot links and scene objects)",
    "docs_url": "https://robotmsgs.com/types/manipulation/AllowedCollisionMatrix/"
+  },
+  {
+   "id": "robot_msgs.manipulation.CollisionElement",
+   "name": "CollisionElement",
+   "package": "robot_msgs",
+   "module": "robot_msgs.manipulation",
+   "what": "One thing in a `CollisionScene`: moveit_msgs/CollisionObject's geometry plus its tags",
+   "docs_url": "https://robotmsgs.com/types/manipulation/CollisionElement/"
+  },
+  {
+   "id": "robot_msgs.manipulation.CollisionScene",
+   "name": "CollisionScene",
+   "package": "robot_msgs",
+   "module": "robot_msgs.manipulation",
+   "what": "Every collision element of a scene, in one frame (`header.frame_id`, usually ``\"world\"``)",
+   "docs_url": "https://robotmsgs.com/types/manipulation/CollisionScene/"
   },
   {
    "id": "robot_msgs.manipulation.GraspPose",
@@ -2294,10 +2374,30 @@
   },
   {
    "package": "traj_compare",
+   "type": "robot_msgs.compare.JointTolerance",
+   "kind": "imports",
+   "symbol": "traj_compare.rerun_report",
+   "where": "src/traj_compare/rerun_report.py:19",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
    "type": "robot_msgs.compare.PoseTolerance",
    "kind": "imports",
    "symbol": "traj_compare.dataset",
    "where": "src/traj_compare/dataset.py:76",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.compare.PoseTolerance",
+   "kind": "imports",
+   "symbol": "traj_compare.rerun_report",
+   "where": "src/traj_compare/rerun_report.py:19",
    "public": false,
    "declared": false,
    "verified": true
@@ -2327,7 +2427,7 @@
    "type": "robot_msgs.compare.Tolerances",
    "kind": "consumes",
    "symbol": "traj_compare.model.Comparison.tcp_tolerances",
-   "where": "src/traj_compare/model.py:562",
+   "where": "src/traj_compare/model.py:573",
    "public": true,
    "declared": false,
    "verified": true
@@ -2337,7 +2437,7 @@
    "type": "robot_msgs.compare.Tolerances",
    "kind": "consumes",
    "symbol": "traj_compare.model.Comparison.tolerances",
-   "where": "src/traj_compare/model.py:561",
+   "where": "src/traj_compare/model.py:572",
    "public": true,
    "declared": true,
    "verified": true
@@ -2387,9 +2487,39 @@
    "type": "robot_msgs.trajectory.JointLimits",
    "kind": "consumes",
    "symbol": "traj_compare.coverage.analysis.analyze",
-   "where": "src/traj_compare/coverage/analysis.py:163",
+   "where": "src/traj_compare/coverage/analysis.py:176",
    "public": true,
    "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "traj_compare.model.Comparison.joint_limits",
+   "where": "src/traj_compare/model.py:607",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "traj_compare.model.Situation.joint_limits",
+   "where": "src/traj_compare/model.py:435",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "traj_compare.coverage.analysis.trajectory_signals",
+   "where": "src/traj_compare/coverage/analysis.py:311",
+   "public": true,
+   "declared": false,
    "verified": true
   },
   {
@@ -2397,7 +2527,7 @@
    "type": "robot_msgs.trajectory.JointTrajectory",
    "kind": "consumes",
    "symbol": "traj_compare.coverage.workbench.write_trajectory_rrd",
-   "where": "src/traj_compare/coverage/workbench.py:840",
+   "where": "src/traj_compare/coverage/workbench.py:871",
    "public": true,
    "declared": false,
    "verified": true
@@ -2764,6 +2894,86 @@
   },
   {
    "package": "robot_msg_viz",
+   "type": "robot_msgs.fiducial.FiducialArray",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.fiducial.FiducialBoard",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.fiducial.FiducialDetection",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.fiducial.FiducialMap",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.fiducial.FiducialMount",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.fiducial.FiducialPose",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.fiducial.FiducialTrack",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.fiducial.FiducialTrackArray",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
    "type": "robot_msgs.geometry.Accel",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.geometry",
@@ -2806,6 +3016,16 @@
    "package": "robot_msg_viz",
    "type": "robot_msgs.geometry.Pose",
    "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:57",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.geometry.Pose",
+   "kind": "imports",
    "symbol": "robot_msg_viz.views.geometry",
    "where": "src/robot_msg_viz/views/geometry.py:40",
    "public": false,
@@ -2817,7 +3037,7 @@
    "type": "robot_msgs.geometry.Pose",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.manipulation",
-   "where": "src/robot_msg_viz/views/manipulation.py:40",
+   "where": "src/robot_msg_viz/views/manipulation.py:48",
    "public": false,
    "declared": false,
    "verified": true
@@ -2867,7 +3087,17 @@
    "type": "robot_msgs.geometry.PoseStamped",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.manipulation",
-   "where": "src/robot_msg_viz/views/manipulation.py:40",
+   "where": "src/robot_msg_viz/views/manipulation.py:48",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.geometry.Quaternion",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:57",
    "public": false,
    "declared": false,
    "verified": true
@@ -2887,7 +3117,7 @@
    "type": "robot_msgs.geometry.Quaternion",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
-   "where": "src/robot_msg_viz/views/sensor.py:29",
+   "where": "src/robot_msg_viz/views/sensor.py:33",
    "public": false,
    "declared": false,
    "verified": true
@@ -2917,7 +3147,7 @@
    "type": "robot_msgs.geometry.Transform",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
-   "where": "src/robot_msg_viz/views/sensor.py:29",
+   "where": "src/robot_msg_viz/views/sensor.py:33",
    "public": false,
    "declared": false,
    "verified": true
@@ -2957,7 +3187,7 @@
    "type": "robot_msgs.geometry.Vector3",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.manipulation",
-   "where": "src/robot_msg_viz/views/manipulation.py:40",
+   "where": "src/robot_msg_viz/views/manipulation.py:48",
    "public": false,
    "declared": false,
    "verified": true
@@ -2967,7 +3197,7 @@
    "type": "robot_msgs.geometry.Vector3",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
-   "where": "src/robot_msg_viz/views/sensor.py:29",
+   "where": "src/robot_msg_viz/views/sensor.py:33",
    "public": false,
    "declared": false,
    "verified": true
@@ -3017,7 +3247,27 @@
    "type": "robot_msgs.manipulation.AllowedCollisionMatrix",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.manipulation",
-   "where": "src/robot_msg_viz/views/manipulation.py:41",
+   "where": "src/robot_msg_viz/views/manipulation.py:49",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.manipulation.CollisionElement",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.manipulation",
+   "where": "src/robot_msg_viz/views/manipulation.py:49",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.manipulation.CollisionScene",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.manipulation",
+   "where": "src/robot_msg_viz/views/manipulation.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3027,7 +3277,7 @@
    "type": "robot_msgs.manipulation.GraspPose",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.manipulation",
-   "where": "src/robot_msg_viz/views/manipulation.py:41",
+   "where": "src/robot_msg_viz/views/manipulation.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3037,7 +3287,7 @@
    "type": "robot_msgs.manipulation.NamedPose",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.manipulation",
-   "where": "src/robot_msg_viz/views/manipulation.py:41",
+   "where": "src/robot_msg_viz/views/manipulation.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3047,7 +3297,7 @@
    "type": "robot_msgs.manipulation.Waypoint",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.manipulation",
-   "where": "src/robot_msg_viz/views/manipulation.py:41",
+   "where": "src/robot_msg_viz/views/manipulation.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3057,7 +3307,7 @@
    "type": "robot_msgs.manipulation.WaypointAction",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.manipulation",
-   "where": "src/robot_msg_viz/views/manipulation.py:41",
+   "where": "src/robot_msg_viz/views/manipulation.py:49",
    "public": false,
    "declared": false,
    "verified": true
@@ -3067,7 +3317,7 @@
    "type": "robot_msgs.sensor.CameraInfo",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
-   "where": "src/robot_msg_viz/views/sensor.py:30",
+   "where": "src/robot_msg_viz/views/sensor.py:34",
    "public": false,
    "declared": false,
    "verified": true
@@ -3077,7 +3327,7 @@
    "type": "robot_msgs.sensor.Image",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
-   "where": "src/robot_msg_viz/views/sensor.py:30",
+   "where": "src/robot_msg_viz/views/sensor.py:34",
    "public": false,
    "declared": false,
    "verified": true
@@ -3097,7 +3347,7 @@
    "type": "robot_msgs.sensor.Imu",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
-   "where": "src/robot_msg_viz/views/sensor.py:30",
+   "where": "src/robot_msg_viz/views/sensor.py:34",
    "public": false,
    "declared": false,
    "verified": true
@@ -3116,8 +3366,18 @@
    "package": "robot_msg_viz",
    "type": "robot_msgs.sensor.JointState",
    "kind": "imports",
+   "symbol": "robot_msg_viz.views.manipulation",
+   "where": "src/robot_msg_viz/views/manipulation.py:58",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
-   "where": "src/robot_msg_viz/views/sensor.py:30",
+   "where": "src/robot_msg_viz/views/sensor.py:34",
    "public": false,
    "declared": false,
    "verified": true
@@ -3157,7 +3417,17 @@
    "type": "robot_msgs.sensor.PointCloud",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
-   "where": "src/robot_msg_viz/views/sensor.py:30",
+   "where": "src/robot_msg_viz/views/sensor.py:34",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.shape.Mesh",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.manipulation",
+   "where": "src/robot_msg_viz/views/manipulation.py:59",
    "public": false,
    "declared": false,
    "verified": true
@@ -3176,8 +3446,28 @@
    "package": "robot_msg_viz",
    "type": "robot_msgs.shape.Plane",
    "kind": "imports",
+   "symbol": "robot_msg_viz.views.manipulation",
+   "where": "src/robot_msg_viz/views/manipulation.py:59",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.shape.Plane",
+   "kind": "imports",
    "symbol": "robot_msg_viz.views.shape",
    "where": "src/robot_msg_viz/views/shape.py:33",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.shape.SolidPrimitive",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.manipulation",
+   "where": "src/robot_msg_viz/views/manipulation.py:59",
    "public": false,
    "declared": false,
    "verified": true
@@ -3236,6 +3526,16 @@
    "package": "robot_msg_viz",
    "type": "robot_msgs.std.Header",
    "kind": "imports",
+   "symbol": "robot_msg_viz.views.fiducial",
+   "where": "src/robot_msg_viz/views/fiducial.py:58",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
    "symbol": "robot_msg_viz.views.geometry",
    "where": "src/robot_msg_viz/views/geometry.py:55",
    "public": false,
@@ -3247,7 +3547,7 @@
    "type": "robot_msgs.std.Header",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.manipulation",
-   "where": "src/robot_msg_viz/views/manipulation.py:42",
+   "where": "src/robot_msg_viz/views/manipulation.py:60",
    "public": false,
    "declared": false,
    "verified": true
@@ -3257,7 +3557,7 @@
    "type": "robot_msgs.std.Header",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
-   "where": "src/robot_msg_viz/views/sensor.py:31",
+   "where": "src/robot_msg_viz/views/sensor.py:35",
    "public": false,
    "declared": false,
    "verified": true
