@@ -133,7 +133,7 @@ def card(package: dict, media: dict) -> str:
     if links.get("pypi"):
         buttons.append(f'<a class="pk-btn" href="{esc(links["pypi"])}">PyPI</a>')
     layer = LAYER_HEAD.get(package.get("layer"), (package.get("layer", ""), ""))[0]
-    return (f'<article class="pk" id="pkg-{esc(pid)}">{figure}<div class="pk-body"><p class="pk-layer">{esc(layer)}</p>'
+    return (f'<article class="pk" id="pkg-{esc(pid)}" data-layer="{esc(package.get("layer", ""))}">{figure}<div class="pk-body"><p class="pk-layer">{esc(layer)}</p>'
             f'<h3><a href="{esc(home)}">{esc(pid)}</a></h3><p class="pk-line">{esc(package.get("one_line", ""))}</p>'
             f'<div class="pk-meta">{language_chips(package)}<code>pip install {esc(package.get("pypi", pid))}</code></div>'
             f'<div class="pk-btns">{"".join(buttons)}</div></div></article>')
@@ -162,7 +162,7 @@ def build() -> str:
         diagram, edges = domain_svg(domain)
     except KeyError:  # domain.json names a package graph.json dropped: show the cards, skip the diagram
         diagram, edges = "", []
-    hero_order = [pid for pid in manifest.get("_hero", {}).get("order", []) if pid in by_id]
+    hero_order = manifest.get("_hero", {}).get("order", [])  # the reel shows them whether or not this build has the card
     hero_has = (SITE / "media" / "landing" / "hero.mp4").exists()
     reel = "".join(f'<a class="chip" href="#pkg-{esc(pid)}">{esc(pid)}</a>' for pid in hero_order)
     code_html, code_where = excerpt()
@@ -194,7 +194,10 @@ def build() -> str:
 
     counts = (f'<b>{len(packages)}</b> packages · <b>{len(graph.get("types", []))}</b> shared types · '
               f'<b>{len(graph.get("uses", []))}</b> type uses, scanned from the code')
-    page = (TEMPLATE.replace("@@CSS@@", CSS).replace("@@LOGO@@", LOGO).replace("@@COUNTS@@", counts)
+    # What the browser needs to draw a card the build did not have (see the TEMPLATE's "late cards" script).
+    card_data = json.dumps({"media": media, "layers": {k: v[0] for k, v in LAYER_HEAD.items()}, "order": LAYER_ORDER},
+                           separators=(",", ":")).replace("</", "<\\/")
+    page = (TEMPLATE.replace("@@CARD_DATA@@", card_data).replace("@@CSS@@", CSS).replace("@@LOGO@@", LOGO).replace("@@COUNTS@@", counts)
             .replace("@@N@@", str(len(packages)))
             .replace("@@HERO@@", HERO_VIDEO if hero_has else '<img src="media/landing/hero.jpg" alt="">')
             .replace("@@REEL@@", reel).replace("@@GROUPS@@", groups).replace("@@LAYERS@@", layer_list).replace("@@DIAGRAM@@", diagram)
@@ -559,6 +562,35 @@ ln -s $PWD/robot_sdk/skill ~/.claude/skills/robot-sdk</code></pre></div>
     card.addEventListener('mouseenter', on); card.addEventListener('mouseleave', off);
     card.addEventListener('focusin', on); card.addEventListener('focusout', off);
   });
+  // late cards. WHY (2026-11-25): the hourly refresh renders this page before it carries over packages whose repo it
+  // could not clone (tools/refresh/refresh.py carry_over), so data/graph.json can list a package the static cards miss.
+  // Draw those from the published graph, the same card as site/landing.py's card(), in layer order.
+  var CARD = @@CARD_DATA@@;
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function lateCard(p) {
+    var l = p.links || {}, home = l.site || l.github || '@@REPO@@', m = CARD.media[p.id], b = [];
+    var fig = m ? '<a class="pk-media" href="' + esc(home) + '" tabindex="-1"><img src="' + esc(m.still) + '" alt="' + esc(m.caption) + '" loading="lazy"></a><p class="pk-cap">' + esc(m.caption) + '</p>'
+                : '<a class="pk-media empty" href="' + esc(home) + '" tabindex="-1"><span>' + esc(p.id) + '</span><small>no recording yet</small></a>';
+    if (l.site) b.push('<a class="pk-btn primary" href="' + esc(l.site) + '">Landing page ↗</a>');
+    b.push('<a class="pk-btn" href="@@DOCS@@#/packages/' + esc(p.id) + '">Docs</a>');
+    if (l.github) b.push('<a class="pk-btn" href="' + esc(l.github) + '">GitHub</a>');
+    if (l.pypi) b.push('<a class="pk-btn" href="' + esc(l.pypi) + '">PyPI</a>');
+    var el = document.createElement('article'); el.className = 'pk'; el.id = 'pkg-' + p.id; el.dataset.layer = p.layer || '';
+    el.innerHTML = fig + '<div class="pk-body"><p class="pk-layer">' + esc(CARD.layers[p.layer] || p.layer || '') + '</p><h3><a href="' + esc(home) + '">' + esc(p.id) + '</a></h3>'
+      + '<p class="pk-line">' + esc(p.one_line) + '</p><div class="pk-meta"><code>pip install ' + esc(p.pypi || p.id) + '</code></div><div class="pk-btns">' + b.join('') + '</div></div>';
+    return el;
+  }
+  fetch('data/graph.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (g) {
+    var grid = document.querySelector('.pk-grid');
+    if (!g || !g.packages || !grid) return;
+    var rank = function (layer) { var i = CARD.order.indexOf(layer); return i < 0 ? CARD.order.length : i; };
+    g.packages.forEach(function (p) {
+      if (document.getElementById('pkg-' + p.id)) return;
+      var el = lateCard(p), after = null;
+      grid.querySelectorAll('.pk').forEach(function (c) { if (rank(c.dataset.layer) <= rank(p.layer)) after = c; });
+      grid.insertBefore(el, after ? after.nextSibling : grid.firstChild);
+    });
+  }).catch(function () {});
   // health: read at view time from the data the hourly refresh publishes (calm unless something fails)
   fetch('data/health.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (h) {
     if (!h || !h.summary) return;
