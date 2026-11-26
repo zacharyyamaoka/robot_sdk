@@ -1,0 +1,820 @@
+{
+ "schema": "robot-sdk-health/1",
+ "generated": "2026-11-25T19:19:47-07:00",
+ "graph_generated": "2026-11-25T08:07:14-07:00",
+ "checks": [
+  {
+   "id": "tests",
+   "label": "Tests",
+   "what": "the package's test workflow on main (GitHub Actions)"
+  },
+  {
+   "id": "lint",
+   "label": "Declaration",
+   "what": "robot-sdk.toml matches the code (python -m tools.sdk_graph check)"
+  },
+  {
+   "id": "types",
+   "label": "Types",
+   "what": "declared type uses are found in the code"
+  },
+  {
+   "id": "release",
+   "label": "Release",
+   "what": "the version robot-sdk pins is published on PyPI"
+  },
+  {
+   "id": "upstream",
+   "label": "Repo",
+   "what": "the GitHub repo is reachable"
+  },
+  {
+   "id": "landing",
+   "label": "Landing page",
+   "what": "robot-sdk.toml [links] site answers 200 with a real page, and the README links to it"
+  }
+ ],
+ "members": [
+  {
+   "id": "robot_msgs",
+   "kind": "package",
+   "state": "warn",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main cc40339",
+     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45740818681",
+     "workflow": "test.yml",
+     "sha": "cc40339",
+     "at": "2026-11-26T02:12:05Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_msgs/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "none",
+     "detail": "defines 67 shared types; uses none of them",
+     "verified": 0,
+     "found": 0,
+     "missing": 0
+    },
+    "release": {
+     "state": "pass",
+     "detail": "pins ~=0.3.1; PyPI has 0.3.2",
+     "pinned": "~=0.3.1",
+     "pypi_latest": "0.3.2",
+     "satisfied": true,
+     "url": "https://pypi.org/project/robot-msgs/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_msgs"
+    },
+    "landing": {
+     "state": "warn",
+     "detail": "README does not link to it; https://robotmsgs.com answers 200 with a real page (robot_msgs — the standard vocabulary for robot data)",
+     "url": "https://robotmsgs.com",
+     "readme": false,
+     "http": 200
+    }
+   }
+  },
+  {
+   "id": "robot_models",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 61b292c",
+     "url": "https://github.com/zacharyyamaoka/robot_models/actions/runs/45545267196",
+     "workflow": "test.yml",
+     "sha": "61b292c",
+     "at": "2026-11-25T04:13:15Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_models/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "pass",
+     "detail": "5 declared + verified · 2 found, not declared · 0 missing",
+     "verified": 5,
+     "found": 2,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.3.0; PyPI has 0.2.0",
+     "pinned": "~=0.3.0",
+     "pypi_latest": "0.2.0",
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-models-lib/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_models"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
+    }
+   }
+  },
+  {
+   "id": "robot_controllers",
+   "kind": "package",
+   "state": "warn",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 3159fe9",
+     "url": "https://github.com/zacharyyamaoka/robot_controllers/actions/runs/45545268965",
+     "workflow": "test.yml",
+     "sha": "3159fe9",
+     "at": "2026-11-25T04:13:16Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_controllers/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "pass",
+     "detail": "8 declared + verified · 26 found, not declared · 0 missing",
+     "verified": 8,
+     "found": 26,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-controllers/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_controllers"
+    },
+    "landing": {
+     "state": "warn",
+     "detail": "README does not link to it; https://zacharyyamaoka.github.io/robot-controllers/ answers 200 with a real page (robot_controllers)",
+     "url": "https://zacharyyamaoka.github.io/robot-controllers/",
+     "readme": false,
+     "http": 200
+    }
+   }
+  },
+  {
+   "id": "robot_reach",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 6d1fcba",
+     "url": "https://github.com/zacharyyamaoka/robot_reach/actions/runs/45741406634",
+     "workflow": "test.yml",
+     "sha": "6d1fcba",
+     "at": "2026-11-26T02:17:20Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_reach/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "pass",
+     "detail": "1 declared + verified · 2 found, not declared · 0 missing",
+     "verified": 1,
+     "found": 2,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-reach/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_reach"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
+    }
+   }
+  },
+  {
+   "id": "robot_collision",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "unknown",
+     "detail": "CI not readable: no public repo at github.com/zacharyyamaoka/robot_collision (404)"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": []
+    },
+    "types": {
+     "state": "pass",
+     "detail": "3 declared + verified · 0 found, not declared · 0 missing",
+     "verified": 3,
+     "found": 0,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-collision/"
+    },
+    "upstream": {
+     "state": "fail",
+     "detail": "no public repo at github.com/zacharyyamaoka/robot_collision (404)",
+     "url": "https://github.com/zacharyyamaoka/robot_collision"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "https://zacharyyamaoka.github.io/robot_collision/ answers HTTP 404, not a page; README not read",
+     "url": "https://zacharyyamaoka.github.io/robot_collision/",
+     "readme": null,
+     "http": 404
+    }
+   }
+  },
+  {
+   "id": "robot_thermal",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 928622d",
+     "url": "https://github.com/zacharyyamaoka/robot_thermal/actions/runs/45545275156",
+     "workflow": "test.yml",
+     "sha": "928622d",
+     "at": "2026-11-25T04:13:19Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_thermal/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "none",
+     "detail": "no type uses",
+     "verified": 0,
+     "found": 0,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-thermal/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_thermal"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
+    }
+   }
+  },
+  {
+   "id": "robot_trajectories",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 3351a11",
+     "url": "https://github.com/zacharyyamaoka/robot_trajectories/actions/runs/45740800169",
+     "workflow": "test.yml",
+     "sha": "3351a11",
+     "at": "2026-11-26T02:11:56Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_trajectories/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "pass",
+     "detail": "13 declared + verified · 33 found, not declared · 0 missing",
+     "verified": 13,
+     "found": 33,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-trajectories/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_trajectories"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
+    }
+   }
+  },
+  {
+   "id": "robot_autonomy",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 0f68b89",
+     "url": "https://github.com/zacharyyamaoka/robot_autonomy/actions/runs/45571469033",
+     "workflow": "test.yml",
+     "sha": "0f68b89",
+     "at": "2026-11-25T07:51:54Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_autonomy/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "warn",
+     "detail": "0 declared + verified · 3 found, not declared · 0 missing: none of its type uses are declared",
+     "verified": 0,
+     "found": 3,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-autonomy/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_autonomy"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
+    }
+   }
+  },
+  {
+   "id": "robot_metrics",
+   "kind": "package",
+   "state": "warn",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main f953427",
+     "url": "https://github.com/zacharyyamaoka/robot_metrics/actions/runs/45545284704",
+     "workflow": "test.yml",
+     "sha": "f953427",
+     "at": "2026-11-25T04:13:24Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_metrics/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "pass",
+     "detail": "6 declared + verified · 5 found, not declared · 0 missing",
+     "verified": 6,
+     "found": 5,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-metrics/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_metrics"
+    },
+    "landing": {
+     "state": "pass",
+     "detail": "https://zacharyyamaoka.github.io/robot_metrics/ answers 200 with a real page (robot_metrics); README links to it",
+     "url": "https://zacharyyamaoka.github.io/robot_metrics/",
+     "readme": true,
+     "http": 200
+    }
+   }
+  },
+  {
+   "id": "robot_activity",
+   "kind": "package",
+   "state": "warn",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 2ebea6e",
+     "url": "https://github.com/zacharyyamaoka/robot_activity/actions/runs/45553094059",
+     "workflow": "test.yml",
+     "sha": "2ebea6e",
+     "at": "2026-11-25T05:22:12Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_activity/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "none",
+     "detail": "no type uses",
+     "verified": 0,
+     "found": 0,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.1; not on PyPI yet",
+     "pinned": "~=0.1.1",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-activity/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_activity"
+    },
+    "landing": {
+     "state": "pass",
+     "detail": "https://zacharyyamaoka.github.io/robot_activity/ answers 200 with a real page (Robot Activity Agent); README links to it",
+     "url": "https://zacharyyamaoka.github.io/robot_activity/",
+     "readme": true,
+     "http": 200
+    }
+   }
+  },
+  {
+   "id": "traj_compare",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "running",
+     "detail": "test.yml is running on main a85557c",
+     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45741417897",
+     "workflow": "test.yml",
+     "sha": "a85557c",
+     "at": "2026-11-26T02:17:25Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/traj_compare/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "pass",
+     "detail": "10 declared + verified · 7 found, not declared · 0 missing",
+     "verified": 10,
+     "found": 7,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/traj-compare/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/traj_compare"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
+    }
+   }
+  },
+  {
+   "id": "robot_msg_viz",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "none",
+     "detail": "the repo has no test workflow",
+     "url": "https://github.com/zacharyyamaoka/robot_msg_viz/actions"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_msg_viz/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "warn",
+     "detail": "0 declared + verified · 82 found, not declared · 0 missing: none of its type uses are declared",
+     "verified": 0,
+     "found": 82,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-msg-viz/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_msg_viz"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
+    }
+   }
+  },
+  {
+   "id": "sim2real",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 7355462",
+     "url": "https://github.com/zacharyyamaoka/sim2real/actions/runs/45582384039",
+     "workflow": "test.yml",
+     "sha": "7355462",
+     "at": "2026-11-25T09:07:20Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/sim2real/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "pass",
+     "detail": "20 declared + verified · 101 found, not declared · 0 missing",
+     "verified": 20,
+     "found": 101,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/sim2real/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/sim2real"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
+    }
+   }
+  },
+  {
+   "id": "robot_diagnostics",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 2ab15cb",
+     "url": "https://github.com/zacharyyamaoka/robot_diagnostics/actions/runs/45545298969",
+     "workflow": "test.yml",
+     "sha": "2ab15cb",
+     "at": "2026-11-25T04:13:32Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_diagnostics/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "warn",
+     "detail": "0 declared + verified · 2 found, not declared · 0 missing: none of its type uses are declared",
+     "verified": 0,
+     "found": 2,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-diagnostics/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_diagnostics"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
+    }
+   }
+  },
+  {
+   "id": "like_keras",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 7d942f9",
+     "url": "https://github.com/zacharyyamaoka/like_keras/actions/runs/45699121243",
+     "workflow": "test.yml",
+     "sha": "7d942f9",
+     "at": "2026-11-25T20:52:42Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/like_keras/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "warn",
+     "detail": "0 declared + verified · 10 found, not declared · 0 missing: none of its type uses are declared",
+     "verified": 0,
+     "found": 10,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/like_keras/"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/like_keras"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
+    }
+   }
+  },
+  {
+   "id": "robot_sdk_agent",
+   "kind": "agent",
+   "state": "pass",
+   "checks": {
+    "tests": {
+     "state": "pass",
+     "detail": "test.yml passed on main 706387f",
+     "url": "https://github.com/zacharyyamaoka/robot_sdk_agent/actions/runs/45555249741",
+     "workflow": "test.yml",
+     "sha": "706387f",
+     "at": "2026-11-25T05:40:50Z"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/robot_sdk_agent/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "none",
+     "detail": "an agent declares no types; it builds on packages"
+    },
+    "release": {
+     "state": "none",
+     "detail": "an agent is not released on PyPI"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/robot_sdk_agent"
+    },
+    "landing": {
+     "state": "none",
+     "detail": "an agent needs no landing page; its packages do"
+    }
+   }
+  },
+  {
+   "id": "trajectory_tracking_agent",
+   "kind": "agent",
+   "state": "pass",
+   "checks": {
+    "tests": {
+     "state": "none",
+     "detail": "the repo has no test workflow",
+     "url": "https://github.com/zacharyyamaoka/trajectory_tracking_agent/actions"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": [],
+     "url": "https://github.com/zacharyyamaoka/trajectory_tracking_agent/blob/main/robot-sdk.toml"
+    },
+    "types": {
+     "state": "none",
+     "detail": "an agent declares no types; it builds on packages"
+    },
+    "release": {
+     "state": "none",
+     "detail": "an agent is not released on PyPI"
+    },
+    "upstream": {
+     "state": "pass",
+     "detail": "public on GitHub",
+     "url": "https://github.com/zacharyyamaoka/trajectory_tracking_agent"
+    },
+    "landing": {
+     "state": "none",
+     "detail": "an agent needs no landing page; its packages do"
+    }
+   }
+  }
+ ],
+ "summary": {
+  "pass": 2,
+  "warn": 4,
+  "fail": 11,
+  "unknown": 0
+ }
+}
