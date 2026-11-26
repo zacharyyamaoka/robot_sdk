@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-26T02:23:10+00:00",
- "graph_generated": "2026-11-26T02:23:00+00:00",
+ "generated": "2026-11-25T19:19:47-07:00",
+ "graph_generated": "2026-11-25T08:07:14-07:00",
  "checks": [
   {
    "id": "tests",
@@ -226,6 +226,49 @@
    }
   },
   {
+   "id": "robot_collision",
+   "kind": "package",
+   "state": "fail",
+   "checks": {
+    "tests": {
+     "state": "unknown",
+     "detail": "CI not readable: no public repo at github.com/zacharyyamaoka/robot_collision (404)"
+    },
+    "lint": {
+     "state": "pass",
+     "detail": "robot-sdk.toml matches the code",
+     "failures": []
+    },
+    "types": {
+     "state": "pass",
+     "detail": "3 declared + verified · 0 found, not declared · 0 missing",
+     "verified": 3,
+     "found": 0,
+     "missing": 0
+    },
+    "release": {
+     "state": "warn",
+     "detail": "pins ~=0.1.0; not on PyPI yet",
+     "pinned": "~=0.1.0",
+     "pypi_latest": null,
+     "satisfied": false,
+     "url": "https://pypi.org/project/robot-collision/"
+    },
+    "upstream": {
+     "state": "fail",
+     "detail": "no public repo at github.com/zacharyyamaoka/robot_collision (404)",
+     "url": "https://github.com/zacharyyamaoka/robot_collision"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "https://zacharyyamaoka.github.io/robot_collision/ answers HTTP 404, not a page; README not read",
+     "url": "https://zacharyyamaoka.github.io/robot_collision/",
+     "readme": null,
+     "http": 404
+    }
+   }
+  },
+  {
    "id": "robot_thermal",
    "kind": "package",
    "state": "fail",
@@ -275,7 +318,7 @@
   {
    "id": "robot_trajectories",
    "kind": "package",
-   "state": "warn",
+   "state": "fail",
    "checks": {
     "tests": {
      "state": "pass",
@@ -312,11 +355,10 @@
      "url": "https://github.com/zacharyyamaoka/robot_trajectories"
     },
     "landing": {
-     "state": "pass",
-     "detail": "https://zacharyyamaoka.github.io/robot_trajectories/ answers 200 with a real page (robot_trajectories); README links to it",
-     "url": "https://zacharyyamaoka.github.io/robot_trajectories/",
-     "readme": true,
-     "http": 200
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
     }
    }
   },
@@ -469,8 +511,8 @@
    "state": "fail",
    "checks": {
     "tests": {
-     "state": "pass",
-     "detail": "test.yml passed on main a85557c",
+     "state": "running",
+     "detail": "test.yml is running on main a85557c",
      "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45741417897",
      "workflow": "test.yml",
      "sha": "a85557c",
@@ -484,9 +526,9 @@
     },
     "types": {
      "state": "pass",
-     "detail": "10 declared + verified · 12 found, not declared · 0 missing",
+     "detail": "10 declared + verified · 7 found, not declared · 0 missing",
      "verified": 10,
-     "found": 12,
+     "found": 7,
      "missing": 0
     },
     "release": {
@@ -513,7 +555,7 @@
   {
    "id": "robot_msg_viz",
    "kind": "package",
-   "state": "warn",
+   "state": "fail",
    "checks": {
     "tests": {
      "state": "none",
@@ -547,11 +589,10 @@
      "url": "https://github.com/zacharyyamaoka/robot_msg_viz"
     },
     "landing": {
-     "state": "pass",
-     "detail": "https://zacharyyamaoka.github.io/robot_msg_viz/ answers 200 with a real page (robot_msg_viz — a ready-made Rerun view for every robot message); README links to it",
-     "url": "https://zacharyyamaoka.github.io/robot_msg_viz/",
-     "readme": true,
-     "http": 200
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
     }
    }
   },
@@ -697,48 +738,6 @@
    }
   },
   {
-   "id": "robot_collision",
-   "kind": "package",
-   "state": "fail",
-   "checks": {
-    "tests": {
-     "state": "unknown",
-     "detail": "CI not readable: pinned, but the GitHub repo is not reachable (kept from the last good graph)"
-    },
-    "lint": {
-     "state": "pass",
-     "detail": "robot-sdk.toml matches the code (from the last good graph)",
-     "failures": []
-    },
-    "types": {
-     "state": "pass",
-     "detail": "3 declared + verified · 0 found, not declared · 0 missing",
-     "verified": 3,
-     "found": 0,
-     "missing": 0
-    },
-    "release": {
-     "state": "warn",
-     "detail": "pins ~=0.1.0; not on PyPI yet",
-     "pinned": "~=0.1.0",
-     "pypi_latest": null,
-     "satisfied": false,
-     "url": "https://pypi.org/project/robot-collision/"
-    },
-    "upstream": {
-     "state": "fail",
-     "detail": "pinned, but the GitHub repo is not reachable (kept from the last good graph)"
-    },
-    "landing": {
-     "state": "fail",
-     "detail": "https://zacharyyamaoka.github.io/robot_collision/ answers HTTP 404, not a page; README not read",
-     "url": "https://zacharyyamaoka.github.io/robot_collision/",
-     "readme": null,
-     "http": 404
-    }
-   }
-  },
-  {
    "id": "robot_sdk_agent",
    "kind": "agent",
    "state": "pass",
@@ -814,8 +813,8 @@
  ],
  "summary": {
   "pass": 2,
-  "warn": 6,
-  "fail": 9,
+  "warn": 4,
+  "fail": 11,
   "unknown": 0
  }
 }
