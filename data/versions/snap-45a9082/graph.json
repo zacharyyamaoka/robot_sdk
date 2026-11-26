@@ -1,0 +1,3232 @@
+{
+ "schema": "robot-sdk-graph/1",
+ "generated": "2026-11-24T21:13:44-07:00",
+ "sources": {
+  "robot_sdk": "7d5b607",
+  "robot_msgs": "39ca3ea",
+  "robot_models": "61b292c",
+  "robot_controllers": "3159fe9",
+  "robot_reach": "42a6c2a",
+  "robot_thermal": "928622d",
+  "robot_trajectories": "e2cdd76",
+  "robot_autonomy": "ac7ecf0",
+  "robot_metrics": "f953427",
+  "robot_activity": "01ab392",
+  "traj_compare": "5ba36f8-dirty",
+  "sim2real": "21f81b0",
+  "robot_diagnostics": "2ab15cb",
+  "like_keras": "a57ae51",
+  "trajectory_tracking_agent": "8bf6fc8"
+ },
+ "packages": [
+  {
+   "id": "robot_msgs",
+   "pypi": "robot-msgs",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_msgs",
+   "role": "library",
+   "layer": "vocabulary",
+   "one_line": "Frozen numpy-backed message dataclasses every package joins on",
+   "summary": "The standard robot data types (ROS's geometry, sensor, trajectory and vision messages) as frozen Python dataclasses, *with* the functions between them: pose offsets, trajectory interpolation and resampling, point projection, depth to point cloud. `.show()` (Rerun) and `.plot()` (matplotlib) on every type. ROS 2 / bag export as an extra. Strict semver: additive changes only.",
+   "use_when": "Any pose, transform, joint state, trajectory, limit, image or point cloud. **Never define your own Pose or Trajectory.**",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_msgs",
+    "pypi": "https://pypi.org/project/robot-msgs/",
+    "site": "https://robotmsgs.com"
+   },
+   "version": "0.3.1",
+   "deps": {
+    "required": [],
+    "extras": {
+     "viz": [],
+     "ros": [],
+     "rerun": [
+      "robot_msgs"
+     ],
+     "viser": [],
+     "test": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "robot_models",
+   "pypi": "robot-models-lib",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_models",
+   "role": "library",
+   "layer": "models",
+   "one_line": "Generic models by type: actuators, arms, sensors, homing procedures",
+   "summary": "Generic physical models of part *types* (servos, arms, conveyors, end effectors, sensors), each a ladder of models from ideal to learned (M0 ideal → M1 datasheet → M2 Coulomb + viscous → M3 friction …). Every rung states its parameters, equation and references. No maker, no SKU. Imports robot_msgs and numpy only.",
+   "use_when": "What parameters a model of an actuator or arm needs, which friction or dynamics model to use, how parameter names map.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_models",
+    "pypi": "https://pypi.org/project/robot-models-lib/",
+    "docs": "https://github.com/zacharyyamaoka/robot_models/tree/main/docs/peps",
+    "issues": "https://github.com/zacharyyamaoka/robot_models/issues"
+   },
+   "version": "0.3.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "contact": [],
+     "test": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "robot_controllers",
+   "pypi": "robot-controllers",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_controllers",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Feed-forward/feedback controllers as black boxes plus a Layout",
+   "summary": "Controllers as black boxes: a robot_msgs message in, a `ServoCommand` out, `controller.tick(state, dt)`. Joint trajectory controller (Python and C++), joint impedance. Each benchmarked on a ladder of rungs (free motion, fast motion, impacts, pushes, replanning, host stalls) for performance and cost.",
+   "use_when": "Tracking a trajectory, impedance or compliance, choosing a controller, host vs board control.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_controllers",
+    "pypi": "https://pypi.org/project/robot-controllers/",
+    "site": "https://zacharyyamaoka.github.io/robot-controllers/",
+    "docs": "https://github.com/zacharyyamaoka/robot_controllers/blob/main/docs/CONTRACT.md"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "bench": [],
+     "tracking": [],
+     "site": [],
+     "test": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "robot_reach",
+   "pypi": "robot-reach",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_reach",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Workspace and IK-branch reach of any arm, FK/IK passed in",
+   "summary": "Reachability of any arm in Cartesian and joint space, from FK and IK passed in as pure functions. Reach maps, joint maps, IK branches, orientations; save results, view them in viser. Example arms built in: pendulum, RR, five-bar, 3-DOF shoulder, UR5e. Loads URDFs.",
+   "use_when": "Workspace, \"can the arm reach X\", IK branch choice, placing a robot or a bin, arm sizing.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_reach",
+    "pypi": "https://pypi.org/project/robot-reach/"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "plot": [],
+     "viz": [],
+     "test": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "robot_thermal",
+   "pypi": "robot-thermal",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_thermal",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Motor and board heat tracking with burst-limit decisions",
+   "summary": "Running servo motors above their continuous rating in short bursts, safely. v1: an I²t burst budget per drive plus a hard cut on board temperature. v2: a lumped thermal network per drive, fed by logged current, with a Kalman observer. Standard library at runtime.",
+   "use_when": "Motor or board heat, burst limits, duty cycles, how hard a joint may be pushed.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_thermal",
+    "pypi": "https://pypi.org/project/robot-thermal/"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [],
+    "extras": {
+     "msgs": [
+      "robot_msgs"
+     ],
+     "test": [
+      "robot_msgs"
+     ],
+     "report": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "robot_trajectories",
+   "pypi": "robot-trajectories",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_trajectories",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Trajectory kinds from limits and tasks, one JointTrajectory out",
+   "summary": "A signal library for robot motion. Every trajectory kind is a `TrajectoryGenerator`: a plain function `f(JointSpace, numbers/points/poses) → JointTrajectory`, inside the limits and at rest at both ends. ~80 kinds: moves, waypoints (joint and Cartesian), random waypoints, pick and place, chirps, multisines, PRBS, step trains, PID tuning, friction ID, ISO 9283 tests, workspace sweeps, moving targets. `chain` / `split` to compose. The legs inside a kind are timed by a `WaypointTrajectoryGenerator` (points + joint limits in, a JointTrajectory out: minimum_jerk, trapezoid, ruckig, ruckig_pro, toppra as plugins), passed as `waypoint_generator=`. The robot (limits, FK/IK, dynamics, collision) is injected via `JointSpace`.",
+   "use_when": "Generating any motion: test trajectories, excitation for system ID, pick-and-place paths, tuning signals, benchmarks.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_trajectories",
+    "pypi": "https://pypi.org/project/robot-trajectories/",
+    "docs": "https://github.com/zacharyyamaoka/robot_trajectories/tree/main/docs/peps"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "test": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "robot_autonomy",
+   "pypi": "robot-autonomy",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_autonomy",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Counts human interventions per working hour; ranks causes",
+   "summary": "The Robot Autonomy Agent: working hours between human interventions, from every source (chat asks, logs, faults, tickets), with the causes ranked as a to-do list.",
+   "use_when": "Measuring and driving down human interventions; autonomy KPIs.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_autonomy",
+    "pypi": "https://pypi.org/project/robot-autonomy/"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "wandb": [],
+     "test": [],
+     "oracle": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "robot_metrics",
+   "pypi": "robot-metrics",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_metrics",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Tracking, stop, lag, repeatability metrics over message streams",
+   "summary": "Performance metrics for robot parts: tracking error, stop error, lag, repeatability, with units. Works on a whole recording or a live feed, with identical numbers. Runs group into rungs, stations and deployments; pass/fail targets (objectives) are kept apart from the maths. Shaped like torchmetrics.",
+   "use_when": "Scoring any run: target vs real, sim vs real, before vs after, pass/fail gates.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_metrics",
+    "pypi": "https://pypi.org/project/robot-metrics/",
+    "site": "https://zacharyyamaoka.github.io/robot_metrics/",
+    "changelog": "https://github.com/zacharyyamaoka/robot_metrics/blob/main/CHANGELOG.md"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "viz": [],
+     "wandb": [],
+     "rerun": [],
+     "test": [],
+     "site": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "robot_activity",
+   "pypi": "robot-activity",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_activity",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Per-robot and fleet activity, work queue, stalemate flags",
+   "summary": "The Robot Activity Agent: measures whether each robot is doing useful work (claimed, active, moving), keeps a work queue moving, flags stalemates and gives every idle second a reason.",
+   "use_when": "Fleet or robot utilisation, uptime dashboards, work queues.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_activity",
+    "pypi": "https://pypi.org/project/robot-activity/",
+    "site": "https://zacharyyamaoka.github.io/robot_activity/",
+    "dashboard": "https://zacharyyamaoka.github.io/robot_activity/dashboard.html",
+    "changelog": "https://github.com/zacharyyamaoka/robot_activity/blob/main/CHANGELOG.md"
+   },
+   "version": "0.1.1",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "wandb": [],
+     "test": [],
+     "site": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "traj_compare",
+   "pypi": "traj-compare",
+   "repo_url": "https://github.com/zacharyyamaoka/traj_compare",
+   "role": "viewer",
+   "layer": "viewers",
+   "one_line": "A/B trajectory comparison and coverage viewers, one static report.html",
+   "summary": "The viewers, on robot_msgs types: a turn-key A/B trajectory comparison viewer that writes one static `report.html` (target vs sim vs real), and the dataset coverage viewers, one payload feeding a data-ui page, Matplotlib, Viser and W&B: `traj_compare.coverage` (trajectories) and `traj_compare.grasp_coverage` (grasps). Coverage of any list of dataclass records (each field against its declared `Value` range, class balance, missing values, \"is more data still adding coverage?\") moved to its own package, dataclass_coverage.",
+   "use_when": "Comparing runs (target vs sim vs real, before vs after), benchmark reports, \"how much of the space does this dataset cover?\". **Never write a bespoke trajectory plot or coverage page.**",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/traj_compare",
+    "pypi": "https://pypi.org/project/traj-compare/"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "test": [],
+     "rerun": [
+      "robot_msgs"
+     ],
+     "export": [],
+     "plot": [],
+     "viser": [],
+     "wandb": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "sim2real",
+   "pypi": "sim2real",
+   "repo_url": "https://github.com/zacharyyamaoka/sim2real",
+   "role": "library",
+   "layer": "outer",
+   "one_line": "RobotTwin, calibrate() and fit/replay over real or simulated runs",
+   "summary": "The outer API on top of everything: digital twins (`RobotTwin`), one-click `.calibrate()` (configure → fit → tune → measure routines), MuJoCo simulation, and dashboards of how close each twin is to its real hardware. May import every package above.",
+   "use_when": "Twins, calibration, system identification, sim-vs-real comparison, the one-call API over a whole robot.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/sim2real",
+    "pypi": "https://pypi.org/project/sim2real/",
+    "docs": "https://github.com/zacharyyamaoka/sim2real/tree/main/docs/peps"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "sim": [],
+     "vision": [],
+     "tracking": [],
+     "homing": [
+      "robot_models"
+     ],
+     "trajectories": [
+      "robot_trajectories"
+     ],
+     "test": [
+      "robot_models"
+     ]
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "robot_diagnostics",
+   "pypi": "robot-diagnostics",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_diagnostics",
+   "role": "library",
+   "layer": "checks",
+   "one_line": "Diagnostics as pure functions: diagnose(config, data) -> Result",
+   "summary": "Robot Diagnostics (RobotDx). Diagnostics as checks: a diagnostic = a metric + a threshold, with a registry, records (ROS `DiagnosticStatus` shape), roll-ups and ~33 stock checks: tracking and stop error, ISO 9283, frequency response, fidelity, coverage, feedback, health, camera, events. Stdlib-only core; the stock maths (numpy, robot_metrics, sim2real) is the `stock` extra, imported lazily. The io-diagnostics app (dashboard, device tree) uses it.",
+   "use_when": "Is this robot, joint or sensor healthy? Pass/fail checks on runs, health dashboards, turning a metric into an alarm.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_diagnostics",
+    "pypi": "https://pypi.org/project/robot-diagnostics/"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [],
+    "extras": {
+     "stock": [
+      "robot_metrics",
+      "sim2real"
+     ],
+     "test": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  },
+  {
+   "id": "like_keras",
+   "pypi": "like_keras",
+   "repo_url": "https://github.com/zacharyyamaoka/like_keras",
+   "role": "library",
+   "layer": "comms",
+   "one_line": "Components, ports and systems over dora; robot_msgs on the wire",
+   "summary": "The communication API: components with ports, systems that wire them from outside, deployments in one process or across the network. dora-rs is the first transport. (Design in progress: check `docs/CONTRACT.md`.)",
+   "use_when": "Connecting robot components, sensors and processes; dataflows.",
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/like_keras",
+    "pypi": "https://pypi.org/project/like_keras/",
+    "docs": "https://github.com/zacharyyamaoka/like_keras/blob/main/docs/CONTRACT.md"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "dora": [],
+     "test": []
+    }
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  }
+ ],
+ "types": [
+  {
+   "id": "robot_msgs.Msg",
+   "name": "Msg",
+   "package": "robot_msgs",
+   "module": "robot_msgs",
+   "what": "Base of every message",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.compare.PoseTolerance",
+   "name": "PoseTolerance",
+   "package": "robot_msgs",
+   "module": "robot_msgs.compare",
+   "what": "Limits on a pose error's magnitudes: ``position`` (m) and ``rotation`` angle (rad)",
+   "docs_url": "https://robotmsgs.com/types/compare/PoseTolerance/"
+  },
+  {
+   "id": "robot_msgs.compare.Tolerances",
+   "name": "Tolerances",
+   "package": "robot_msgs",
+   "module": "robot_msgs.compare",
+   "what": "What a run must stay inside, as ``joint_trajectory_controller`` states it",
+   "docs_url": "https://robotmsgs.com/types/compare/Tolerances/"
+  },
+  {
+   "id": "robot_msgs.control.EffortStall",
+   "name": "EffortStall",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Done when `joint` moves slower than `speed` while its measured effort pushes the way its setpoint runs with more than `effort` (N·m or N), for `dwell` seconds: it is pressing something",
+   "docs_url": "https://robotmsgs.com/types/control/EffortStall/"
+  },
+  {
+   "id": "robot_msgs.control.Elapsed",
+   "name": "Elapsed",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Done when the step has run `duration` seconds",
+   "docs_url": "https://robotmsgs.com/types/control/Elapsed/"
+  },
+  {
+   "id": "robot_msgs.control.JointCommand",
+   "name": "JointCommand",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "What one joint does during one step",
+   "docs_url": "https://robotmsgs.com/types/control/JointCommand/"
+  },
+  {
+   "id": "robot_msgs.control.JointCommandSequence",
+   "name": "JointCommandSequence",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "The steps in order for joints `joint_names`, plus one abort guard for every step",
+   "docs_url": "https://robotmsgs.com/types/control/JointCommandSequence/"
+  },
+  {
+   "id": "robot_msgs.control.JointCommandSequenceController",
+   "name": "JointCommandSequenceController",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Runs `sequence`; see the module docstring",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.control.JointCommandStep",
+   "name": "JointCommandStep",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "One step: a `JointCommand` per joint it names, done when ANY of `done_when` holds, the whole sequence aborted if not done within `timeout` (s)",
+   "docs_url": "https://robotmsgs.com/types/control/JointCommandStep/"
+  },
+  {
+   "id": "robot_msgs.control.Reached",
+   "name": "Reached",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Done when every listed joint's setpoint is at its target and the joint is within `tolerance` of it, slower than `speed`, for `dwell` seconds",
+   "docs_url": "https://robotmsgs.com/types/control/Reached/"
+  },
+  {
+   "id": "robot_msgs.control.ServoCommand",
+   "name": "ServoCommand",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Targets for servo `name[i]`, in SI",
+   "docs_url": "https://robotmsgs.com/types/control/ServoCommand/"
+  },
+  {
+   "id": "robot_msgs.control.ServoState",
+   "name": "ServoState",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "`position[i]` (rad or m), `velocity[i]`, `effort[i]` (N·m or N) belong to servo `name[i]`",
+   "docs_url": "https://robotmsgs.com/types/control/ServoState/"
+  },
+  {
+   "id": "robot_msgs.control.Settled",
+   "name": "Settled",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Done when every listed joint has moved slower than `speed` for `dwell` seconds",
+   "docs_url": "https://robotmsgs.com/types/control/Settled/"
+  },
+  {
+   "id": "robot_msgs.control.Stall",
+   "name": "Stall",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Done when `joint`'s setpoint leads it by more than `lead` (in the direction of motion) while it moves slower than `speed`, for `dwell` seconds: something stopped it",
+   "docs_url": "https://robotmsgs.com/types/control/Stall/"
+  },
+  {
+   "id": "robot_msgs.coverage.CoverageResult",
+   "name": "CoverageResult",
+   "package": "robot_msgs",
+   "module": "robot_msgs.coverage",
+   "what": "The coverage of one point set over one grid",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.geometry.Pose",
+   "name": "Pose",
+   "package": "robot_msgs",
+   "module": "robot_msgs.geometry",
+   "what": "Same maths as `Transform` (every method converts and delegates), different intent: a Pose says where something *is*, a Transform says how to move between frames",
+   "docs_url": "https://robotmsgs.com/types/geometry/Pose/"
+  },
+  {
+   "id": "robot_msgs.manipulation.GraspPose",
+   "name": "GraspPose",
+   "package": "robot_msgs",
+   "module": "robot_msgs.manipulation",
+   "what": "Where the gripper's tool frame goes to grasp, and how wide its jaws are",
+   "docs_url": "https://robotmsgs.com/types/manipulation/GraspPose/"
+  },
+  {
+   "id": "robot_msgs.manipulation.NamedPose",
+   "name": "NamedPose",
+   "package": "robot_msgs",
+   "module": "robot_msgs.manipulation",
+   "what": "A saved position of a robot's joint group, looked up by name (``\"ready\"``, ``\"home\"``)",
+   "docs_url": "https://robotmsgs.com/types/manipulation/NamedPose/"
+  },
+  {
+   "id": "robot_msgs.sensor.JointState",
+   "name": "JointState",
+   "package": "robot_msgs",
+   "module": "robot_msgs.sensor",
+   "what": "`position[i]` (rad or m), `velocity[i]` and `effort[i]` belong to joint `name[i]`",
+   "docs_url": "https://robotmsgs.com/types/sensor/JointState/"
+  },
+  {
+   "id": "robot_msgs.shape.Mesh",
+   "name": "Mesh",
+   "package": "robot_msgs",
+   "module": "robot_msgs.shape",
+   "what": "`vertices` is ``(N, 3)`` float64 metres; `triangles` is ``(M, 3)`` int32 vertex indices (ROS's ``MeshTriangle.vertex_indices``), counter-clockwise seen from outside",
+   "docs_url": "https://robotmsgs.com/types/shape/Mesh/"
+  },
+  {
+   "id": "robot_msgs.space.Space",
+   "name": "Space",
+   "package": "robot_msgs",
+   "module": "robot_msgs.space",
+   "what": "A message seen as a space (gymnasium-style), derived from the instance itself",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.std.DiagnosticRecord",
+   "name": "DiagnosticRecord",
+   "package": "robot_msgs",
+   "module": "robot_msgs.std",
+   "what": "One evaluation of one component's health, sent periodically",
+   "docs_url": "https://robotmsgs.com/types/std/DiagnosticRecord/"
+  },
+  {
+   "id": "robot_msgs.std.Header",
+   "name": "Header",
+   "package": "robot_msgs",
+   "module": "robot_msgs.std",
+   "what": "`stamp` is seconds since the Unix epoch (or since sim start); `frame_id` names the frame",
+   "docs_url": "https://robotmsgs.com/types/std/Header/"
+  },
+  {
+   "id": "robot_msgs.std.LogRecord",
+   "name": "LogRecord",
+   "package": "robot_msgs",
+   "module": "robot_msgs.std",
+   "what": "One log line from a running component, as it crosses a process or lands in a recording",
+   "docs_url": "https://robotmsgs.com/types/std/LogRecord/"
+  },
+  {
+   "id": "robot_msgs.std.Metrics",
+   "name": "Metrics",
+   "package": "robot_msgs",
+   "module": "robot_msgs.std",
+   "what": "`values[i]` (float64) is the metric `names[i]`, as `path` measured it at `header.stamp`",
+   "docs_url": "https://robotmsgs.com/types/std/Metrics/"
+  },
+  {
+   "id": "robot_msgs.trajectory.JointLimits",
+   "name": "JointLimits",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "One value per joint for each bound that is known; `None` means unbounded",
+   "docs_url": "https://robotmsgs.com/types/trajectory/JointLimits/"
+  },
+  {
+   "id": "robot_msgs.trajectory.JointTrajectory",
+   "name": "JointTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "Joint-space motion keyed by joint name",
+   "docs_url": "https://robotmsgs.com/types/trajectory/JointTrajectory/"
+  },
+  {
+   "id": "robot_msgs.trajectory.PoseTrajectory",
+   "name": "PoseTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "`positions (N, 3)` in metres, `orientations (N, 4)` xyzw, optional twist per sample",
+   "docs_url": "https://robotmsgs.com/types/trajectory/PoseTrajectory/"
+  },
+  {
+   "id": "robot_msgs.trajectory.Trajectory",
+   "name": "Trajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "Samples at strictly increasing times `t` (seconds after `header.stamp`)",
+   "docs_url": "https://robotmsgs.com/types/trajectory/Trajectory/"
+  }
+ ],
+ "uses": [
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.Msg",
+   "kind": "imports",
+   "symbol": "robot_models.homing.metrics",
+   "where": "src/robot_models/homing/metrics.py:27",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.Msg",
+   "kind": "imports",
+   "symbol": "robot_models.homing.types",
+   "where": "src/robot_models/homing/types.py:20",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "robot_models.homing.protocols.HomingProcedure.plan",
+   "where": "src/robot_models/homing/protocols.py:67",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "robot_models.homing.protocols.Phase.sequence",
+   "where": "src/robot_models/homing/protocols.py:54",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "produces",
+   "symbol": "robot_models.homing.protocols.HomingPlant.tick",
+   "where": "src/robot_models/homing/protocols.py:33",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "robot_models.homing.protocols.HomingPlant.reset",
+   "where": "src/robot_models/homing/protocols.py:31",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "robot_models.homing.protocols.HomingPlant.tick",
+   "where": "src/robot_models/homing/protocols.py:33",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.Elapsed",
+   "kind": "imports",
+   "symbol": "robot_controllers.bench.rungs",
+   "where": "src/robot_controllers/bench/rungs.py:33",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.JointCommand",
+   "kind": "imports",
+   "symbol": "robot_controllers.bench.rungs",
+   "where": "src/robot_controllers/bench/rungs.py:33",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "robot_controllers.bench.rungs.SequenceScript.sequence",
+   "where": "src/robot_controllers/bench/rungs.py:317",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "imports",
+   "symbol": "robot_controllers.bench.rungs",
+   "where": "src/robot_controllers/bench/rungs.py:33",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.Reached",
+   "kind": "imports",
+   "symbol": "robot_controllers.bench.rungs",
+   "where": "src/robot_controllers/bench/rungs.py:33",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "consumes",
+   "symbol": "robot_controllers.bench.board.ServoBoards.schedule",
+   "where": "src/robot_controllers/bench/board.py:195",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "consumes",
+   "symbol": "robot_controllers.bench.plant.ServoPlant.write",
+   "where": "src/robot_controllers/bench/plant.py:190",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "produces",
+   "symbol": "robot_controllers.controllers.joint_impedance.JointImpedanceController.tick",
+   "where": "src/robot_controllers/controllers/joint_impedance.py:157",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "produces",
+   "symbol": "robot_controllers.controllers.joint_trajectory.JointTrajectoryController.tick",
+   "where": "src/robot_controllers/controllers/joint_trajectory.py:216",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "produces",
+   "symbol": "robot_controllers.controllers.joint_trajectory.TapeFeeder.tick",
+   "where": "src/robot_controllers/controllers/joint_trajectory.py:256",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "produces",
+   "symbol": "robot_controllers.controllers.joint_trajectory_cpp.JointTrajectoryControllerCpp.tick",
+   "where": "src/robot_controllers/controllers/joint_trajectory_cpp.py:208",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "produces",
+   "symbol": "robot_controllers.controllers.layout.LayoutController.tick",
+   "where": "src/robot_controllers/controllers/layout.py:288",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "produces",
+   "symbol": "robot_controllers.core.Controller.tick",
+   "where": "src/robot_controllers/core.py:62",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.ServoState",
+   "kind": "produces",
+   "symbol": "robot_controllers.bench.plant.ServoPlant.read",
+   "where": "src/robot_controllers/bench/plant.py:165",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.control.Stall",
+   "kind": "imports",
+   "symbol": "robot_controllers.bench.rungs",
+   "where": "src/robot_controllers/bench/rungs.py:33",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_impedance.JointImpedanceController.tick",
+   "where": "src/robot_controllers/controllers/joint_impedance.py:157",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_trajectory.JointTrajectoryController.tick",
+   "where": "src/robot_controllers/controllers/joint_trajectory.py:216",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_trajectory.TapeFeeder.tick",
+   "where": "src/robot_controllers/controllers/joint_trajectory.py:256",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_trajectory_cpp.JointTrajectoryControllerCpp.tick",
+   "where": "src/robot_controllers/controllers/joint_trajectory_cpp.py:208",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.layout.LayoutController.tick",
+   "where": "src/robot_controllers/controllers/layout.py:288",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "robot_controllers.core.Controller.tick",
+   "where": "src/robot_controllers/core.py:62",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "robot_controllers.bench.plant",
+   "where": "src/robot_controllers/bench/plant.py:36",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.bench.targets.collision_stop",
+   "where": "src/robot_controllers/bench/targets.py:225",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_impedance.JointImpedanceController",
+   "where": "src/robot_controllers/controllers/joint_impedance.py:112",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_impedance.JointImpedanceController.replace_input",
+   "where": "src/robot_controllers/controllers/joint_impedance.py:241",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_trajectory.JointTrajectoryController",
+   "where": "src/robot_controllers/controllers/joint_trajectory.py:207",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_trajectory.JointTrajectoryController.replace_input",
+   "where": "src/robot_controllers/controllers/joint_trajectory.py:219",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_trajectory.TapeFeeder",
+   "where": "src/robot_controllers/controllers/joint_trajectory.py:245",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_trajectory.TapeFeeder.replace_input",
+   "where": "src/robot_controllers/controllers/joint_trajectory.py:264",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_trajectory_cpp.JointTrajectoryControllerCpp",
+   "where": "src/robot_controllers/controllers/joint_trajectory_cpp.py:158",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.joint_trajectory_cpp.JointTrajectoryControllerCpp.replace_input",
+   "where": "src/robot_controllers/controllers/joint_trajectory_cpp.py:263",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.layout.LayoutController",
+   "where": "src/robot_controllers/controllers/layout.py:181",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_controllers.controllers.layout.LayoutController.replace_input",
+   "where": "src/robot_controllers/controllers/layout.py:462",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_controllers",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "imports",
+   "symbol": "robot_controllers.registry",
+   "where": "src/robot_controllers/registry.py:10",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_reach",
+   "type": "robot_msgs.geometry.Pose",
+   "kind": "imports",
+   "symbol": "robot_reach.workspace",
+   "where": "src/robot_reach/workspace.py:75",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_reach",
+   "type": "robot_msgs.manipulation.NamedPose",
+   "kind": "produces",
+   "symbol": "robot_reach.goals.to_named_pose",
+   "where": "src/robot_reach/goals.py:856",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_reach",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "imports",
+   "symbol": "robot_reach.workspace",
+   "where": "src/robot_reach/workspace.py:81",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "robot_trajectories.segments",
+   "where": "src/robot_trajectories/segments.py:44",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.kernels.Bounds.from_limits",
+   "where": "src/robot_trajectories/kernels.py:58",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.kernels.to_trajectory",
+   "where": "src/robot_trajectories/kernels.py:377",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.segments.guard",
+   "where": "src/robot_trajectories/segments.py:96",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.space.DescriptionLike.joint_limits",
+   "where": "src/robot_trajectories/space.py:102",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.space.JointSpace.from_limits",
+   "where": "src/robot_trajectories/space.py:346",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.space.JointSpace.limits",
+   "where": "src/robot_trajectories/space.py:331",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.space.JointSpace.within",
+   "where": "src/robot_trajectories/space.py:398",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.space.limits_to_json",
+   "where": "src/robot_trajectories/space.py:243",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.this_week.chirp_before_after",
+   "where": "src/robot_trajectories/this_week.py:69",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.this_week.week",
+   "where": "src/robot_trajectories/this_week.py:48",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.this_week.write_tapes",
+   "where": "src/robot_trajectories/this_week.py:92",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.waypoint_trajectory_generator.WaypointTrajectoryGenerator.__call__",
+   "where": "src/robot_trajectories/waypoint_trajectory_generator.py:323",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.waypoint_trajectory_generator.WaypointTrajectoryGeneratorBackend.time_parameterize",
+   "where": "src/robot_trajectories/waypoint_trajectory_generator.py:116",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "produces",
+   "symbol": "robot_trajectories.space.limits_from_json",
+   "where": "src/robot_trajectories/space.py:254",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "produces",
+   "symbol": "robot_trajectories.this_week.read_limits",
+   "where": "src/robot_trajectories/this_week.py:40",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.moving.synchronised",
+   "where": "src/robot_trajectories/moving.py:287",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.recipe.calls",
+   "where": "src/robot_trajectories/recipe.py:33",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.recipe.rebuild",
+   "where": "src/robot_trajectories/recipe.py:47",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.recipe.recipe",
+   "where": "src/robot_trajectories/recipe.py:27",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.recipe.summary",
+   "where": "src/robot_trajectories/recipe.py:91",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.segments.annotate",
+   "where": "src/robot_trajectories/segments.py:404",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.segments.bands",
+   "where": "src/robot_trajectories/segments.py:177",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.segments.chain",
+   "where": "src/robot_trajectories/segments.py:338",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.segments.labels",
+   "where": "src/robot_trajectories/segments.py:160",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.segments.notes",
+   "where": "src/robot_trajectories/segments.py:165",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.segments.recipe_of",
+   "where": "src/robot_trajectories/segments.py:150",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.segments.repeat",
+   "where": "src/robot_trajectories/segments.py:430",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.segments.segment_info",
+   "where": "src/robot_trajectories/segments.py:155",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.segments.split",
+   "where": "src/robot_trajectories/segments.py:386",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.space.JointSpace.tool_points",
+   "where": "src/robot_trajectories/space.py:570",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.space.JointSpace.torques",
+   "where": "src/robot_trajectories/space.py:583",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.this_week.table_row",
+   "where": "src/robot_trajectories/this_week.py:57",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.kernels.to_trajectory",
+   "where": "src/robot_trajectories/kernels.py:377",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.recipe.rebuild",
+   "where": "src/robot_trajectories/recipe.py:47",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.registry.KindInfo.function",
+   "where": "src/robot_trajectories/registry.py:71",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.registry.kind",
+   "where": "src/robot_trajectories/registry.py:156",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.segments.annotate",
+   "where": "src/robot_trajectories/segments.py:404",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.segments.chain",
+   "where": "src/robot_trajectories/segments.py:339",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.segments.repeat",
+   "where": "src/robot_trajectories/segments.py:430",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.segments.split",
+   "where": "src/robot_trajectories/segments.py:386",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.this_week.week",
+   "where": "src/robot_trajectories/this_week.py:48",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.waypoint_trajectory_generator.WaypointTrajectoryGenerator.__call__",
+   "where": "src/robot_trajectories/waypoint_trajectory_generator.py:324",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.waypoint_trajectory_generator.WaypointTrajectoryGeneratorBackend.time_parameterize",
+   "where": "src/robot_trajectories/waypoint_trajectory_generator.py:118",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "produces",
+   "symbol": "robot_trajectories.moving.target_from_record",
+   "where": "src/robot_trajectories/moving.py:242",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_trajectories",
+   "type": "robot_msgs.trajectory.Trajectory",
+   "kind": "consumes",
+   "symbol": "robot_trajectories.trajectory_generator.TrajectoryGenerator.__call__",
+   "where": "src/robot_trajectories/trajectory_generator.py:34",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_autonomy",
+   "type": "robot_msgs.std.DiagnosticRecord",
+   "kind": "imports",
+   "symbol": "robot_autonomy.demo",
+   "where": "src/robot_autonomy/demo.py:250",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_autonomy",
+   "type": "robot_msgs.std.DiagnosticRecord",
+   "kind": "imports",
+   "symbol": "robot_autonomy.sources.diagnostics",
+   "where": "src/robot_autonomy/sources/diagnostics.py:23",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_autonomy",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "robot_autonomy.demo",
+   "where": "src/robot_autonomy/demo.py:250",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "robot_metrics.datasets.fivebar_ladder",
+   "where": "src/robot_metrics/datasets/fivebar_ladder.py:18",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "robot_metrics.datasets.onedof_round8",
+   "where": "src/robot_metrics/datasets/onedof_round8.py:37",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_metrics.alignment.Aligner.push",
+   "where": "src/robot_metrics/alignment.py:150",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_metrics.alignment.align",
+   "where": "src/robot_metrics/alignment.py:94",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_metrics.stock.moving",
+   "where": "src/robot_metrics/stock.py:43",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_metrics.stops.stops",
+   "where": "src/robot_metrics/stops.py:154",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_metrics.alignment.Aligned.measured",
+   "where": "src/robot_metrics/alignment.py:47",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_metrics.alignment.Aligned.target",
+   "where": "src/robot_metrics/alignment.py:46",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_metrics.stops.Stop.move",
+   "where": "src/robot_metrics/stops.py:61",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "imports",
+   "symbol": "robot_metrics.datasets.fivebar_ladder",
+   "where": "src/robot_metrics/datasets/fivebar_ladder.py:19",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "imports",
+   "symbol": "robot_metrics.stock",
+   "where": "src/robot_metrics/stock.py:34",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.compare.PoseTolerance",
+   "kind": "imports",
+   "symbol": "traj_compare.dataset",
+   "where": "src/traj_compare/dataset.py:74",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.compare.Tolerances",
+   "kind": "consumes",
+   "symbol": "traj_compare.dataset.write_dataset_report",
+   "where": "src/traj_compare/dataset.py:1953",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.compare.Tolerances",
+   "kind": "consumes",
+   "symbol": "traj_compare.model.Comparison.tcp_tolerances",
+   "where": "src/traj_compare/model.py:557",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.compare.Tolerances",
+   "kind": "consumes",
+   "symbol": "traj_compare.model.Comparison.tolerances",
+   "where": "src/traj_compare/model.py:556",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.manipulation.GraspPose",
+   "kind": "consumes",
+   "symbol": "traj_compare.grasp_coverage.analysis.grasp_values",
+   "where": "src/traj_compare/grasp_coverage/analysis.py:224",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.shape.Mesh",
+   "kind": "imports",
+   "symbol": "traj_compare.rerun_export",
+   "where": "src/traj_compare/rerun_export.py:72",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "traj_compare.data_ui",
+   "where": "src/traj_compare/data_ui.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "consumes",
+   "symbol": "traj_compare.coverage.analysis.analyze",
+   "where": "src/traj_compare/coverage/analysis.py:160",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "traj_compare.coverage.workbench.write_trajectory_rrd",
+   "where": "src/traj_compare/coverage/workbench.py:785",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "traj_compare.data_ui.write_tables",
+   "where": "src/traj_compare/data_ui.py:447",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "traj_compare.dataset.Run.measured",
+   "where": "src/traj_compare/dataset.py:126",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "traj_compare.dataset.Run.reference",
+   "where": "src/traj_compare/dataset.py:125",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "traj_compare.data_ui.links_from_robot",
+   "where": "src/traj_compare/data_ui.py:350",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "traj_compare.dataset.Run.series",
+   "where": "src/traj_compare/dataset.py:146",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "consumes",
+   "symbol": "traj_compare.data_ui.write_tables",
+   "where": "src/traj_compare/data_ui.py:447",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "traj_compare",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "produces",
+   "symbol": "traj_compare.data_ui.links_from_robot",
+   "where": "src/traj_compare/data_ui.py:350",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.EffortStall",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.j1_home.effort_stall",
+   "where": "src/sim2real/sim/homing/j1_home.py:69",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Elapsed",
+   "kind": "imports",
+   "symbol": "sim2real.rig",
+   "where": "src/sim2real/rig.py:182",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Elapsed",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.fullarm_procedures",
+   "where": "src/sim2real/sim/homing/fullarm_procedures.py:43",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Elapsed",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.fullarm_routine",
+   "where": "src/sim2real/sim/homing/fullarm_routine.py:45",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Elapsed",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.mujoco_bench",
+   "where": "src/sim2real/sim/homing/mujoco_bench.py:35",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Elapsed",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.procedures",
+   "where": "src/sim2real/sim/homing/procedures.py:42",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Elapsed",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.real_plant",
+   "where": "src/sim2real/sim/homing/real_plant.py:42",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Elapsed",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.wrist",
+   "where": "src/sim2real/sim/homing/wrist.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Elapsed",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.wrist_real",
+   "where": "src/sim2real/sim/homing/wrist_real.py:42",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommand",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.gravity_ff.feedforward_for",
+   "where": "src/sim2real/sim/homing/gravity_ff.py:167",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommand",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.recovery_ff.seek_side",
+   "where": "src/sim2real/sim/homing/recovery_ff.py:94",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommand",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.sag_proof.pressing",
+   "where": "src/sim2real/sim/homing/sag_proof.py:102",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommand",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.sag_proof.sag_rad",
+   "where": "src/sim2real/sim/homing/sag_proof.py:63",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommand",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.j1_home.back_command",
+   "where": "src/sim2real/sim/homing/j1_home.py:74",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommand",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.j1_home.seek_command",
+   "where": "src/sim2real/sim/homing/j1_home.py:64",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.c1_seek.keep_c1_powered",
+   "where": "src/sim2real/sim/homing/c1_seek.py:77",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.fullarm_procedures.widen",
+   "where": "src/sim2real/sim/homing/fullarm_procedures.py:152",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.gravity_ff.with_gravity_ff",
+   "where": "src/sim2real/sim/homing/gravity_ff.py:268",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.j1_rack.run_sequence",
+   "where": "src/sim2real/sim/homing/j1_rack.py:220",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.real_plant.hold_j1",
+   "where": "src/sim2real/sim/homing/real_plant.py:103",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.real_plant.keep_j2_powered",
+   "where": "src/sim2real/sim/homing/real_plant.py:107",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.real_plant.run_phase_real",
+   "where": "src/sim2real/sim/homing/real_plant.py:346",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.recover.recovery_steps",
+   "where": "src/sim2real/sim/homing/recover.py:60",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.recover.with_prefix",
+   "where": "src/sim2real/sim/homing/recover.py:70",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.recovery_ff.fill_feed",
+   "where": "src/sim2real/sim/homing/recovery_ff.py:196",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.recovery_ff.prefix_steps",
+   "where": "src/sim2real/sim/homing/recovery_ff.py:257",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.sag_proof.sag_proof",
+   "where": "src/sim2real/sim/homing/sag_proof.py:152",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.wrist_gff.with_wrist_gravity_ff",
+   "where": "src/sim2real/sim/homing/wrist_gff.py:120",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.c1_seek.keep_c1_powered",
+   "where": "src/sim2real/sim/homing/c1_seek.py:77",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.fullarm_procedures.widen",
+   "where": "src/sim2real/sim/homing/fullarm_procedures.py:152",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.gravity_ff.with_gravity_ff",
+   "where": "src/sim2real/sim/homing/gravity_ff.py:268",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.j1_home.j1_home_sequence",
+   "where": "src/sim2real/sim/homing/j1_home.py:80",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.j1_rack.return_sequence",
+   "where": "src/sim2real/sim/homing/j1_rack.py:273",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.real_plant.hold_j1",
+   "where": "src/sim2real/sim/homing/real_plant.py:103",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.real_plant.keep_j2_powered",
+   "where": "src/sim2real/sim/homing/real_plant.py:107",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.recover.load_recovery",
+   "where": "src/sim2real/sim/homing/recover.py:39",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.recover.with_prefix",
+   "where": "src/sim2real/sim/homing/recover.py:70",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.recovery_ff.fill_feed",
+   "where": "src/sim2real/sim/homing/recovery_ff.py:196",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.sag_proof.sag_proof",
+   "where": "src/sim2real/sim/homing/sag_proof.py:152",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.wrist_gff.with_wrist_gravity_ff",
+   "where": "src/sim2real/sim/homing/wrist_gff.py:120",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.wrist_real.recovery_sequence",
+   "where": "src/sim2real/sim/homing/wrist_real.py:381",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequenceController",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.bench",
+   "where": "src/sim2real/sim/homing/bench.py:30",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequenceController",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.j1_rack",
+   "where": "src/sim2real/sim/homing/j1_rack.py:70",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandSequenceController",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.real_plant",
+   "where": "src/sim2real/sim/homing/real_plant.py:42",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.gravity_ff.step_end_pose",
+   "where": "src/sim2real/sim/homing/gravity_ff.py:124",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.real_plant.hold_j1_step",
+   "where": "src/sim2real/sim/homing/real_plant.py:91",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.recover.with_prefix",
+   "where": "src/sim2real/sim/homing/recover.py:70",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.recovery_ff.end_pose",
+   "where": "src/sim2real/sim/homing/recovery_ff.py:155",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.recovery_ff.seek_side",
+   "where": "src/sim2real/sim/homing/recovery_ff.py:94",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.sag_proof.rehold_step",
+   "where": "src/sim2real/sim/homing/sag_proof.py:108",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.sag_proof.sag_aware_stall",
+   "where": "src/sim2real/sim/homing/sag_proof.py:142",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.sag_proof.still_at_target",
+   "where": "src/sim2real/sim/homing/sag_proof.py:69",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.sag_proof.with_still_at_target",
+   "where": "src/sim2real/sim/homing/sag_proof.py:77",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.real_plant.hold_j1_step",
+   "where": "src/sim2real/sim/homing/real_plant.py:91",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.recover.recovery_steps",
+   "where": "src/sim2real/sim/homing/recover.py:60",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.recovery_ff.prefix_steps",
+   "where": "src/sim2real/sim/homing/recovery_ff.py:257",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.sag_proof.rehold_step",
+   "where": "src/sim2real/sim/homing/sag_proof.py:108",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.sag_proof.sag_aware_stall",
+   "where": "src/sim2real/sim/homing/sag_proof.py:142",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.JointCommandStep",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.sag_proof.with_still_at_target",
+   "where": "src/sim2real/sim/homing/sag_proof.py:77",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Reached",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.sag_proof.still_at_target",
+   "where": "src/sim2real/sim/homing/sag_proof.py:69",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Reached",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.sag_proof.still_at_target",
+   "where": "src/sim2real/sim/homing/sag_proof.py:69",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.fullarm_plant.FullArmHomingPlant.tick",
+   "where": "src/sim2real/sim/homing/fullarm_plant.py:649",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.mujoco_plant.MujocoRigPlant.tick",
+   "where": "src/sim2real/sim/homing/mujoco_plant.py:505",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.plant.KinematicStopPlant.tick",
+   "where": "src/sim2real/sim/homing/plant.py:143",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.real_plant.RealRigPlant.tick",
+   "where": "src/sim2real/sim/homing/real_plant.py:230",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "consumes",
+   "symbol": "sim2real.sim.homing.wrist_real.RealWristPlant.tick",
+   "where": "src/sim2real/sim/homing/wrist_real.py:114",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Settled",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.real_plant",
+   "where": "src/sim2real/sim/homing/real_plant.py:42",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Settled",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.sag_proof",
+   "where": "src/sim2real/sim/homing/sag_proof.py:48",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Stall",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.fullarm_procedures",
+   "where": "src/sim2real/sim/homing/fullarm_procedures.py:43",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Stall",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.fullarm_routine",
+   "where": "src/sim2real/sim/homing/fullarm_routine.py:45",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Stall",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.gravity_ff",
+   "where": "src/sim2real/sim/homing/gravity_ff.py:47",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Stall",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.procedures",
+   "where": "src/sim2real/sim/homing/procedures.py:42",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Stall",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.real_plant",
+   "where": "src/sim2real/sim/homing/real_plant.py:42",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Stall",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.recovery_ff",
+   "where": "src/sim2real/sim/homing/recovery_ff.py:76",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Stall",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.sag_proof",
+   "where": "src/sim2real/sim/homing/sag_proof.py:48",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.control.Stall",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.wrist",
+   "where": "src/sim2real/sim/homing/wrist.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.coverage.CoverageResult",
+   "kind": "produces",
+   "symbol": "sim2real.cards.coverage.actuator_coverage",
+   "where": "src/sim2real/cards/coverage.py:130",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.coverage.CoverageResult",
+   "kind": "produces",
+   "symbol": "sim2real.cards.coverage.arm_6dof_coverage",
+   "where": "src/sim2real/cards/coverage.py:214",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.coverage.CoverageResult",
+   "kind": "produces",
+   "symbol": "sim2real.cards.coverage.arm_coverage",
+   "where": "src/sim2real/cards/coverage.py:187",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.coverage.CoverageResult",
+   "kind": "produces",
+   "symbol": "sim2real.cards.coverage.arm_gripper_coverage",
+   "where": "src/sim2real/cards/coverage.py:219",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.coverage.CoverageResult",
+   "kind": "produces",
+   "symbol": "sim2real.cards.coverage.condition_coverage",
+   "where": "src/sim2real/cards/coverage.py:238",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.coverage.CoverageResult",
+   "kind": "produces",
+   "symbol": "sim2real.cards.coverage.conveyor_coverage",
+   "where": "src/sim2real/cards/coverage.py:253",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.coverage.CoverageResult",
+   "kind": "produces",
+   "symbol": "sim2real.cards.coverage.driver_coverage",
+   "where": "src/sim2real/cards/coverage.py:145",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.coverage.CoverageResult",
+   "kind": "produces",
+   "symbol": "sim2real.cards.coverage.servo_coverage",
+   "where": "src/sim2real/cards/coverage.py:117",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.manipulation.NamedPose",
+   "kind": "consumes",
+   "symbol": "sim2real.named_poses.fivebar_craig_deg",
+   "where": "src/sim2real/named_poses/__init__.py:49",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.manipulation.NamedPose",
+   "kind": "consumes",
+   "symbol": "sim2real.named_poses.wrist_deg",
+   "where": "src/sim2real/named_poses/__init__.py:55",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.manipulation.NamedPose",
+   "kind": "produces",
+   "symbol": "sim2real.named_poses.named_pose",
+   "where": "src/sim2real/named_poses/__init__.py:42",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.manipulation.NamedPose",
+   "kind": "produces",
+   "symbol": "sim2real.named_poses.named_poses",
+   "where": "src/sim2real/named_poses/__init__.py:36",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.fullarm_plant.FullArmHomingPlant.reset",
+   "where": "src/sim2real/sim/homing/fullarm_plant.py:485",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.fullarm_plant.FullArmHomingPlant.state",
+   "where": "src/sim2real/sim/homing/fullarm_plant.py:716",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.fullarm_plant.FullArmHomingPlant.tick",
+   "where": "src/sim2real/sim/homing/fullarm_plant.py:649",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.mujoco_plant.MujocoRigPlant.reset",
+   "where": "src/sim2real/sim/homing/mujoco_plant.py:454",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.mujoco_plant.MujocoRigPlant.state",
+   "where": "src/sim2real/sim/homing/mujoco_plant.py:554",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.mujoco_plant.MujocoRigPlant.tick",
+   "where": "src/sim2real/sim/homing/mujoco_plant.py:505",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.plant.KinematicStopPlant.reset",
+   "where": "src/sim2real/sim/homing/plant.py:121",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.plant.KinematicStopPlant.state",
+   "where": "src/sim2real/sim/homing/plant.py:184",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.plant.KinematicStopPlant.tick",
+   "where": "src/sim2real/sim/homing/plant.py:143",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.real_plant.RealRigPlant.reset",
+   "where": "src/sim2real/sim/homing/real_plant.py:206",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.real_plant.RealRigPlant.state",
+   "where": "src/sim2real/sim/homing/real_plant.py:261",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.real_plant.RealRigPlant.tick",
+   "where": "src/sim2real/sim/homing/real_plant.py:230",
+   "public": true,
+   "declared": true,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.wrist.WristPlant.reset",
+   "where": "src/sim2real/sim/homing/wrist.py:290",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.wrist.WristPlant.state",
+   "where": "src/sim2real/sim/homing/wrist.py:347",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.wrist.WristPlant.tick",
+   "where": "src/sim2real/sim/homing/wrist.py:305",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.wrist_real.RealWristPlant.reset",
+   "where": "src/sim2real/sim/homing/wrist_real.py:94",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.wrist_real.RealWristPlant.state",
+   "where": "src/sim2real/sim/homing/wrist_real.py:141",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "produces",
+   "symbol": "sim2real.sim.homing.wrist_real.RealWristPlant.tick",
+   "where": "src/sim2real/sim/homing/wrist_real.py:114",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.space.Space",
+   "kind": "imports",
+   "symbol": "sim2real.metrics.gate",
+   "where": "src/sim2real/metrics/gate.py:19",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "sim2real.real",
+   "where": "src/sim2real/real.py:290",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.fullarm_plant",
+   "where": "src/sim2real/sim/homing/fullarm_plant.py:51",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.j1_rack",
+   "where": "src/sim2real/sim/homing/j1_rack.py:72",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.mujoco_plant",
+   "where": "src/sim2real/sim/homing/mujoco_plant.py:48",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.plant",
+   "where": "src/sim2real/sim/homing/plant.py:33",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.real_plant",
+   "where": "src/sim2real/sim/homing/real_plant.py:54",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.wrist",
+   "where": "src/sim2real/sim/homing/wrist.py:55",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "sim2real.sim.homing.wrist_real",
+   "where": "src/sim2real/sim/homing/wrist_real.py:44",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.trajectory.JointLimits",
+   "kind": "imports",
+   "symbol": "sim2real.preflight",
+   "where": "src/sim2real/preflight.py:713",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "imports",
+   "symbol": "sim2real.nominal",
+   "where": "src/sim2real/nominal.py:267",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "imports",
+   "symbol": "sim2real.rack_results",
+   "where": "src/sim2real/rack_results.py:51",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "imports",
+   "symbol": "sim2real.real",
+   "where": "src/sim2real/real.py:291",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "imports",
+   "symbol": "sim2real.rig",
+   "where": "src/sim2real/rig.py:171",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "sim2real",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "imports",
+   "symbol": "sim2real.twin",
+   "where": "src/sim2real/twin.py:673",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_diagnostics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "imports",
+   "symbol": "robot_diagnostics._robot_metrics",
+   "where": "src/robot_diagnostics/_robot_metrics.py:41",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_diagnostics",
+   "type": "robot_msgs.trajectory.Trajectory",
+   "kind": "imports",
+   "symbol": "robot_diagnostics._robot_metrics",
+   "where": "src/robot_diagnostics/_robot_metrics.py:41",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.Msg",
+   "kind": "imports",
+   "symbol": "like_keras.codec",
+   "where": "src/like_keras/codec.py:83",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.DiagnosticRecord",
+   "kind": "imports",
+   "symbol": "like_keras.attach",
+   "where": "src/like_keras/attach.py:378",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.DiagnosticRecord",
+   "kind": "imports",
+   "symbol": "like_keras.backends.inproc",
+   "where": "src/like_keras/backends/inproc.py:717",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "like_keras.attach",
+   "where": "src/like_keras/attach.py:378",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "like_keras.backends.inproc",
+   "where": "src/like_keras/backends/inproc.py:717",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "like_keras.codec",
+   "where": "src/like_keras/codec.py:294",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "like_keras.component",
+   "where": "src/like_keras/component.py:309",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.LogRecord",
+   "kind": "imports",
+   "symbol": "like_keras.component",
+   "where": "src/like_keras/component.py:309",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.Metrics",
+   "kind": "imports",
+   "symbol": "like_keras.attach",
+   "where": "src/like_keras/attach.py:378",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.Metrics",
+   "kind": "imports",
+   "symbol": "like_keras.backends.inproc",
+   "where": "src/like_keras/backends/inproc.py:717",
+   "public": false,
+   "declared": false,
+   "verified": true
+  }
+ ],
+ "agents": [
+  {
+   "id": "trajectory_tracking_agent",
+   "name": "Trajectory Tracking Agent",
+   "repo_url": "https://github.com/zacharyyamaoka/trajectory_tracking_agent",
+   "objective": "Lowest tool tracking error on a given trajectory, inside its gates (UR5e first)",
+   "builds_on": [
+    "robot_msgs",
+    "robot_controllers"
+   ],
+   "status": {
+    "schema": "ai-team-status/1",
+    "member": "Trajectory Tracking Agent",
+    "team": "Robot Team",
+    "remit": "make robots track a given trajectory more accurately, inside the gates (ruler v1, OBJECTIVES.md)",
+    "kpi": {
+     "name": "tool_track_rms_mm (best admissible, dev)",
+     "value": 0.031333594888818476,
+     "unit": "mm",
+     "direction": "down",
+     "target": null,
+     "level": "31 of 34 admissible",
+     "level_name": "ruler v1 · ur5e_alone · workspace/v2 dev",
+     "next_gate": "an admissible solution below 0.031 mm",
+     "on_track": true
+    },
+    "counter_kpi": {
+     "name": "holdout - dev of the best (mm; reporting only, never selected on)",
+     "value": -0.0006686573781421526,
+     "unit": "mm",
+     "owner": "Trajectory Tracking Agent"
+    },
+    "status": "idle",
+    "blocked_on": null,
+    "todo": {
+     "open": 4,
+     "done_7d": 20,
+     "top": [
+      "Make the identification gain-portable: fit the plant torque M(q)·ë + kd·ė + kp·e (the full inverse of the board loop, M from the given model) instead of kp·e + kd·ė, then check by running one fit at x1 and x4. Expect: if it works, one model for every rung; if not, friction here is loop-dependent and each rung keeps its own fit.",
+      "Identify from a dedicated calibration run (a rich excitation trajectory, its own runs only) instead of the dev records, so the identified model never sees the tasks it is scored on. Needs a way to run a non-dataset trajectory through the boundary without `deployment.plant()` (see Suggestions for Zach).",
+      "Test O1.1, the boundary ([specs/O1.1](specs/O1.1-the-boundary.md) has no test): run one short task with a controller whose `tick` returns a bare array, one whose command leaves out a joint, and a correct one; assert the first two fail `completed` with the wrapper's reason and the third completes, and that `tick` runs at the deployment's host rate (count its calls). Expect: O1.1 unverified → pass; no score moves."
+     ]
+    },
+    "links": {
+     "repo": "https://github.com/zacharyyamaoka/trajectory_tracking_agent",
+     "report": "PROGRESS.md",
+     "wandb": "Trajectory Tracking",
+     "vault": null
+    },
+    "updated_t": 1795563985.2978485
+   },
+   "one_line": "Makes a robot track a given trajectory more accurately, with a scored population of every controller it tried",
+   "summary": null,
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/trajectory_tracking_agent",
+    "site": "https://zacharyyamaoka.github.io/trajectory_tracking_agent/",
+    "docs": "https://github.com/zacharyyamaoka/trajectory_tracking_agent/blob/main/docs/CONTRACT.md"
+   },
+   "declaration": "robot-sdk.toml",
+   "lint": "pass"
+  }
+ ]
+}

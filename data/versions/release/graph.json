@@ -1,0 +1,361 @@
+{
+ "schema": "robot-sdk-graph/1",
+ "generated": "2026-11-25T01:41:39-07:00",
+ "sources": {
+  "robot_sdk": "bf2705a-dirty",
+  "robot_msgs": "daa6e1b",
+  "robot_models": "486ecc2",
+  "robot_metrics": "2573912",
+  "robot_activity": "7680692"
+ },
+ "packages": [
+  {
+   "id": "robot_msgs",
+   "pypi": "robot-msgs",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_msgs",
+   "role": "library",
+   "layer": "vocabulary",
+   "one_line": "Standard robot message types as frozen Python dataclasses, with the helper functions ROS messages never had.",
+   "summary": null,
+   "use_when": null,
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_msgs"
+   },
+   "version": "0.3.0",
+   "deps": {
+    "required": [],
+    "extras": {
+     "viz": [],
+     "ros": [],
+     "rerun": [
+      "robot_msgs"
+     ],
+     "viser": [],
+     "test": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_models",
+   "pypi": "robot-model-ladders",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_models",
+   "role": "library",
+   "layer": "models",
+   "one_line": "Generic physical models of robot part types (no maker, no SKU): each type a ladder of models from ideal to learned, every rung with its parameters, equation and references.",
+   "summary": null,
+   "use_when": null,
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_models"
+   },
+   "version": "0.2.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "contact": [],
+     "test": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_metrics",
+   "pypi": "robot-metrics",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_metrics",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Performance metrics for robot parts: torchmetrics' shape with numpy inside, over robot_msgs streams, live or offline, with the gates kept outside compute().",
+   "summary": null,
+   "use_when": null,
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_metrics"
+   },
+   "version": "0.1.0",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "viz": [],
+     "wandb": [],
+     "rerun": [],
+     "test": [],
+     "site": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  },
+  {
+   "id": "robot_activity",
+   "pypi": "robot-activity",
+   "repo_url": "https://github.com/zacharyyamaoka/robot_activity",
+   "role": "library",
+   "layer": "leaf",
+   "one_line": "Robot Activity Agent: keep every robot doing useful work. Activity metrics (claimed/activity/moving), a work queue with owners and shared policies, stalemate flags, and an agent loop that keeps the queue full.",
+   "summary": null,
+   "use_when": null,
+   "links": {
+    "github": "https://github.com/zacharyyamaoka/robot_activity"
+   },
+   "version": "0.1.1",
+   "deps": {
+    "required": [
+     "robot_msgs"
+    ],
+    "extras": {
+     "wandb": [],
+     "test": [],
+     "site": []
+    }
+   },
+   "declaration": null,
+   "lint": "undeclared"
+  }
+ ],
+ "types": [
+  {
+   "id": "robot_msgs.Msg",
+   "name": "Msg",
+   "package": "robot_msgs",
+   "module": "robot_msgs",
+   "what": "Base of every message",
+   "docs_url": null
+  },
+  {
+   "id": "robot_msgs.control.JointCommandSequence",
+   "name": "JointCommandSequence",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "The steps in order for joints `joint_names`, plus one abort guard for every step",
+   "docs_url": "https://robotmsgs.com/types/control/JointCommandSequence/"
+  },
+  {
+   "id": "robot_msgs.control.ServoCommand",
+   "name": "ServoCommand",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Targets for servo `name[i]`, in SI",
+   "docs_url": "https://robotmsgs.com/types/control/ServoCommand/"
+  },
+  {
+   "id": "robot_msgs.sensor.JointState",
+   "name": "JointState",
+   "package": "robot_msgs",
+   "module": "robot_msgs.sensor",
+   "what": "`position[i]` (rad or m), `velocity[i]` and `effort[i]` belong to joint `name[i]`",
+   "docs_url": "https://robotmsgs.com/types/sensor/JointState/"
+  },
+  {
+   "id": "robot_msgs.std.Header",
+   "name": "Header",
+   "package": "robot_msgs",
+   "module": "robot_msgs.std",
+   "what": "`stamp` is seconds since the Unix epoch (or since sim start); `frame_id` names the frame",
+   "docs_url": "https://robotmsgs.com/types/std/Header/"
+  },
+  {
+   "id": "robot_msgs.trajectory.JointTrajectory",
+   "name": "JointTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "Joint-space motion keyed by joint name",
+   "docs_url": "https://robotmsgs.com/types/trajectory/JointTrajectory/"
+  },
+  {
+   "id": "robot_msgs.trajectory.PoseTrajectory",
+   "name": "PoseTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "`positions (N, 3)` in metres, `orientations (N, 4)` xyzw, optional twist per sample",
+   "docs_url": "https://robotmsgs.com/types/trajectory/PoseTrajectory/"
+  }
+ ],
+ "uses": [
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.Msg",
+   "kind": "imports",
+   "symbol": "robot_models.homing.metrics",
+   "where": "src/robot_models/homing/metrics.py:27",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.Msg",
+   "kind": "imports",
+   "symbol": "robot_models.homing.types",
+   "where": "src/robot_models/homing/types.py:20",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "robot_models.homing.protocols.HomingProcedure.plan",
+   "where": "src/robot_models/homing/protocols.py:67",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.control.JointCommandSequence",
+   "kind": "consumes",
+   "symbol": "robot_models.homing.protocols.Phase.sequence",
+   "where": "src/robot_models/homing/protocols.py:54",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "produces",
+   "symbol": "robot_models.homing.protocols.HomingPlant.tick",
+   "where": "src/robot_models/homing/protocols.py:33",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "robot_models.homing.protocols.HomingPlant.reset",
+   "where": "src/robot_models/homing/protocols.py:31",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_models",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "consumes",
+   "symbol": "robot_models.homing.protocols.HomingPlant.tick",
+   "where": "src/robot_models/homing/protocols.py:33",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "robot_metrics.datasets.fivebar_ladder",
+   "where": "src/robot_metrics/datasets/fivebar_ladder.py:18",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "robot_metrics.datasets.onedof_round8",
+   "where": "src/robot_metrics/datasets/onedof_round8.py:37",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_metrics.alignment.Aligner.push",
+   "where": "src/robot_metrics/alignment.py:150",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_metrics.alignment.align",
+   "where": "src/robot_metrics/alignment.py:94",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_metrics.stock.moving",
+   "where": "src/robot_metrics/stock.py:43",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "consumes",
+   "symbol": "robot_metrics.stops.stops",
+   "where": "src/robot_metrics/stops.py:154",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_metrics.alignment.Aligned.measured",
+   "where": "src/robot_metrics/alignment.py:47",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_metrics.alignment.Aligned.target",
+   "where": "src/robot_metrics/alignment.py:46",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "produces",
+   "symbol": "robot_metrics.stops.Stop.move",
+   "where": "src/robot_metrics/stops.py:61",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "imports",
+   "symbol": "robot_metrics.datasets.fivebar_ladder",
+   "where": "src/robot_metrics/datasets/fivebar_ladder.py:19",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_metrics",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "imports",
+   "symbol": "robot_metrics.stock",
+   "where": "src/robot_metrics/stock.py:34",
+   "public": false,
+   "declared": false,
+   "verified": true
+  }
+ ],
+ "agents": []
+}
