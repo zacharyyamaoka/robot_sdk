@@ -1,8 +1,10 @@
 """python -m tools.sdk_graph [build|check [--online]|readme|draft <package>|health|versions]
 
   build (default)  scan the sibling checkouts and write site/data/graph.json
-  check            lint every robot-sdk.toml against the code; exit 1 naming file:line on any mismatch
-    --online       also fetch every declared link; exit 1 on any that doesn't answer 200 (a PyPI 404 = unpublished)
+  check            lint every robot-sdk.toml against the code; exit 1 naming file:line on any mismatch; then each
+                   package's landing page: [links] site declared + the README links to it (reported, never exit 1)
+    --online       also fetch every declared link; exit 1 on any that doesn't answer 200 (a PyPI 404 = unpublished),
+                   and fetch each landing page (200, real HTML, not a placeholder or GitHub; Access = private)
   readme           rewrite README.md's and skill/SKILL.md's generated tables from site/data/graph.json
   draft <package>  print a first robot-sdk.toml for a package from what the scanner finds (prune it by hand)
   health           write site/data/health.json: tests on main, lint, types, release vs pin, repo (docs/site-data-schema.md)
@@ -19,6 +21,7 @@ import sys
 
 from . import declaration as decl
 from . import health as health_doc
+from . import landing
 from . import links as link_check
 from . import readme
 from . import versions as versions_doc
@@ -40,7 +43,23 @@ def check(online: bool = False) -> int:
         for owner, key, url, code, verdict in link_check.check_all(owners):
             print(f"  {verdict:11} {code!s:>4}  {owner}.{key}  {url}")
             bad += verdict == "dead"
+    print("\nlanding pages:")
+    for package, row in landing_rows(built.graph["packages"], online).items():
+        print(f"  {row['state']:8} {package:20} {row['url'] or '-'}")
+        print(f"           {row['detail']}")
     return 1 if bad else 0
+
+
+def landing_rows(packages: list[dict], online: bool, root: pathlib.Path = ROOT) -> dict[str, dict]:
+    """Each package's landing check from its own checkout's README (the page itself only when `online`).
+    WHY never in the exit code: refresh's hourly run goes red on `check`; the Health page's Landing column is the gate
+    (Zach, 2026-11-25: health is only good with a landing page), and a package lacking one is not a broken declaration."""
+    def readme(package: str) -> object:
+        path = root / package / "README.md"
+        return path.read_text(encoding="utf-8", errors="replace") if path.is_file() else landing.NO_README
+
+    fetch = landing.fetch_page if online else None
+    return {p["id"]: landing.landing_check(p.get("links") or {}, fetch, readme(p["id"])) for p in packages}
 
 
 def option(argv: list[str], flag: str, default: pathlib.Path) -> pathlib.Path:

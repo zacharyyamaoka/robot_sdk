@@ -25,7 +25,8 @@ read is `unknown` with the reason in `detail`.
     {"id": "lint",     "label": "Declaration", "what": "robot-sdk.toml matches the code (python -m tools.sdk_graph check)"},
     {"id": "types",    "label": "Types",       "what": "declared type uses are found in the code"},
     {"id": "release",  "label": "Release",     "what": "the version robot-sdk pins is published on PyPI"},
-    {"id": "upstream", "label": "Repo",        "what": "the GitHub repo is reachable"}
+    {"id": "upstream", "label": "Repo",        "what": "the GitHub repo is reachable"},
+    {"id": "landing",  "label": "Landing page", "what": "robot-sdk.toml [links] site answers 200 with a real page, and the README links to it"}
   ],
   "members": [{
     "id": "robot_msgs",                      // = graph.json packages[].id or agents[].id
@@ -39,7 +40,9 @@ read is `unknown` with the reason in `detail`.
                    "verified": 21, "found": 37, "missing": 0},
       "release":  {"state": "warn", "detail": "pins ~=0.3.1; PyPI has 0.3.0", "pinned": "~=0.3.1",
                    "pypi_latest": "0.3.0", "satisfied": false, "url": "https://pypi.org/project/robot-msgs/"},
-      "upstream": {"state": "pass", "detail": "public on GitHub"}
+      "upstream": {"state": "pass", "detail": "public on GitHub"},
+      "landing":  {"state": "warn", "detail": "README does not link to it; https://robotmsgs.com answers 200 with a real page (…)",
+                   "url": "https://robotmsgs.com", "readme": false, "http": 200}
     }
   }],
   "summary": {"pass": 9, "warn": 3, "fail": 4, "unknown": 0}
@@ -58,6 +61,13 @@ release; `running` = the newest run on main hasn't finished).
 - **release** — robot_sdk's pyproject pin vs PyPI's released versions: the pin is satisfied → pass; PyPI has the
   project but no version satisfying the pin, or the project is not on PyPI yet → warn. Agents: none.
 - **upstream** — graph.json `upstream: "missing"` → fail; otherwise pass.
+- **landing** (added 2026-11-25; Zach: "the health of the package is only good IF it does have this") — graph.json
+  `links.site`, fetched (redirects followed by hand), and the README on the default branch (raw.githubusercontent.com).
+  No `site` → fail; a GitHub URL, a non-200 answer, a non-HTML answer or a placeholder page ("Coming soon", GitHub
+  Pages' "Site not found", near-empty) → fail; a redirect to a Cloudflare Access login → warn with `private: true`
+  (present, content not checked); the README does not link it, or there is no README → warn; the page or README not
+  read → unknown. `url` is the declared site, `readme` whether the README links it, `http` the last status. Agents:
+  none. Latest release health has no landing column (a page answers today, not at a tag). `tools/sdk_graph/landing.py`.
 
 ## `versions.json` — schema `robot-sdk-versions/1`
 

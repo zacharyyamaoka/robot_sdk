@@ -19,7 +19,7 @@ import pytest
 SDK = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SDK))
 
-from tools.sdk_graph import health, versions  # noqa: E402
+from tools.sdk_graph import health, landing, versions  # noqa: E402
 
 DATA = SDK / "site" / "data"
 STATES = {"pass", "warn", "fail", "running", "none", "unknown"}
@@ -73,8 +73,20 @@ def online(name: str = "pkg", run: dict | None = None, released: tuple = ("0.3.0
     }
 
 
+SITE = "https://o.github.io/pkg/"
+LANDING = "<!doctype html><title>pkg</title><body>" + "A real landing page for pkg, with what it is for. " * 8 + "</body>"
+
+
+def pages(readme: str = f"# pkg\n\n[Landing page]({SITE})\n") -> dict:
+    """The fake page fetcher: pkg's landing page and its README on main."""
+    table = {SITE: landing.Page(200, SITE, "text/html", LANDING, "ok"),
+             "https://raw.githubusercontent.com/o/pkg/main/README.md": landing.Page(200, "raw", "text/plain", readme, "ok")}  # fmt: skip
+    return lambda url: table.get(url) or landing.Page(None, url, None, None, "URLError: offline")
+
+
 def graph(**package) -> dict:
-    p = {"id": "pkg", "pypi": "pkg", "repo_url": "https://github.com/o/pkg", "lint": "pass", **package}
+    p = {"id": "pkg", "pypi": "pkg", "repo_url": "https://github.com/o/pkg", "lint": "pass",
+         "links": {"github": "https://github.com/o/pkg", "site": SITE}, **package}  # fmt: skip
     return {
         "schema": "robot-sdk-graph/1", "generated": "2026-11-24T21:00:00-07:00", "sources": {"pkg": "248f9f1"},
         "packages": [p], "types": [{"id": "robot_msgs.T", "package": "robot_msgs"}],
@@ -94,7 +106,8 @@ def member(doc: dict, member: str = "pkg") -> dict:
 
 def doc_for(table: dict, g: dict | None = None, pins: dict | None = None, **kw) -> dict:
     return health.build_health(g or graph(), pins={"pkg": "~=0.3.0"} if pins is None else pins,
-                               src=health.Sources(fetch=Fake(table) if not isinstance(table, Fake) else table), **kw)  # fmt: skip
+                               src=health.Sources(fetch=Fake(table) if not isinstance(table, Fake) else table,
+                                                  fetch_page=pages()), **kw)  # fmt: skip
 
 
 # ------------------------------------------------------------------------------------------------ health: state rules
@@ -103,7 +116,7 @@ def doc_for(table: dict, g: dict | None = None, pins: dict | None = None, **kw) 
 def test_all_green_is_pass():
     doc = doc_for(online())
     assert {k: c["state"] for k, c in checks_of(doc).items()} == {
-        "tests": "pass", "lint": "pass", "types": "pass", "release": "pass", "upstream": "pass"}  # fmt: skip
+        "tests": "pass", "lint": "pass", "types": "pass", "release": "pass", "upstream": "pass", "landing": "pass"}  # fmt: skip
     assert member(doc)["state"] == "pass" and doc["summary"] == {"pass": 1, "warn": 0, "fail": 0, "unknown": 0}
 
 
@@ -123,7 +136,7 @@ def test_every_failed_conclusion_is_fail(conclusion):
 def test_running_ci_neither_passes_nor_raises():
     doc = doc_for(online(run=run_of(None, status="in_progress")))
     assert checks_of(doc)["tests"]["state"] == "running"
-    assert member(doc)["state"] == "pass"  # the other four pass; running never raises the member
+    assert member(doc)["state"] == "pass"  # the other five pass; running never raises the member
 
 
 def test_unreachable_api_is_unknown_never_pass():
@@ -415,7 +428,7 @@ def test_committed_health_matches_the_schema():
     doc, g = json.loads(path.read_text()), json.loads((DATA / "graph.json").read_text())
     assert doc["schema"] == "robot-sdk-health/1"
     assert set(doc) == {"schema", "generated", "graph_generated", "checks", "members", "summary"}
-    assert [c["id"] for c in doc["checks"]] == ["tests", "lint", "types", "release", "upstream"]
+    assert [c["id"] for c in doc["checks"]] == ["tests", "lint", "types", "release", "upstream", "landing"]
     assert [m["id"] for m in doc["members"]] == [p["id"] for p in g["packages"]] + [a["id"] for a in g["agents"]]
     for m in doc["members"]:
         assert set(m) == {"id", "kind", "state", "checks"} and m["kind"] in {"package", "agent"}

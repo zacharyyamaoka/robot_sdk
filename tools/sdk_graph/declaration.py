@@ -10,7 +10,8 @@
     [links]                           # where to read more; github and pypi required (an agent: github only)
     github = "https://github.com/zacharyyamaoka/<repo>"   # must be the repo's own (pyproject urls / repo name)
     pypi = "https://pypi.org/project/<pyproject name>/"   # must name pyproject's [project].name
-    site = "..."                      # optional, like docs, changelog, dashboard or anything else: https URLs
+    site = "https://…"                # the landing page: every package needs one (health's Landing page check,
+                                      # tools/sdk_graph/landing.py); docs, changelog, dashboard … are optional
 
 An agent (role = "agent") also states `name`, `objective`, `builds_on` (the robot-sdk packages it imports, checked
 against its pyproject) and optionally `status` (a JSON file in its repo, copied verbatim into graph.json).

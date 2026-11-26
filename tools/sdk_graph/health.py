@@ -2,9 +2,10 @@
 
     python -m tools.sdk_graph health [--graph PATH] [--out PATH]
 
-One row per member (graph.json's packages in order, then its agents), five checks each: tests on main (GitHub Actions),
-the declaration lint and the declared type uses (both from graph.json), robot-sdk's pin vs PyPI, and whether the GitHub
-repo is public.
+One row per member (graph.json's packages in order, then its agents), six checks each: tests on main (GitHub Actions),
+the declaration lint and the declared type uses (both from graph.json), robot-sdk's pin vs PyPI, whether the GitHub
+repo is public, and whether the package has a landing page (tools/sdk_graph/landing.py) its README links to.
+WHY landing gates green (Zach, 2026-11-25): "the health of the package is only good IF it does have this".
 
 WHY a check never invents a pass (Zach, 2026-11-24: "you want to be able to see what is passing or not"): every source
 that could not be read (no network, rate limit, a timeout, a bad answer) is `unknown` with the reason in `detail`, and
@@ -26,6 +27,7 @@ import urllib.error
 import urllib.request
 from collections.abc import Callable
 
+from . import landing
 from .graph import SDK, normalize
 
 SCHEMA = "robot-sdk-health/1"
@@ -41,7 +43,10 @@ CHECKS = [
     {"id": "types", "label": "Types", "what": "declared type uses are found in the code"},
     {"id": "release", "label": "Release", "what": "the version robot-sdk pins is published on PyPI"},
     {"id": "upstream", "label": "Repo", "what": "the GitHub repo is reachable"},
+    {"id": "landing", "label": "Landing page", "what": "robot-sdk.toml [links] site answers 200 with a real page, and "
+                                                         "the README links to it"},
 ]
+# WHY Latest release has no landing column: a page answers today, not at a tag.
 # A release version's health (versions/release/health.json) asks the same questions of each package at its tag.
 RELEASE_CHECKS = [
     {"id": "tests", "label": "Tests", "what": "the package's test workflow at the tagged commit (GitHub Actions)"},
@@ -86,12 +91,29 @@ def fetch_json(url: str, token: str | None = None) -> tuple[int | None, object |
 
 
 class Sources:
-    """GitHub and PyPI answers, each URL fetched once."""
+    """GitHub and PyPI answers (JSON), and landing pages + READMEs (`page`), each URL fetched once.
 
-    def __init__(self, fetch: Callable[..., tuple] | None = None, token: str | None = None) -> None:
+    WHY pages default to the network only when `fetch` does: a test passing just a fake JSON fetcher must never reach
+    the internet for a page; it gets an offline answer (unknown) instead."""
+
+    def __init__(self, fetch: Callable[..., tuple] | None = None, token: str | None = None,
+                 fetch_page: Callable[[str], landing.Page] | None = None) -> None:
+        self.fetch_page = fetch_page or (landing.fetch_page if fetch is None else None)
         self.fetch = fetch or fetch_json
         self.token = token
         self._cache: dict[str, tuple] = {}
+        self._pages: dict[str, landing.Page] = {}
+
+    def page(self, url: str) -> landing.Page:
+        if url not in self._pages:
+            if self.fetch_page is None:
+                self._pages[url] = landing.Page(None, url, None, None, "no page fetcher (offline)")
+            else:
+                try:
+                    self._pages[url] = self.fetch_page(url)
+                except Exception as error:  # noqa: BLE001 — a fetcher bug costs a cell, never the file
+                    self._pages[url] = landing.Page(None, url, None, None, f"{type(error).__name__}: {error}")
+        return self._pages[url]
 
     def get(self, url: str) -> tuple[int | None, object | None, str]:
         if url not in self._cache:
@@ -335,6 +357,20 @@ def release_check(pypi: str, pin: str | None, src: Sources, tagged: str | None =
             "satisfied": satisfied, "url": url}  # fmt: skip
 
 
+def readme_on_main(repo: dict | None, src: Sources) -> object:
+    """The README.md on the default branch (raw.githubusercontent.com), landing.NO_README on a 404, None if unread."""
+    if repo is None:
+        return None
+    got = src.page(f"https://raw.githubusercontent.com/{repo['full_name']}/{repo.get('default_branch') or 'main'}/README.md")
+    if got.status == 404:
+        return landing.NO_README
+    return got.text if got.status == 200 and got.text is not None else None
+
+
+def landing_cell(member: dict, repo: dict | None, src: Sources) -> dict:
+    return landing.landing_check(member.get("links") or {}, src.page, readme_on_main(repo, src))
+
+
 def member_state(checks: dict) -> str:
     ranked = [RANK[c["state"]] for c in checks.values() if c["state"] in RANK]
     if not ranked:
@@ -382,6 +418,8 @@ def build_health(
             "release": release,
             "upstream": upstream,
         }
+        if tags is None:
+            checks["landing"] = landing_cell(p, repo, src)
         return {"id": p["id"], "kind": "package", "state": member_state(checks), "checks": checks}
 
     def agent_row(a: dict) -> dict:
@@ -393,6 +431,8 @@ def build_health(
             "release": {"state": "none", "detail": "an agent is not released on PyPI"},
             "upstream": upstream,
         }
+        if tags is None:
+            checks["landing"] = {"state": "none", "detail": "an agent needs no landing page; its packages do"}
         return {"id": a["id"], "kind": "agent", "state": member_state(checks), "checks": checks}
 
     jobs = [(package_row, p) for p in graph.get("packages", [])] + [(agent_row, a) for a in graph.get("agents", [])]

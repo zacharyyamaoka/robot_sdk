@@ -41,6 +41,8 @@ pip install robot-sdk
 
 Each row is the package's own `robot-sdk.toml` (`one_line`, `layer`, `[links]`), checked against its code by `python -m tools.sdk_graph check` and copied here through `site/data/graph.json`. To change a row, change that file in the package's repo.
 
+**Every package has a landing page** (Zach, 2026-11-25): `[links] site = "https://…"` in its `robot-sdk.toml`, answering 200 with a real page (not a 404, a placeholder or a GitHub README), and linked from the package's README. A package without one is never green on the [Health page](https://robotsdk.dev); `python -m tools.sdk_graph check --online` lists who has one and why not.
+
 **Dependency rule:** a package imports only from layers below it. Leaves never import each other: when one needs another's behaviour it declares a Protocol or takes a function as an argument. Viewers are end points: no package depends on one. `tools/check_layers.py` enforces this.
 
 **Inside each package:** [`docs/package-layout.md`](docs/package-layout.md): the core, one `lk/` folder for like_keras blocks (components, systems, launch, config) behind an `[lk]` extra, and the C++ twin in `cpp/` (default pick of five proposals, pending Zach's choice).
