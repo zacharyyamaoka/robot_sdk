@@ -1,8 +1,9 @@
-"""Build the live site into site/_build/: every 2026-11-24 proposal, with a bottom-right switcher that remembers the pick.
+"""Build the live site into site/_build/: the landing page at / (site/landing.py) and the chosen docs design at /docs/.
 
     python3 /home/bam/robot_sdk/site/publish_dashboard.py && python3 /home/bam/robot_sdk/site/publish_pages.py
 
-Layout: / is the DEFAULT variant, /v1/ … /v10/ are every variant, and all of them read data/graph.json,
+Layout (since 2026-11-25): / is the landing page, /docs/ the DEFAULT variant, /v1/ … /v10/ forward to /docs/ (with the
+switcher on: / is DEFAULT and /v1/ … /v10/ are every variant). The variants read data/graph.json,
 data/pick_and_place.json and (round 2) data/health.json + data/versions.json at runtime, so a refreshed graph updates
 every variant without a rebuild.
 
@@ -14,6 +15,8 @@ page"): round 2 (a site with workspaces) is listed first; round 1 stays reachabl
 """
 import pathlib
 import shutil
+import subprocess
+import sys
 
 ROUNDS = [
     ("Round 2 · site with workspaces", {
@@ -69,10 +72,12 @@ SWITCHER_HTML = """
 """
 
 
-def page(variant: str, at_root: bool) -> str:
+def page(variant: str, at_root: bool, home: str | None = None) -> str:
     text = (PROPOSALS / variant / "index.html").read_text()
     data = "data/" if at_root else "../data/"
     meta = f'<meta name="robot-sdk-data" content="{data}">'
+    if home:  # where the docs' logo goes (src/v10/chrome.jsx reads it)
+        meta += f'\n<meta name="robot-sdk-home" content="{home}">'
     text = text.replace("<head>", "<head>\n" + meta, 1)
     if SWITCHER:
         options = "".join(
@@ -90,18 +95,27 @@ def page(variant: str, at_root: bool) -> str:
 if BUILD.exists():
     shutil.rmtree(BUILD)
 (BUILD / "data").mkdir(parents=True)
-(BUILD / "index.html").write_text(page(DEFAULT, at_root=True))
+# WHY / is a landing page and the docs are /docs/ (Zach, 2026-11-25: "update the landing page so that it doesn't have
+# the side bar ... more like informative and media rich like [pidtuna.com]"): site/landing.py writes / (no sidebar);
+# the shipped V10 Docs, sidebar and all, live one click away at /docs/. The landing page forwards the docs' old
+# hash routes (/#/packages/…) to /docs/#/packages/…, so links shared before the move still land on the same page.
+if SWITCHER:
+    (BUILD / "index.html").write_text(page(DEFAULT, at_root=True))
+else:
+    subprocess.run([sys.executable, str(ROOT / "site" / "landing.py"), str(BUILD / "index.html")], check=True)
+    (BUILD / "docs").mkdir()
+    (BUILD / "docs" / "index.html").write_text(page(DEFAULT, at_root=False, home="../"))
 if SWITCHER:
     for variant in VARIANTS:
         (BUILD / variant).mkdir()
         (BUILD / variant / "index.html").write_text(page(variant, at_root=False))
 else:
-    # WHY stubs: /v6/#/packages/… links were shared while the switcher was live; they land on the one design, same route.
+    # WHY stubs: /v6/#/packages/… links were shared while the switcher was live; they land on the docs, same route.
     for variant in VARIANTS:
         (BUILD / variant).mkdir()
         (BUILD / variant / "index.html").write_text(
-            '<!doctype html><meta charset="utf-8"><title>robot-sdk</title><link rel="canonical" href="../">'
-            '<script>location.replace("../" + location.hash)</script><a href="../">robot-sdk</a>\n')
+            '<!doctype html><meta charset="utf-8"><title>robot-sdk</title><link rel="canonical" href="../docs/">'
+            '<script>location.replace("../docs/" + location.hash)</script><a href="../docs/">robot-sdk docs</a>\n')
 for name in ("graph.json", "pick_and_place.json"):
     shutil.copy2(ROOT / "site" / "data" / name, BUILD / "data" / name)
 for name in ("health.json", "versions.json"):  # the Health workspace and version picker (docs/site-data-schema.md)

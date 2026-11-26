@@ -37,6 +37,12 @@ export function Logo({ size = 28 }) {
   );
 }
 
+// Where the logo goes. WHY a meta (2026-11-25, Zach: the landing page "doesn't have the side bar"): the published site
+// puts a sidebar-free landing page at / and these docs at /docs/; publish_dashboard.py writes
+// <meta name="robot-sdk-home" content="../"> so the logo returns to it, as a Docusaurus logo returns to the site's home.
+// Without the meta (the proposals gallery, file://) the logo opens the docs' own Overview, as before.
+const homeHref = (route) => (typeof document !== "undefined" && document.querySelector('meta[name="robot-sdk-home"]')?.content) || route.href("overview");
+
 // ---- announcement bar: health on every screen ------------------------------------------------------------------------
 // WHY the announcement bar (Docusaurus' site-wide notice slot): Zach wants health first-class and "summarised on every
 // screen" (criterion fr2); the bar is where a docs site says the one thing every reader should know right now.
@@ -70,7 +76,7 @@ export function Navbar({ site, route, active, mobile, onMenu, onSearch }) {
   return (
     <nav className="d-navbar" aria-label="Main" data-testid="d-navbar">
       {mobile && <button className="d-burger" onClick={onMenu} aria-label="Open the navigation" data-testid="d-burger"><Icon.menu /></button>}
-      <a className="d-brand" href={route.href("overview")} data-testid="d-brand"><Logo /><b>robot-sdk</b></a>
+      <a className="d-brand" href={homeHref(route)} data-testid="d-brand" title="robot-sdk home"><Logo /><b>robot-sdk</b></a>
       {!mobile && <div className="d-navitems">
         {NAV.map((w) => (
           <a key={w.id} data-ws={w.id} href={route.href(w.id)} className={"d-navlink" + (active === w.id ? " on" : "")} aria-current={active === w.id ? "page" : undefined}>
@@ -232,7 +238,7 @@ export function Drawer({ open, onClose, route, active, site, children }) {
     <div className="d-drawer-wrap" data-testid="d-drawer">
       <div className="d-drawer-backdrop" onClick={onClose} />
       <div className="d-drawer" role="dialog" aria-label="Navigation">
-        <div className="d-drawer-head"><a className="d-brand" href={route.href("overview")} onClick={onClose}><Logo /><b>robot-sdk</b></a>
+        <div className="d-drawer-head"><a className="d-brand" href={homeHref(route)} onClick={onClose}><Logo /><b>robot-sdk</b></a>
           <button className="d-x" onClick={onClose} aria-label="Close the navigation"><Icon.close /></button></div>
         {/* WHY the main menu outside the scroll: the docs tree below scrolls to the current page, and the workspaces
             must stay one tap away (Docusaurus' "back to main menu", flattened into one view). */}

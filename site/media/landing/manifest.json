@@ -1,0 +1,98 @@
+{
+ "robot_msgs": {
+  "still": "media/landing/robot_msgs.jpg",
+  "clip": null,
+  "caption": "A UR5e tool path as a PoseTrajectory: its stock .plot(), 626 samples",
+  "source": "robot_msgs/reports/media/robot-msgs-v1-gallery/ur5e_tool.webp"
+ },
+ "robot_models": {
+  "still": "media/landing/robot_models.jpg",
+  "clip": null,
+  "caption": "The servo model ladder: M0 learned black box up to M7, each rung one physical effect",
+  "source": "robot_models/reports/media/robot-models-v1-2026-11-16/still-servo-ladder.jpg"
+ },
+ "robot_controllers": {
+  "still": "media/landing/robot_controllers.jpg",
+  "clip": "media/landing/robot_controllers.mp4",
+  "caption": "Three controller layouts on one simulated UR5e trajectory: tracking error underneath",
+  "source": "robot_controllers/reports/media/controller-layouts-2026-11-20/hero-ur5e.mp4"
+ },
+ "robot_reach": {
+  "still": "media/landing/robot_reach.jpg",
+  "clip": "media/landing/robot_reach.mp4",
+  "caption": "The UR5e's workspace in viser: every point coloured by how much of the pose the arm controls",
+  "source": "robot_reach/site/media/hero.mp4"
+ },
+ "robot_collision": {
+  "still": "media/landing/robot_collision.jpg",
+  "clip": "media/landing/robot_collision.mp4",
+  "caption": "The allowed-collision matrix next to the robot: pick a link pair, see the pair in 3D",
+  "source": "robot_collision/site/media/hero.mp4"
+ },
+ "robot_trajectories": {
+  "still": "media/landing/robot_trajectories.jpg",
+  "clip": "media/landing/robot_trajectories.mp4",
+  "caption": "The trajectory catalog: pick a generator, see its path on the arm and its joint curves",
+  "source": "robot_trajectories/reports/media/catalog-hero-2026-11-18.mp4"
+ },
+ "robot_autonomy": {
+  "still": "media/landing/robot_autonomy.jpg",
+  "clip": null,
+  "caption": "Hands-on interventions per day and the agent's to-do list, from a simulated fleet",
+  "source": "robot_autonomy/reports/media/hero-2026-11-18-run4/frame-45.png"
+ },
+ "robot_metrics": {
+  "still": "media/landing/robot_metrics.jpg",
+  "clip": "media/landing/robot_metrics.mp4",
+  "caption": "Coverage of a real CAN-bus servo's state space, growing play by play",
+  "source": "robot_metrics/reports/media/coverage-gallery-2026-11-19/hero.mp4"
+ },
+ "robot_activity": {
+  "still": "media/landing/robot_activity.jpg",
+  "clip": "media/landing/robot_activity.mp4",
+  "caption": "Fleet utilisation: what each robot did today, and why it stood still",
+  "source": "robot_activity/website/_build/media/hero.mp4"
+ },
+ "traj_compare": {
+  "still": "media/landing/traj_compare.jpg",
+  "clip": "media/landing/traj_compare.mp4",
+  "caption": "Trajectory coverage: which joint and tool space a dataset of UR5e runs actually visits",
+  "source": "traj_compare/reports/media/coverage-viewer-2026-11-23/hero.mp4"
+ },
+ "robot_msg_viz": {
+  "still": "media/landing/robot_msg_viz.jpg",
+  "clip": "media/landing/robot_msg_viz.mp4",
+  "caption": "A JointTrajectory in Rerun: the arm moving, the tool's position and speed beside it",
+  "source": "robot_msg_viz/website/media/hero.mp4"
+ },
+ "sim2real": {
+  "still": "media/landing/sim2real.jpg",
+  "clip": "media/landing/sim2real.mp4",
+  "caption": "The simulated twin of a UR5e pick cell, the scene camera's view",
+  "source": "sim2real/dashboards/source/media/scene_cam_twin.mp4"
+ },
+ "robot_diagnostics": {
+  "still": "media/landing/robot_diagnostics.jpg",
+  "clip": null,
+  "caption": "From the pick-and-place below: shaded, the stops stock.stop_error scored against its limit",
+  "source": "robot_sdk/site/media/pick_and_place_tracking_error.png"
+ },
+ "like_keras": {
+  "still": "media/landing/like_keras.jpg",
+  "clip": "media/landing/like_keras.mp4",
+  "caption": "A live arm cell over dora: every port's rate, latency and drops, refreshed each second",
+  "source": "like_keras/build/report/hero.mp4"
+ },
+ "_hero": {
+  "order": [
+   "robot_controllers",
+   "robot_msg_viz",
+   "robot_reach",
+   "robot_collision",
+   "robot_trajectories",
+   "sim2real",
+   "traj_compare"
+  ],
+  "clip_s": 3.0
+ }
+}
