@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-25T08:48:51+00:00",
- "graph_generated": "2026-11-25T08:48:43+00:00",
+ "generated": "2026-11-26T02:28:59+00:00",
+ "graph_generated": "2026-11-26T02:28:49+00:00",
  "checks": [
   {
    "id": "tests",
@@ -27,21 +27,26 @@
    "id": "upstream",
    "label": "Repo",
    "what": "the GitHub repo is reachable"
+  },
+  {
+   "id": "landing",
+   "label": "Landing page",
+   "what": "robot-sdk.toml [links] site answers 200 with a real page, and the README links to it"
   }
  ],
  "members": [
   {
    "id": "robot_msgs",
    "kind": "package",
-   "state": "warn",
+   "state": "fail",
    "checks": {
     "tests": {
-     "state": "pass",
-     "detail": "test.yml passed on main 3023fce",
-     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45559786153",
+     "state": "fail",
+     "detail": "test.yml failed on main 10cbb5f",
+     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45742314041",
      "workflow": "test.yml",
-     "sha": "3023fce",
-     "at": "2026-11-25T06:19:51Z"
+     "sha": "10cbb5f",
+     "at": "2026-11-26T02:25:25Z"
     },
     "lint": {
      "state": "pass",
@@ -57,24 +62,31 @@
      "missing": 0
     },
     "release": {
-     "state": "warn",
-     "detail": "pins ~=0.3.1; PyPI has 0.3.0",
+     "state": "pass",
+     "detail": "pins ~=0.3.1; PyPI has 0.3.2",
      "pinned": "~=0.3.1",
-     "pypi_latest": "0.3.0",
-     "satisfied": false,
+     "pypi_latest": "0.3.2",
+     "satisfied": true,
      "url": "https://pypi.org/project/robot-msgs/"
     },
     "upstream": {
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_msgs"
+    },
+    "landing": {
+     "state": "pass",
+     "detail": "https://robotmsgs.com answers 200 with a real page (robot_msgs — the standard vocabulary for robot data); README links to it",
+     "url": "https://robotmsgs.com",
+     "readme": true,
+     "http": 200
     }
    }
   },
   {
    "id": "robot_models",
    "kind": "package",
-   "state": "warn",
+   "state": "fail",
    "checks": {
     "tests": {
      "state": "pass",
@@ -109,6 +121,12 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_models"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
     }
    }
   },
@@ -119,11 +137,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main 3159fe9",
-     "url": "https://github.com/zacharyyamaoka/robot_controllers/actions/runs/45545268965",
+     "detail": "test.yml passed on main 04d0d58",
+     "url": "https://github.com/zacharyyamaoka/robot_controllers/actions/runs/45742321774",
      "workflow": "test.yml",
-     "sha": "3159fe9",
-     "at": "2026-11-25T04:13:16Z"
+     "sha": "04d0d58",
+     "at": "2026-11-26T02:25:29Z"
     },
     "lint": {
      "state": "pass",
@@ -150,6 +168,13 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_controllers"
+    },
+    "landing": {
+     "state": "pass",
+     "detail": "https://zacharyyamaoka.github.io/robot-controllers/ answers 200 with a real page (robot_controllers); README links to it",
+     "url": "https://zacharyyamaoka.github.io/robot-controllers/",
+     "readme": true,
+     "http": 200
     }
    }
   },
@@ -159,12 +184,12 @@
    "state": "fail",
    "checks": {
     "tests": {
-     "state": "fail",
-     "detail": "test.yml failed on main 940ada4",
-     "url": "https://github.com/zacharyyamaoka/robot_reach/actions/runs/45553107911",
+     "state": "pass",
+     "detail": "test.yml passed on main 6d1fcba",
+     "url": "https://github.com/zacharyyamaoka/robot_reach/actions/runs/45741406634",
      "workflow": "test.yml",
-     "sha": "940ada4",
-     "at": "2026-11-25T05:22:19Z"
+     "sha": "6d1fcba",
+     "at": "2026-11-26T02:17:20Z"
     },
     "lint": {
      "state": "pass",
@@ -191,13 +216,19 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_reach"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
     }
    }
   },
   {
    "id": "robot_thermal",
    "kind": "package",
-   "state": "warn",
+   "state": "fail",
    "checks": {
     "tests": {
      "state": "pass",
@@ -232,6 +263,12 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_thermal"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
     }
    }
   },
@@ -242,11 +279,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main e2cdd76",
-     "url": "https://github.com/zacharyyamaoka/robot_trajectories/actions/runs/45545278907",
+     "detail": "test.yml passed on main 3351a11",
+     "url": "https://github.com/zacharyyamaoka/robot_trajectories/actions/runs/45740800169",
      "workflow": "test.yml",
-     "sha": "e2cdd76",
-     "at": "2026-11-25T04:13:21Z"
+     "sha": "3351a11",
+     "at": "2026-11-26T02:11:56Z"
     },
     "lint": {
      "state": "pass",
@@ -273,13 +310,20 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_trajectories"
+    },
+    "landing": {
+     "state": "pass",
+     "detail": "https://zacharyyamaoka.github.io/robot_trajectories/ answers 200 with a real page (robot_trajectories); README links to it",
+     "url": "https://zacharyyamaoka.github.io/robot_trajectories/",
+     "readme": true,
+     "http": 200
     }
    }
   },
   {
    "id": "robot_autonomy",
    "kind": "package",
-   "state": "warn",
+   "state": "fail",
    "checks": {
     "tests": {
      "state": "pass",
@@ -314,6 +358,12 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_autonomy"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
     }
    }
   },
@@ -355,6 +405,13 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_metrics"
+    },
+    "landing": {
+     "state": "pass",
+     "detail": "https://zacharyyamaoka.github.io/robot_metrics/ answers 200 with a real page (robot_metrics); README links to it",
+     "url": "https://zacharyyamaoka.github.io/robot_metrics/",
+     "readme": true,
+     "http": 200
     }
    }
   },
@@ -396,6 +453,13 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_activity"
+    },
+    "landing": {
+     "state": "pass",
+     "detail": "https://zacharyyamaoka.github.io/robot_activity/ answers 200 with a real page (Robot Activity Agent); README links to it",
+     "url": "https://zacharyyamaoka.github.io/robot_activity/",
+     "readme": true,
+     "http": 200
     }
    }
   },
@@ -405,12 +469,12 @@
    "state": "fail",
    "checks": {
     "tests": {
-     "state": "fail",
-     "detail": "test.yml failed on main 95da542",
-     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45577990587",
+     "state": "pass",
+     "detail": "test.yml passed on main a85557c",
+     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45741417897",
      "workflow": "test.yml",
-     "sha": "95da542",
-     "at": "2026-11-25T08:37:58Z"
+     "sha": "a85557c",
+     "at": "2026-11-26T02:17:25Z"
     },
     "lint": {
      "state": "pass",
@@ -420,9 +484,9 @@
     },
     "types": {
      "state": "pass",
-     "detail": "10 declared + verified · 7 found, not declared · 0 missing",
+     "detail": "10 declared + verified · 12 found, not declared · 0 missing",
      "verified": 10,
-     "found": 7,
+     "found": 12,
      "missing": 0
     },
     "release": {
@@ -437,6 +501,12 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/traj_compare"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
     }
    }
   },
@@ -475,6 +545,13 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_msg_viz"
+    },
+    "landing": {
+     "state": "pass",
+     "detail": "https://zacharyyamaoka.github.io/robot_msg_viz/ answers 200 with a real page (robot_msg_viz — a ready-made Rerun view for every robot message); README links to it",
+     "url": "https://zacharyyamaoka.github.io/robot_msg_viz/",
+     "readme": true,
+     "http": 200
     }
    }
   },
@@ -484,12 +561,12 @@
    "state": "fail",
    "checks": {
     "tests": {
-     "state": "fail",
-     "detail": "test.yml failed on main 21f81b0",
-     "url": "https://github.com/zacharyyamaoka/sim2real/actions/runs/45545295465",
+     "state": "pass",
+     "detail": "test.yml passed on main 7355462",
+     "url": "https://github.com/zacharyyamaoka/sim2real/actions/runs/45582384039",
      "workflow": "test.yml",
-     "sha": "21f81b0",
-     "at": "2026-11-25T04:13:30Z"
+     "sha": "7355462",
+     "at": "2026-11-25T09:07:20Z"
     },
     "lint": {
      "state": "pass",
@@ -516,13 +593,19 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/sim2real"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
     }
    }
   },
   {
    "id": "robot_diagnostics",
    "kind": "package",
-   "state": "warn",
+   "state": "fail",
    "checks": {
     "tests": {
      "state": "pass",
@@ -557,21 +640,27 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_diagnostics"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
     }
    }
   },
   {
    "id": "like_keras",
    "kind": "package",
-   "state": "warn",
+   "state": "fail",
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main f2995b0",
-     "url": "https://github.com/zacharyyamaoka/like_keras/actions/runs/45553099117",
+     "detail": "test.yml passed on main 7d942f9",
+     "url": "https://github.com/zacharyyamaoka/like_keras/actions/runs/45699121243",
      "workflow": "test.yml",
-     "sha": "f2995b0",
-     "at": "2026-11-25T05:22:15Z"
+     "sha": "7d942f9",
+     "at": "2026-11-25T20:52:42Z"
     },
     "lint": {
      "state": "pass",
@@ -598,6 +687,12 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/like_keras"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
+     "url": null,
+     "readme": null
     }
    }
   },
@@ -633,6 +728,13 @@
     "upstream": {
      "state": "fail",
      "detail": "pinned, but the GitHub repo is not reachable (kept from the last good graph)"
+    },
+    "landing": {
+     "state": "fail",
+     "detail": "https://zacharyyamaoka.github.io/robot_collision/ answers HTTP 404, not a page; README not read",
+     "url": "https://zacharyyamaoka.github.io/robot_collision/",
+     "readme": null,
+     "http": 404
     }
    }
   },
@@ -667,6 +769,10 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/robot_sdk_agent"
+    },
+    "landing": {
+     "state": "none",
+     "detail": "an agent needs no landing page; its packages do"
     }
    }
   },
@@ -698,14 +804,18 @@
      "state": "pass",
      "detail": "public on GitHub",
      "url": "https://github.com/zacharyyamaoka/trajectory_tracking_agent"
+    },
+    "landing": {
+     "state": "none",
+     "detail": "an agent needs no landing page; its packages do"
     }
    }
   }
  ],
  "summary": {
   "pass": 2,
-  "warn": 11,
-  "fail": 4,
+  "warn": 5,
+  "fail": 10,
   "unknown": 0
  }
 }
