@@ -1,9 +1,9 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-26T02:40:37+00:00",
+ "generated": "2026-11-26T08:35:11+00:00",
  "sources": {
   "robot_sdk": "74c3278",
-  "robot_msgs": "10cbb5f",
+  "robot_msgs": "7f08d8a",
   "robot_models": "61b292c",
   "robot_controllers": "04d0d58",
   "robot_reach": "6d1fcba",
@@ -12,13 +12,13 @@
   "robot_autonomy": "0f68b89",
   "robot_metrics": "f953427",
   "robot_activity": "2ebea6e",
-  "traj_compare": "a85557c",
-  "robot_msg_viz": "46b7947",
+  "traj_compare": "ecf0abb",
+  "robot_msg_viz": "3461069",
   "sim2real": "7355462",
   "robot_diagnostics": "2ab15cb",
   "like_keras": "7d942f9",
   "robot_sdk_agent": "706387f",
-  "trajectory_tracking_agent": "2e65819",
+  "trajectory_tracking_agent": "a4794e3",
   "robot_collision": "19aa8d0"
  },
  "packages": [
@@ -36,7 +36,7 @@
     "pypi": "https://pypi.org/project/robot-msgs/",
     "site": "https://robotmsgs.com"
    },
-   "version": "0.3.2",
+   "version": "0.4.0",
    "deps": {
     "required": [],
     "extras": {
@@ -56,7 +56,7 @@
      "id": "python",
      "status": "full",
      "where": "src/robot_msgs",
-     "evidence": "94 modules"
+     "evidence": "106 modules"
     }
    ]
   },
@@ -430,7 +430,7 @@
      "id": "python",
      "status": "full",
      "where": "src/robot_msg_viz",
-     "evidence": "26 modules"
+     "evidence": "29 modules"
     }
    ]
   },
@@ -611,6 +611,22 @@
    "docs_url": "https://robotmsgs.com/types/compare/Comparison/"
   },
   {
+   "id": "robot_msgs.compare.Dataset",
+   "name": "Dataset",
+   "package": "robot_msgs",
+   "module": "robot_msgs.compare",
+   "what": "Runs with unique names, and a `title`",
+   "docs_url": "https://robotmsgs.com/types/compare/Dataset/"
+  },
+  {
+   "id": "robot_msgs.compare.DatasetComparison",
+   "name": "DatasetComparison",
+   "package": "robot_msgs",
+   "module": "robot_msgs.compare",
+   "what": "What `compare_dataset(dataset)` returns: one `RunComparison` per run, by run name",
+   "docs_url": "https://robotmsgs.com/types/compare/DatasetComparison/"
+  },
+  {
    "id": "robot_msgs.compare.ErrorStats",
    "name": "ErrorStats",
    "package": "robot_msgs",
@@ -641,6 +657,30 @@
    "module": "robot_msgs.compare",
    "what": "Limits on a pose error's magnitudes: ``position`` (m) and ``rotation`` angle (rad)",
    "docs_url": "https://robotmsgs.com/types/compare/PoseTolerance/"
+  },
+  {
+   "id": "robot_msgs.compare.Recording",
+   "name": "Recording",
+   "package": "robot_msgs",
+   "module": "robot_msgs.compare",
+   "what": "Every stream one source recorded in one run, by stream name",
+   "docs_url": "https://robotmsgs.com/types/compare/Recording/"
+  },
+  {
+   "id": "robot_msgs.compare.Run",
+   "name": "Run",
+   "package": "robot_msgs",
+   "module": "robot_msgs.compare",
+   "what": "One run of one experiment: every source's `Recording`, and which pairs to compare",
+   "docs_url": "https://robotmsgs.com/types/compare/Run/"
+  },
+  {
+   "id": "robot_msgs.compare.RunComparison",
+   "name": "RunComparison",
+   "package": "robot_msgs",
+   "module": "robot_msgs.compare",
+   "what": "What `compare_run(run)` returns: one `Comparison` per pair and shared stream",
+   "docs_url": "https://robotmsgs.com/types/compare/RunComparison/"
   },
   {
    "id": "robot_msgs.compare.Tolerances",
@@ -1003,6 +1043,38 @@
    "docs_url": "https://robotmsgs.com/types/std/Metrics/"
   },
   {
+   "id": "robot_msgs.trajectory.ImageTrajectory",
+   "name": "ImageTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "Frames `(N, H, W[, C])` of one `encoding` (a sensor_msgs/image_encodings name, as `Image`)",
+   "docs_url": "https://robotmsgs.com/types/trajectory/ImageTrajectory/"
+  },
+  {
+   "id": "robot_msgs.trajectory.ImageTrajectoryPoint",
+   "name": "ImageTrajectoryPoint",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "One frame of an `ImageTrajectory`; `image` is it as a sensor `Image`",
+   "docs_url": "https://robotmsgs.com/types/trajectory/ImageTrajectoryPoint/"
+  },
+  {
+   "id": "robot_msgs.trajectory.ImuTrajectory",
+   "name": "ImuTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "`orientations (N, 4)` xyzw, `angular_velocities (N, 3)` rad/s, `linear_accelerations (N, 3)` m/s², all in `header.frame_id` (the IMU's frame), as sensor_msgs/Imu",
+   "docs_url": "https://robotmsgs.com/types/trajectory/ImuTrajectory/"
+  },
+  {
+   "id": "robot_msgs.trajectory.ImuTrajectoryPoint",
+   "name": "ImuTrajectoryPoint",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "One sample of an `ImuTrajectory`",
+   "docs_url": "https://robotmsgs.com/types/trajectory/ImuTrajectoryPoint/"
+  },
+  {
    "id": "robot_msgs.trajectory.JointLimitViolation",
    "name": "JointLimitViolation",
    "package": "robot_msgs",
@@ -1051,6 +1123,38 @@
    "docs_url": "https://robotmsgs.com/types/trajectory/PoseTrajectoryPoint/"
   },
   {
+   "id": "robot_msgs.trajectory.ServoCommandTrajectory",
+   "name": "ServoCommandTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "Targets sent to servos `joint_names` over time; every per-sample array is ``(N, J)``",
+   "docs_url": "https://robotmsgs.com/types/trajectory/ServoCommandTrajectory/"
+  },
+  {
+   "id": "robot_msgs.trajectory.ServoCommandTrajectoryPoint",
+   "name": "ServoCommandTrajectoryPoint",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "One sample of a `ServoCommandTrajectory`: every servo's targets at `t`",
+   "docs_url": "https://robotmsgs.com/types/trajectory/ServoCommandTrajectoryPoint/"
+  },
+  {
+   "id": "robot_msgs.trajectory.ServoStateTrajectory",
+   "name": "ServoStateTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "What servos `joint_names` reported over time; every per-sample array is ``(N, J)``",
+   "docs_url": "https://robotmsgs.com/types/trajectory/ServoStateTrajectory/"
+  },
+  {
+   "id": "robot_msgs.trajectory.ServoStateTrajectoryPoint",
+   "name": "ServoStateTrajectoryPoint",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "One sample of a `ServoStateTrajectory`: every servo's reading at `t`",
+   "docs_url": "https://robotmsgs.com/types/trajectory/ServoStateTrajectoryPoint/"
+  },
+  {
    "id": "robot_msgs.trajectory.Trajectory",
    "name": "Trajectory",
    "package": "robot_msgs",
@@ -1065,6 +1169,22 @@
    "module": "robot_msgs.trajectory",
    "what": "One sample: its time and the value of every per-sample field at that time",
    "docs_url": "https://robotmsgs.com/types/trajectory/TrajectoryPoint/"
+  },
+  {
+   "id": "robot_msgs.trajectory.WrenchTrajectory",
+   "name": "WrenchTrajectory",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "`forces (N, 3)` in N and `torques (N, 3)` in N·m, in `header.frame_id`",
+   "docs_url": "https://robotmsgs.com/types/trajectory/WrenchTrajectory/"
+  },
+  {
+   "id": "robot_msgs.trajectory.WrenchTrajectoryPoint",
+   "name": "WrenchTrajectoryPoint",
+   "package": "robot_msgs",
+   "module": "robot_msgs.trajectory",
+   "what": "One sample of a `WrenchTrajectory`: `force` (N) and `torque` (N·m)",
+   "docs_url": "https://robotmsgs.com/types/trajectory/WrenchTrajectoryPoint/"
   },
   {
    "id": "robot_msgs.vision.BoundingBox2D",
@@ -2397,7 +2517,47 @@
    "type": "robot_msgs.compare.Comparison",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.compare",
-   "where": "src/robot_msg_viz/views/compare.py:34",
+   "where": "src/robot_msg_viz/views/compare.py:44",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.compare.Comparison",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:45",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.compare.Dataset",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:31",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.compare.Dataset",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:45",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.compare.DatasetComparison",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:45",
    "public": false,
    "declared": false,
    "verified": true
@@ -2407,7 +2567,7 @@
    "type": "robot_msgs.compare.ErrorStats",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.compare",
-   "where": "src/robot_msg_viz/views/compare.py:34",
+   "where": "src/robot_msg_viz/views/compare.py:44",
    "public": false,
    "declared": false,
    "verified": true
@@ -2417,7 +2577,7 @@
    "type": "robot_msgs.compare.JointTolerance",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.compare",
-   "where": "src/robot_msg_viz/views/compare.py:34",
+   "where": "src/robot_msg_viz/views/compare.py:44",
    "public": false,
    "declared": false,
    "verified": true
@@ -2427,7 +2587,57 @@
    "type": "robot_msgs.compare.Outcome",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.compare",
-   "where": "src/robot_msg_viz/views/compare.py:34",
+   "where": "src/robot_msg_viz/views/compare.py:44",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.compare.Recording",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:31",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.compare.Recording",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:45",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.compare.Run",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:31",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.compare.Run",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:45",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.compare.RunComparison",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:45",
    "public": false,
    "declared": false,
    "verified": true
@@ -2437,7 +2647,7 @@
    "type": "robot_msgs.compare.Tolerances",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.compare",
-   "where": "src/robot_msg_viz/views/compare.py:34",
+   "where": "src/robot_msg_viz/views/compare.py:44",
    "public": false,
    "declared": false,
    "verified": true
@@ -2447,7 +2657,7 @@
    "type": "robot_msgs.compare.Violation",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.compare",
-   "where": "src/robot_msg_viz/views/compare.py:34",
+   "where": "src/robot_msg_viz/views/compare.py:44",
    "public": false,
    "declared": false,
    "verified": true
@@ -2794,6 +3004,16 @@
   },
   {
    "package": "robot_msg_viz",
+   "type": "robot_msgs.geometry.Wrench",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:45",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
    "type": "robot_msgs.manipulation.AllowedCollisionMatrix",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.manipulation",
@@ -2864,6 +3084,16 @@
   },
   {
    "package": "robot_msg_viz",
+   "type": "robot_msgs.sensor.Image",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
    "type": "robot_msgs.sensor.Imu",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
@@ -2874,10 +3104,50 @@
   },
   {
    "package": "robot_msg_viz",
+   "type": "robot_msgs.sensor.Imu",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:46",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
    "type": "robot_msgs.sensor.JointState",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.sensor",
    "where": "src/robot_msg_viz/views/sensor.py:30",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.sensor.PointCloud",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:33",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.sensor.PointCloud",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.compare",
+   "where": "src/robot_msg_viz/views/compare.py:55",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.sensor.PointCloud",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:56",
    "public": false,
    "declared": false,
    "verified": true
@@ -2938,6 +3208,16 @@
    "kind": "imports",
    "symbol": "robot_msg_viz.views.std",
    "where": "src/robot_msg_viz/views/std.py:35",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:34",
    "public": false,
    "declared": false,
    "verified": true
@@ -3034,6 +3314,106 @@
   },
   {
    "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ImageTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:35",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ImageTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.compare",
+   "where": "src/robot_msg_viz/views/compare.py:56",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ImageTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:57",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ImageTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:47",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ImageTrajectoryPoint",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:47",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ImuTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:35",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ImuTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.compare",
+   "where": "src/robot_msg_viz/views/compare.py:56",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ImuTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:57",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ImuTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:47",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ImuTrajectoryPoint",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:47",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
    "type": "robot_msgs.trajectory.JointLimitViolation",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
@@ -3056,8 +3436,28 @@
    "package": "robot_msg_viz",
    "type": "robot_msgs.trajectory.JointTrajectory",
    "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:35",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "imports",
    "symbol": "robot_msg_viz.views.compare",
-   "where": "src/robot_msg_viz/views/compare.py:45",
+   "where": "src/robot_msg_viz/views/compare.py:56",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.JointTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:57",
    "public": false,
    "declared": false,
    "verified": true
@@ -3087,7 +3487,17 @@
    "type": "robot_msgs.trajectory.PoseTrajectory",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.compare",
-   "where": "src/robot_msg_viz/views/compare.py:45",
+   "where": "src/robot_msg_viz/views/compare.py:56",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.PoseTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:57",
    "public": false,
    "declared": false,
    "verified": true
@@ -3114,6 +3524,126 @@
   },
   {
    "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ServoCommandTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:35",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ServoCommandTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.compare",
+   "where": "src/robot_msg_viz/views/compare.py:56",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ServoCommandTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:57",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ServoCommandTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:47",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ServoCommandTrajectoryPoint",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:47",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ServoStateTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:35",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ServoStateTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.compare",
+   "where": "src/robot_msg_viz/views/compare.py:56",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ServoStateTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:57",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ServoStateTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:47",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.ServoStateTrajectoryPoint",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:47",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.Trajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.compare",
+   "where": "src/robot_msg_viz/views/compare.py:56",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.Trajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:57",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
    "type": "robot_msgs.trajectory.Trajectory",
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
@@ -3128,6 +3658,56 @@
    "kind": "imports",
    "symbol": "robot_msg_viz.views.trajectory",
    "where": "src/robot_msg_viz/views/trajectory.py:49",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.WrenchTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views._sim2real",
+   "where": "src/robot_msg_viz/views/_sim2real.py:35",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.WrenchTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.compare",
+   "where": "src/robot_msg_viz/views/compare.py:56",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.WrenchTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.runs",
+   "where": "src/robot_msg_viz/views/runs.py:57",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.WrenchTrajectory",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:47",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "robot_msg_viz",
+   "type": "robot_msgs.trajectory.WrenchTrajectoryPoint",
+   "kind": "imports",
+   "symbol": "robot_msg_viz.views.streams",
+   "where": "src/robot_msg_viz/views/streams.py:47",
    "public": false,
    "declared": false,
    "verified": true

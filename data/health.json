@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-26T02:28:59+00:00",
- "graph_generated": "2026-11-26T02:28:49+00:00",
+ "generated": "2026-11-26T08:35:24+00:00",
+ "graph_generated": "2026-11-26T08:35:11+00:00",
  "checks": [
   {
    "id": "tests",
@@ -38,15 +38,15 @@
   {
    "id": "robot_msgs",
    "kind": "package",
-   "state": "fail",
+   "state": "pass",
    "checks": {
     "tests": {
-     "state": "fail",
-     "detail": "test.yml failed on main 10cbb5f",
-     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45742314041",
+     "state": "pass",
+     "detail": "test.yml passed on main 7f08d8a",
+     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45756884863",
      "workflow": "test.yml",
-     "sha": "10cbb5f",
-     "at": "2026-11-26T02:25:25Z"
+     "sha": "7f08d8a",
+     "at": "2026-11-26T04:42:17Z"
     },
     "lint": {
      "state": "pass",
@@ -56,7 +56,7 @@
     },
     "types": {
      "state": "none",
-     "detail": "defines 67 shared types; uses none of them",
+     "detail": "defines 82 shared types; uses none of them",
      "verified": 0,
      "found": 0,
      "missing": 0
@@ -470,11 +470,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main a85557c",
-     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45741417897",
+     "detail": "test.yml passed on main ecf0abb",
+     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45757054402",
      "workflow": "test.yml",
-     "sha": "a85557c",
-     "at": "2026-11-26T02:17:25Z"
+     "sha": "ecf0abb",
+     "at": "2026-11-26T04:43:56Z"
     },
     "lint": {
      "state": "pass",
@@ -528,9 +528,9 @@
     },
     "types": {
      "state": "warn",
-     "detail": "0 declared + verified · 82 found, not declared · 0 missing: none of its type uses are declared",
+     "detail": "0 declared + verified · 128 found, not declared · 0 missing: none of its type uses are declared",
      "verified": 0,
-     "found": 82,
+     "found": 128,
      "missing": 0
     },
     "release": {
@@ -813,9 +813,9 @@
   }
  ],
  "summary": {
-  "pass": 2,
+  "pass": 3,
   "warn": 5,
-  "fail": 10,
+  "fail": 9,
   "unknown": 0
  }
 }
