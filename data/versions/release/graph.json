@@ -1,8 +1,8 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-26T02:38:07+00:00",
+ "generated": "2026-11-26T02:40:46+00:00",
  "sources": {
-  "robot_sdk": "a342c65",
+  "robot_sdk": "74c3278",
   "robot_msgs": "cc40339",
   "robot_models": "486ecc2",
   "robot_metrics": "2573912",
