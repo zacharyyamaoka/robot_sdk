@@ -1,9 +1,9 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-26T19:08:20+00:00",
+ "generated": "2026-11-27T02:17:10+00:00",
  "sources": {
   "robot_sdk": "74c3278",
-  "robot_msgs": "d8ff06d",
+  "robot_msgs": "0bbc593",
   "robot_models": "61b292c",
   "robot_controllers": "04d0d58",
   "robot_reach": "6d1fcba",
@@ -36,7 +36,7 @@
     "pypi": "https://pypi.org/project/robot-msgs/",
     "site": "https://robotmsgs.com"
    },
-   "version": "0.6.0",
+   "version": "0.7.0",
    "deps": {
     "required": [],
     "extras": {
@@ -56,7 +56,7 @@
      "id": "python",
      "status": "full",
      "where": "src/robot_msgs",
-     "evidence": "119 modules"
+     "evidence": "126 modules"
     }
    ]
   },
