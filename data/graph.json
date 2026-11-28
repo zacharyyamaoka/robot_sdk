@@ -1,9 +1,9 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-28T01:04:58+00:00",
+ "generated": "2026-11-28T01:15:10+00:00",
  "sources": {
-  "robot_sdk": "f1791d2",
-  "robot_msgs": "df7fd6b",
+  "robot_sdk": "ca6598a",
+  "robot_msgs": "8c3e6ed",
   "robot_models": "61b292c",
   "robot_controllers": "04d0d58",
   "robot_reach": "6d1fcba",
@@ -12,7 +12,7 @@
   "robot_autonomy": "0f68b89",
   "robot_metrics": "f953427",
   "robot_activity": "2ebea6e",
-  "traj_compare": "b4dbe8e",
+  "traj_compare": "2390d42",
   "robot_msg_viz": "39f526a",
   "sim2real": "7355462",
   "robot_diagnostics": "441cbb0",
@@ -2418,7 +2418,7 @@
    "type": "robot_msgs.compare.Tolerances",
    "kind": "consumes",
    "symbol": "traj_compare.dataset.write_dataset_report",
-   "where": "src/traj_compare/dataset.py:2108",
+   "where": "src/traj_compare/dataset.py:2112",
    "public": true,
    "declared": false,
    "verified": true
