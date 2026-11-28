@@ -144,6 +144,43 @@ def transmission_diagram():
     return svg(860, 478, b, "Transmission placement")
 
 
+# ------------------------------------------------------------------ Arm proposals: one small stack per proposal
+
+def arm_stack(layers, side=None, height=None):
+    """layers: (title, sub, kind) top to bottom; side: (title, sub, kind, from_layer, to_layer) drawn at the right."""
+    b, y, w = "", 14, 470
+    ys = []
+    for title, sub, kind in layers:
+        b += box(20, y, w, 52, title, sub, kind)
+        ys.append(y)
+        y += 82
+    for top in ys[:-1]:
+        b += wire(255, top + 52, 255, top + 82)
+    if side:
+        title, sub, kind, a, z = side
+        b += box(540, ys[a], 300, ys[z] - ys[a] + 52, title, sub, kind)
+        b += wire(540, ys[a] + 26, 490, ys[a] + 26, "", cls="w2")
+    return svg(860, height or y, b, "proposal stack")
+
+
+def arm_diagrams():
+    C = ("Controllers: JTC · JCC · manager", "address joints by NAME: j1, j2, c1, w1..", "k")
+    BUS = ("Bus: fdcanusb | pi3hat | twin", "transport only: frames by CAN id", "io")
+    out = {}
+    out["P1"] = arm_stack([C, ("Arm  (role: ServoCommand in, ServoState out, joint names)", "binding = a JointTable: name → bus, can_id, sign, offset, zero", "m"), BUS],
+                          side=("JointTable (config, not code)", "j2: can 12, sign −1, offset 0.3 · c1: can 13 …", "p", 1, 2))
+    out["P2"] = arm_stack([C, ("Arm (names)", "JointMap: name ↔ servo id, sign, offset, zero", "m"),
+                           ("ServoBus (servo ids)", "ServoBus.send({12: cmd, 13: cmd})", "r"), BUS],
+                          side=("bring-up / debug", "wire straight to ServoBus by id", "c", 2, 2))
+    out["P3"] = arm_stack([C, ("robotparts.connect(\"bam_fb_v2\", transport=…)", "returns an Arm: the part's datasheet carries its joint table", "m"), BUS],
+                          side=("same call for a bought arm", "robotparts.connect(\"ur5e\", host=…) → Arm", "c", 1, 1))
+    out["P4"] = arm_stack([("Callers", "send JointTrajectory | JointCommand to the ARM", "c"),
+                           ("Arm = a System: manager + JTC + JCC + joint table", "like a UR controller cabinet", "m"), BUS],
+                          side=("a UR5e binds the WHOLE Arm", "its own cabinet runs the JTC", "c", 1, 1))
+    out["P5"] = arm_stack([C, ("(no Arm box)", "", "p"), ("Bus driver reads a name → can_id table", "rename at the wire", "io")])
+    return out
+
+
 CSS = """
 :root{--bg:#fbfaf7;--fg:#1d1d1b;--mut:#6b6a66;--card:#fff;--line:#d9d6cf;--k:#e6efff;--kS:#3d6fd1;--r:#fdecea;--rS:#c2493d;
 --io:#eaf6ee;--ioS:#2f8a50;--c:#f3efe6;--cS:#8a7a55;--p:#f1f1f1;--pS:#888;--code:#f4f2ec}
@@ -195,6 +232,10 @@ def main() -> None:
         "COLLISION": collision_diagram(), "TXDIAG": transmission_diagram(), "CAPTURE": capture, "TRANSMISSION": transmission, "REMAINING": remaining,
     }
     parts["TXDIAG"] = parts.pop("TXDIAG")
+    arm = read("joint_controllers_arm.html")
+    for k, v in arm_diagrams().items():
+        arm = arm.replace("{{" + k + "}}", v)
+    parts["ARM"] = arm
     for key, value in parts.items():
         sections_extra = sections_extra.replace("{{" + key + "}}", value)
     sections = []

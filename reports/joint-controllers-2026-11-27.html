@@ -26,8 +26,8 @@ th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-alig
 .done{background:var(--io)}.next{background:var(--k)}.later{background:var(--p)}
 ul.tight li{margin:.25em 0}
 </style></head><body><main><p style="color:var(--mut)">2026-11-27 · from Daily Note “joint controllers” · robot_sdk</p><h1>Joint controllers: composed boxes over one bus</h1><div class="verdict"><b>Composed boxes, one writer by wiring.</b> The JTC, the Joint Command Controller and the collision detector are peers. A small controller manager
-(already on robot_msgs main) is the only box wired to the bus. The five-bar mapping goes <b>up</b> into the robot model, so every controller works in servo space.
-<br><span style="font-size:15px;color:var(--mut)">ServoCommand.mode landed (robot_msgs 3eea5a0). The JCC's Follow now goes to the peer JTC by wire (robot_msgs 8c3e6ed). The big step left is moving the rig runners off the bus and onto the manager.</span></div><p style="font-size:14px"><a href="#s1">The stack in one picture</a> · <a href="#s2">Composition, not nesting (your correction, adopted)</a> · <a href="#s3">Collision detection as a read-only box</a> · <a href="#s4">What &quot;bus backend&quot; means (system diagram)</a> · <a href="#s5">Where transmissions live (options and decision)</a> · <a href="#s6">What remains, in order</a></p><h2 id="s1">The stack in one picture</h2>
+(already on robot_msgs main) is the only box wired to the bus. The five-bar mapping goes <b>up</b> into the robot model, so every controller works in servo space. Below the manager, one thin <b>Arm</b> (a role bound by a joint table) turns joint names into CAN ids, signs, offsets and the homed zero.
+<br><span style="font-size:15px;color:var(--mut)">ServoCommand.mode landed (robot_msgs 3eea5a0). The JCC's Follow now goes to the peer JTC by wire (robot_msgs 8c3e6ed). The big step left is moving the rig runners off the bus and onto the manager.</span></div><p style="font-size:14px"><a href="#s1">The stack in one picture</a> · <a href="#s2">Composition, not nesting (your correction, adopted)</a> · <a href="#s3">Collision detection as a read-only box</a> · <a href="#s4">What &quot;bus backend&quot; means (system diagram)</a> · <a href="#s5">Where transmissions live (options and decision)</a> · <a href="#s6">From robot parts to an Arm: 5 API proposals</a> · <a href="#s7">What remains, in order</a></p><h2 id="s1">The stack in one picture</h2>
 <figure><svg viewBox="0 0 880 465" role="img" aria-label="Layer stack"><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs><rect x="20" y="20" width="760" height="60" rx="8" class="c"/><text x="400.0" y="50.0" class="t">Callers: planners · homing · recovery · pick loop · scripts</text><text x="400.0" y="65.0" class="s">they only ever send JointTrajectory or JointCommand (servo names), and read state + result</text><rect x="20" y="120" width="230" height="70" rx="8" class="k"/><text x="135.0" y="155.0" class="t">JTC</text><text x="135.0" y="170.0" class="s">robot_controllers</text><rect x="285" y="120" width="230" height="70" rx="8" class="k"/><text x="400.0" y="155.0" class="t">Joint Command Controller</text><text x="400.0" y="170.0" class="s">recipes: home, move, stop, brake</text><rect x="550" y="120" width="230" height="70" rx="8" class="r"/><text x="665.0" y="155.0" class="t">Collision detector</text><text x="665.0" y="170.0" class="s">read-only: contact per joint</text><rect x="20" y="225" width="760" height="50" rx="8" class="m"/><text x="400.0" y="255.0" class="t">Controller manager: claims per joint · priority · stop wins (the one writer)</text><rect x="20" y="310" width="760" height="60" rx="8" class="io"/><text x="400.0" y="340.0" class="t">Bus box (role “Arm”): ServoCommand in → ServoState out</text><text x="400.0" y="355.0" class="s">bound at deploy time: moteus over CAN  |  twin  |  MuJoCo</text><rect x="20" y="405" width="760" height="50" rx="8" class="p"/><text x="400.0" y="435.0" class="t">Parts: moteus boards, encoders, cameras (robot_parts, datasheets)</text><text x="790" y="55" class="side">goals</text><text x="790" y="160" class="side">controllers</text><text x="790" y="255" class="side">mux</text><text x="790" y="345" class="side">I/O</text><text x="790" y="435" class="side">hardware</text></svg><figcaption>Four layers. Everything above the green bus box is the same code on the real arm, the twin and in tests.
 Callers never see the bus: they send <code>JointTrajectory</code> or <code>JointCommand</code> and read state and a result.</figcaption></figure>
 <ul class="tight">
@@ -163,7 +163,111 @@ Dec 2025 you've been pulling it up. Full timeline with your quotes and pseudo co
 <b>MOC - Where Transmissions Live (Joint vs Servo Space)</b>.</p>
 
 
-<h2 id="s6">What remains, in order</h2>
+<h2 id="s6">From robot parts to an Arm: 5 API proposals</h2>
+<p><b>Your note, sharpened:</b> yes, put one thin <b>Arm</b> between the controllers and the bus. And there's a sharper reason than "it's tidy".
+A bought arm (a UR5e, an xArm, everything in <code>robotparts.arm</code>) already <i>is</i> this box: you send it joint names and positions and never
+see a servo. Our arms are the only ones where CAN ids leak upward (the JCC track's cases name joints <code>can11</code>, and
+<code>bam_fivebar/reachable.py:43</code> hard-codes <code>{"j2": {"can_id": 12}, "c1": {"can_id": 13}}</code>). The Arm makes our servo arms look like a bought arm.</p>
+<p><b>What the Arm does, exactly</b>, so it stays light. It does the 1:1 per-servo things from the transmission rule, and nothing else:</p>
+<ul class="tight">
+<li>name ↔ servo address (bus, CAN id): the thing you want gone from commands</li>
+<li>sign, offset and the <b>homed zero</b>: your "what if you want to apply a joint offset or a zero?" case. The homed map is runtime state, which the Arm reads after homing.</li>
+<li>which transport (fdcanusb, pi3hat, twin): your "if I change from CAN USB I shouldn't need to change my code"</li>
+<li><b>Not</b> the five-bar. The Arm's joints are the servo joints (j2, c1), and the coupling stays in the robot model (decision B above).</li>
+</ul>
+<p><b>Criteria</b> (weights from your note):</p>
+<table><tr><th>#</th><th>Criterion</th><th>Weight</th></tr>
+<tr><td>a</td><td>Callers and controllers address joints by name, never CAN id or transport</td><td>3</td></tr>
+<tr><td>b</td><td>Swap the transport or renumber CAN ids with zero code change outside the Arm</td><td>3</td></tr>
+<tr><td>c</td><td>Same interface for our servo arms and bought arms (UR5e); Arm, Leg, Gripper alike</td><td>3</td></tr>
+<tr><td>d</td><td>Lightweight: "1 light weight thing above", little new code, no new layer of ceremony</td><td>2</td></tr>
+<tr><td>e</td><td>Still able to talk to one servo by id for bring-up and debug</td><td>2</td></tr>
+<tr><td>f</td><td>Fits what exists: like_keras roles + bindings, robot_msgs ServoCommand, robotparts datasheets</td><td>2</td></tr></table>
+
+<h3>P1 · Arm is a role, its binding is a joint table (config, not code)</h3>
+<figure><svg viewBox="0 0 860 260" role="img" aria-label="proposal stack"><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs><rect x="20" y="14" width="470" height="52" rx="8" class="k"/><text x="255.0" y="40.0" class="t">Controllers: JTC · JCC · manager</text><text x="255.0" y="55.0" class="s">address joints by NAME: j1, j2, c1, w1..</text><rect x="20" y="96" width="470" height="52" rx="8" class="m"/><text x="255.0" y="122.0" class="t">Arm  (role: ServoCommand in, ServoState out, joint names)</text><text x="255.0" y="137.0" class="s">binding = a JointTable: name → bus, can_id, sign, offset, zero</text><rect x="20" y="178" width="470" height="52" rx="8" class="io"/><text x="255.0" y="204.0" class="t">Bus: fdcanusb | pi3hat | twin</text><text x="255.0" y="219.0" class="s">transport only: frames by CAN id</text><line x1="255" y1="66" x2="255" y2="96" class="w" marker-end="url(#a)"/><line x1="255" y1="148" x2="255" y2="178" class="w" marker-end="url(#a)"/><rect x="540" y="96" width="300" height="134" rx="8" class="p"/><text x="690.0" y="163.0" class="t">JointTable (config, not code)</text><text x="690.0" y="178.0" class="s">j2: can 12, sign −1, offset 0.3 · c1: can 13 …</text><line x1="540" y1="122" x2="490" y2="122" class="w2" marker-end="url(#a)"/></svg></figure>
+<pre>
+class Arm(lk.Component):                        # role: ports only, joint-named
+    command = lk.In(ServoCommand, lagged=True)  # name = ("j1", "j2", "c1", "w1", ...)
+    state   = lk.Out(ServoState)
+
+# rig config (TOML or a frozen dataclass), the only place a CAN id lives
+JOINTS = JointTable(bus="fdcanusb:/dev/serial/by-id/…", joints={
+    "j2": Servo(can_id=12, sign=-1, offset_rad=0.30),
+    "c1": Servo(can_id=13, sign=+1, offset_rad=0.00), ...})
+
+dep = lk.Deployment(cell, bind={Arm: ServoArm(JOINTS, homed="~/.local/state/…/latest.json")})   # REAL
+dep = lk.Deployment(cell, bind={Arm: TwinArm(JOINTS, plant=...)})                                # SIM
+</pre>
+<p>✅ the thinnest box that does all four jobs · ✅ the table is data, so renumbering is a config edit · ➖ a bought arm binds at the role too,
+but a UR5e wants trajectories, not 500 Hz ServoCommands</p>
+
+<h3>P2 · Two layers: Arm (names) over ServoBus (ids)</h3>
+<figure><svg viewBox="0 0 860 342" role="img" aria-label="proposal stack"><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs><rect x="20" y="14" width="470" height="52" rx="8" class="k"/><text x="255.0" y="40.0" class="t">Controllers: JTC · JCC · manager</text><text x="255.0" y="55.0" class="s">address joints by NAME: j1, j2, c1, w1..</text><rect x="20" y="96" width="470" height="52" rx="8" class="m"/><text x="255.0" y="122.0" class="t">Arm (names)</text><text x="255.0" y="137.0" class="s">JointMap: name ↔ servo id, sign, offset, zero</text><rect x="20" y="178" width="470" height="52" rx="8" class="r"/><text x="255.0" y="204.0" class="t">ServoBus (servo ids)</text><text x="255.0" y="219.0" class="s">ServoBus.send({12: cmd, 13: cmd})</text><rect x="20" y="260" width="470" height="52" rx="8" class="io"/><text x="255.0" y="286.0" class="t">Bus: fdcanusb | pi3hat | twin</text><text x="255.0" y="301.0" class="s">transport only: frames by CAN id</text><line x1="255" y1="66" x2="255" y2="96" class="w" marker-end="url(#a)"/><line x1="255" y1="148" x2="255" y2="178" class="w" marker-end="url(#a)"/><line x1="255" y1="230" x2="255" y2="260" class="w" marker-end="url(#a)"/><rect x="540" y="178" width="300" height="52" rx="8" class="c"/><text x="690.0" y="204.0" class="t">bring-up / debug</text><text x="690.0" y="219.0" class="s">wire straight to ServoBus by id</text><line x1="540" y1="204" x2="490" y2="204" class="w2" marker-end="url(#a)"/></svg></figure>
+<pre>
+bus = ServoBus(transport=Fdcanusb("…"))         # speaks ids: bus.send({12: cmd, 13: cmd}); bus.read() -> {12: state, ...}
+arm = Arm(bus, JointMap(j2=Servo(12, sign=-1, offset=0.30), c1=Servo(13)))
+arm.send(ServoCommand(name=("j2", "c1"), position=(...)))
+bus.send({12: ServoCommand.stop()})              # bring-up: one servo, by id
+</pre>
+<p>✅ the debug path is a real, named box · ➖ two boxes where your note wants one · ➖ ServoBus is exactly what the moteus library already is</p>
+
+<h3>P3 · The Arm is a robot part: <code>robotparts.connect()</code></h3>
+<figure><svg viewBox="0 0 860 260" role="img" aria-label="proposal stack"><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs><rect x="20" y="14" width="470" height="52" rx="8" class="k"/><text x="255.0" y="40.0" class="t">Controllers: JTC · JCC · manager</text><text x="255.0" y="55.0" class="s">address joints by NAME: j1, j2, c1, w1..</text><rect x="20" y="96" width="470" height="52" rx="8" class="m"/><text x="255.0" y="122.0" class="t">robotparts.connect(&quot;bam_fb_v2&quot;, transport=…)</text><text x="255.0" y="137.0" class="s">returns an Arm: the part&#x27;s datasheet carries its joint table</text><rect x="20" y="178" width="470" height="52" rx="8" class="io"/><text x="255.0" y="204.0" class="t">Bus: fdcanusb | pi3hat | twin</text><text x="255.0" y="219.0" class="s">transport only: frames by CAN id</text><line x1="255" y1="66" x2="255" y2="96" class="w" marker-end="url(#a)"/><line x1="255" y1="148" x2="255" y2="178" class="w" marker-end="url(#a)"/><rect x="540" y="96" width="300" height="52" rx="8" class="c"/><text x="690.0" y="122.0" class="t">same call for a bought arm</text><text x="690.0" y="137.0" class="s">robotparts.connect(&quot;ur5e&quot;, host=…) → Arm</text><line x1="540" y1="122" x2="490" y2="122" class="w2" marker-end="url(#a)"/></svg></figure>
+<pre>
+arm = robotparts.connect("bam_fb_v2", transport="fdcanusb", homed=latest_homed())   # our arm
+arm = robotparts.connect("universal_robots_ur5e", host="192.168.1.20")              # a bought one, same Arm
+arm.send(command); state = arm.read()           # joint names from the part's datasheet
+</pre>
+<p>✅ criterion c is perfect: one call for every arm in the catalog · ✅ the joint table lives with the part's datasheet ·
+➖ puts live drivers into the catalog repo (robotparts is datasheets today) · ➖ CAN ids are per <i>rig</i>, not per part, so they still need a config beside it</p>
+
+<h3>P4 · The Arm owns the controllers (an Arm = a UR-style cabinet)</h3>
+<figure><svg viewBox="0 0 860 260" role="img" aria-label="proposal stack"><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs><rect x="20" y="14" width="470" height="52" rx="8" class="c"/><text x="255.0" y="40.0" class="t">Callers</text><text x="255.0" y="55.0" class="s">send JointTrajectory | JointCommand to the ARM</text><rect x="20" y="96" width="470" height="52" rx="8" class="m"/><text x="255.0" y="122.0" class="t">Arm = a System: manager + JTC + JCC + joint table</text><text x="255.0" y="137.0" class="s">like a UR controller cabinet</text><rect x="20" y="178" width="470" height="52" rx="8" class="io"/><text x="255.0" y="204.0" class="t">Bus: fdcanusb | pi3hat | twin</text><text x="255.0" y="219.0" class="s">transport only: frames by CAN id</text><line x1="255" y1="66" x2="255" y2="96" class="w" marker-end="url(#a)"/><line x1="255" y1="148" x2="255" y2="178" class="w" marker-end="url(#a)"/><rect x="540" y="96" width="300" height="52" rx="8" class="c"/><text x="690.0" y="122.0" class="t">a UR5e binds the WHOLE Arm</text><text x="690.0" y="137.0" class="s">its own cabinet runs the JTC</text><line x1="540" y1="122" x2="490" y2="122" class="w2" marker-end="url(#a)"/></svg></figure>
+<pre>
+with lk.System("bam_fb_v2") as arm:              # the Arm IS manager + JTC + JCC + joint table + bus
+    ...
+    arm.expose(trajectory=jtc.trajectory, goal=jcc.goal, state=io.state, result=jcc.result, stop=mux.stop)
+planner(state=arm.state); arm(trajectory=planner.trajectory)     # callers never see a ServoCommand
+</pre>
+<p>✅ matches how bought arms work (the UR cabinet runs its own JTC) · ✅ "robot abstracted" at the highest level ·
+➖ it's a System, not a thin box: callers can't reach the servo-level Arm without opening it</p>
+
+<h3>P5 · No Arm box: rename at the wire</h3>
+<figure><svg viewBox="0 0 860 260" role="img" aria-label="proposal stack"><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs><rect x="20" y="14" width="470" height="52" rx="8" class="k"/><text x="255.0" y="40.0" class="t">Controllers: JTC · JCC · manager</text><text x="255.0" y="55.0" class="s">address joints by NAME: j1, j2, c1, w1..</text><rect x="20" y="96" width="470" height="52" rx="8" class="p"/><text x="255.0" y="127.0" class="t">(no Arm box)</text><rect x="20" y="178" width="470" height="52" rx="8" class="io"/><text x="255.0" y="204.0" class="t">Bus driver reads a name → can_id table</text><text x="255.0" y="219.0" class="s">rename at the wire</text><line x1="255" y1="66" x2="255" y2="96" class="w" marker-end="url(#a)"/><line x1="255" y1="148" x2="255" y2="178" class="w" marker-end="url(#a)"/></svg></figure>
+<pre>
+bus = MoteusBus(transport=..., names={"j2": 12, "c1": 13})   # the driver translates names to ids
+</pre>
+<p>✅ least code · ❌ no home for sign, offset or the homed zero, so they'd leak back into the rig runners (today's <code>ServoMap</code> problem) · ❌ every transport re-implements naming</p>
+
+<h3>Scores and pick</h3>
+<table><tr><th>Proposal</th><th>a (3)</th><th>b (3)</th><th>c (3)</th><th>d (2)</th><th>e (2)</th><th>f (2)</th><th>Total /45</th></tr>
+<tr class="pick"><td><b>P1 role + joint table, with P4 as the System above it</b></td><td>3</td><td>3</td><td>3</td><td>3</td><td>2</td><td>3</td><td><b>43</b></td></tr>
+<tr><td>P1 alone</td><td>3</td><td>3</td><td>2</td><td>3</td><td>2</td><td>3</td><td>40</td></tr>
+<tr><td>P4 alone</td><td>3</td><td>3</td><td>3</td><td>1</td><td>1</td><td>3</td><td>37</td></tr>
+<tr><td>P2</td><td>3</td><td>3</td><td>2</td><td>1</td><td>3</td><td>2</td><td>36</td></tr>
+<tr><td>P3</td><td>3</td><td>2</td><td>3</td><td>2</td><td>1</td><td>2</td><td>34</td></tr>
+<tr><td>P5</td><td>3</td><td>1</td><td>1</td><td>3</td><td>1</td><td>1</td><td>25</td></tr></table>
+<p style="font-size:14px;color:var(--mut)">Scores are 1-3 per criterion, multiplied by its weight. They're my judgement, made explicit so you can disagree with one cell.</p>
+<p><b>Pick (my default, easy to switch): P1, with P4 falling out for free.</b> The servo-level <code>Arm</code> role is the thin box, bound by a joint table. The
+<i>System</i> that wraps Arm + manager + JTC + JCC is what a planner talks to. like_keras's <code>pick_cell</code> already calls it
+<code>arm_controller()</code>. A UR5e binds at that System level (its cabinet is the JTC). Our servo arms bind at the role level. Both have the
+same outside: <code>trajectory</code>, <code>goal</code>, <code>state</code>, <code>result</code>, <code>stop</code>. P2's debug path is kept as
+a method on the REAL binding (<code>ServoArm.servo(12)</code>), not as a box.</p>
+<p><b>Prior art:</b> ros2_control's <code>&lt;ros2_control type="system"&gt;</code> hardware component, which lists joints and puts per-joint params
+(CAN id, sign) in the robot description, is P1. Viam's <code>arm</code> component (joint positions in, no motors visible) next to its <code>motor</code>
+components is the P1 + P4 split.</p>
+<p><b>What it takes:</b></p>
+<ol class="tight">
+<li>a frozen <code>JointTable</code> / <code>Servo(can_id, sign, offset_rad)</code> dataclass</li>
+<li><code>ServoArm(table, homed)</code>, built from today's <code>bam_fivebar/plant.py</code> <code>ServoMap</code> and <code>boards.py</code> can_id</li>
+<li><code>TwinArm</code> from the rack twin</li>
+<li>rename the JCC track's <code>can11</code> joints to names</li>
+<li>one test: renumber a CAN id in the table and nothing else changes</li>
+</ol>
+
+
+<h2 id="s7">What remains, in order</h2>
 <table><tr><th>#</th><th>Step</th><th>State</th></tr>
 <tr><td>1</td><td><code>ServoCommand.mode</code> (position | stop | brake) + NaN = board default</td><td><span class="tag done">done</span> robot_msgs <code>3eea5a0</code>, 0.8.0, pushed (1560 + robot_controllers 493 tests green)</td></tr>
 <tr><td>2</td><td>Stock Joint Command Controller + controller manager</td><td><span class="tag done">landed</span> robot_msgs <code>55ddc46</code>, <code>df7fd6b</code> (ruler v2 0/45). <b>+ Follow by composition:</b> <code>follow(trajectory, via="jtc")</code> lends the joints to the peer JTC through the manager, robot_msgs <code>8c3e6ed</code> (1572 tests, S012 still 0 failed on v2). The nested follower stays the default</td></tr>

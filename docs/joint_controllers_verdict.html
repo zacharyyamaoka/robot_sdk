@@ -1,3 +1,3 @@
 <b>Composed boxes, one writer by wiring.</b> The JTC, the Joint Command Controller and the collision detector are peers. A small controller manager
-(already on robot_msgs main) is the only box wired to the bus. The five-bar mapping goes <b>up</b> into the robot model, so every controller works in servo space.
+(already on robot_msgs main) is the only box wired to the bus. The five-bar mapping goes <b>up</b> into the robot model, so every controller works in servo space. Below the manager, one thin <b>Arm</b> (a role bound by a joint table) turns joint names into CAN ids, signs, offsets and the homed zero.
 <br><span style="font-size:15px;color:var(--mut)">ServoCommand.mode landed (robot_msgs 3eea5a0). The JCC's Follow now goes to the peer JTC by wire (robot_msgs 8c3e6ed). The big step left is moving the rig runners off the bus and onto the manager.</span>
