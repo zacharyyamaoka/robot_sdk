@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-27T02:17:18+00:00",
- "graph_generated": "2026-11-27T02:17:10+00:00",
+ "generated": "2026-11-28T01:05:08+00:00",
+ "graph_generated": "2026-11-28T01:04:58+00:00",
  "checks": [
   {
    "id": "tests",
@@ -42,11 +42,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main 0bbc593",
-     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/45923459902",
+     "detail": "test.yml passed on main df7fd6b",
+     "url": "https://github.com/zacharyyamaoka/robot_msgs/actions/runs/46089457112",
      "workflow": "test.yml",
-     "sha": "0bbc593",
-     "at": "2026-11-27T01:35:48Z"
+     "sha": "df7fd6b",
+     "at": "2026-11-28T00:44:00Z"
     },
     "lint": {
      "state": "pass",
@@ -469,18 +469,18 @@
    "state": "fail",
    "checks": {
     "tests": {
-     "state": "pass",
-     "detail": "test.yml passed on main 6524578",
-     "url": "https://github.com/zacharyyamaoka/traj_compare/actions/runs/45850258995",
+     "state": "fail",
+     "detail": "test.yml failed on main b4dbe8e",
+     "url": "https://github.com/zacharyyamaoka/trajectory_comparison_viewer/actions/runs/46091075532",
      "workflow": "test.yml",
-     "sha": "6524578",
-     "at": "2026-11-26T15:33:24Z"
+     "sha": "b4dbe8e",
+     "at": "2026-11-28T01:02:38Z"
     },
     "lint": {
      "state": "pass",
      "detail": "robot-sdk.toml matches the code",
      "failures": [],
-     "url": "https://github.com/zacharyyamaoka/traj_compare/blob/main/robot-sdk.toml"
+     "url": "https://github.com/zacharyyamaoka/trajectory_comparison_viewer/blob/main/robot-sdk.toml"
     },
     "types": {
      "state": "pass",
@@ -500,13 +500,14 @@
     "upstream": {
      "state": "pass",
      "detail": "public on GitHub",
-     "url": "https://github.com/zacharyyamaoka/traj_compare"
+     "url": "https://github.com/zacharyyamaoka/trajectory_comparison_viewer"
     },
     "landing": {
-     "state": "fail",
-     "detail": "no landing page: robot-sdk.toml has no [links] site = \"https://…\"",
-     "url": null,
-     "readme": null
+     "state": "pass",
+     "detail": "https://zacharyyamaoka.github.io/trajectory_comparison_viewer/ answers 200 with a real page (traj_compare); README links to it",
+     "url": "https://zacharyyamaoka.github.io/trajectory_comparison_viewer/",
+     "readme": true,
+     "http": 200
     }
    }
   },
@@ -609,11 +610,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main 2ab15cb",
-     "url": "https://github.com/zacharyyamaoka/robot_diagnostics/actions/runs/45545298969",
+     "detail": "test.yml passed on main 441cbb0",
+     "url": "https://github.com/zacharyyamaoka/robot_diagnostics/actions/runs/46067355472",
      "workflow": "test.yml",
-     "sha": "2ab15cb",
-     "at": "2026-11-25T04:13:32Z"
+     "sha": "441cbb0",
+     "at": "2026-11-27T21:00:05Z"
     },
     "lint": {
      "state": "pass",
@@ -745,11 +746,11 @@
    "checks": {
     "tests": {
      "state": "pass",
-     "detail": "test.yml passed on main 706387f",
-     "url": "https://github.com/zacharyyamaoka/robot_sdk_agent/actions/runs/45555249741",
+     "detail": "test.yml passed on main f0027b9",
+     "url": "https://github.com/zacharyyamaoka/robot_sdk_agent/actions/runs/46091139477",
      "workflow": "test.yml",
-     "sha": "706387f",
-     "at": "2026-11-25T05:40:50Z"
+     "sha": "f0027b9",
+     "at": "2026-11-28T01:03:21Z"
     },
     "lint": {
      "state": "pass",
