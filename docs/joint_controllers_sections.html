@@ -16,7 +16,7 @@ The manager makes the JTC and the JCC <i>peers</i>. It owns the bus, gives each 
 lower-priority steal, merges per joint, and its <code>stop()</code> always wins. That's your side-by-side picture, with the merge kept in its own box:</p>
 <figure>{{COMPOSITION}}<figcaption>Proposed wiring. The JCC holds a wire <i>to</i> the JTC (send a trajectory, read its status), and its commands
 and the JTC's go side by side into the manager. You get full access to the JTC from anywhere.</figcaption></figure>
-<p><b>The one nesting left to remove.</b> On main, the JCC's <code>Follow</code> step still builds the JTC <i>inside</i> itself through a follower factory
+<p><b>The one nesting left to remove (now done, robot_msgs <code>8c3e6ed</code>, as <code>follow(trajectory, via="jtc")</code>).</b> On main, the JCC's <code>Follow</code> step still builds the JTC <i>inside</i> itself through a follower factory
 (<code>joint_command_controller.py:28</code>, <code>_Follow</code> at :276). In the composed form, Follow becomes two primitives the JCC already has:</p>
 <pre>
 # today (nested): the JTC lives inside the JCC's Follow step

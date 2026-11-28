@@ -1,11 +1,11 @@
 <table><tr><th>#</th><th>Step</th><th>State</th></tr>
 <tr><td>1</td><td><code>ServoCommand.mode</code> (position | stop | brake) + NaN = board default</td><td><span class="tag done">done</span> robot_msgs <code>3eea5a0</code>, 0.8.0, pushed (1560 + robot_controllers 493 tests green)</td></tr>
-<tr><td>2</td><td>Stock Joint Command Controller + controller manager</td><td><span class="tag done">landed</span> robot_msgs <code>55ddc46</code>, <code>df7fd6b</code> (ruler v2 0/45). <b>Left:</b> make <code>Follow</code> a wire to the JTC box instead of the nested follower</td></tr>
+<tr><td>2</td><td>Stock Joint Command Controller + controller manager</td><td><span class="tag done">landed</span> robot_msgs <code>55ddc46</code>, <code>df7fd6b</code> (ruler v2 0/45). <b>+ Follow by composition:</b> <code>follow(trajectory, via="jtc")</code> lends the joints to the peer JTC through the manager, robot_msgs <code>8c3e6ed</code> (1572 tests, S012 still 0 failed on v2). The nested follower stays the default</td></tr>
 <tr><td>3</td><td>Ruler v2 on five-bar / full-arm plants</td><td><span class="tag done">partly</span> v2 exists (45 cases); a five-bar plant in servo space is the next ruler</td></tr>
 <tr><td>4</td><td>like_keras boxes: JTC, JCC, manager, detector, role <code>Arm</code> with REAL / SIM / TEST bindings</td><td><span class="tag next">next</span> pick_cell already shows the shape (JTC + guard)</td></tr>
 <tr><td>5</td><td><code>to_servo_trajectory</code> / <code>to_virtual</code> in robot_models; <code>ServoMap</code> into the REAL bus binding</td><td><span class="tag next">next</span> new, from the transmission decision</td></tr>
 <tr><td>6</td><td>Move the callers: fivebar_home, bam_fivebar_recovery, arm-hold runner send to the manager, not the bus</td><td><span class="tag later">after 4-5</span> the real finish line</td></tr>
 <tr><td>7</td><td>Collision detector as a read-only box (JTC Diagnostics S005)</td><td><span class="tag next">next</span> seam exists (<code>is_in_collision</code>)</td></tr>
 <tr><td>8</td><td>Acceptance: one JointTrajectory, same port, twin vs real arm, traj_compare, 1 mm tool gate</td><td><span class="tag later">last</span></td></tr>
-<tr><td>—</td><td><code>ServoCommandTrajectory</code> has no <code>mode</code> column, so recording drops stop/brake</td><td><span class="tag next">small fix</span> found by today's check</td></tr>
+<tr><td>—</td><td><code>ServoCommandTrajectory</code> has no <code>mode</code> column, so recording drops stop/brake</td><td><span class="tag done">done</span> robot_msgs <code>a66cf24</code></td></tr>
 </table>
