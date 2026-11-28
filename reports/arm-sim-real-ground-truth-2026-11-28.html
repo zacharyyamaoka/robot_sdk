@@ -310,7 +310,7 @@ hw = HardwareInterface.open("lk+tcp://192.168.1.50:7000/bam_fb_pilot#fp=9c41e2")
 <h3>The six backends, and what each is for</h3>
 <table>
 <tr><th>Backend</th><th>Config</th><th>Use it for</th><th>Latency</th></tr>
-<tr><td>1 MuJoCo, frictionless</td><td><code>MujocoConfig(friction=0)</code></td><td>does the plan make sense at all</td><td rowspan="6">measuring now: like_keras <code>reports/hw-backends-latency-2026-11-28.html</code> when the bench lands</td></tr>
+<tr><td>1 MuJoCo, frictionless</td><td><code>MujocoConfig(friction=0)</code></td><td>does the plan make sense at all</td><td rowspan="6">measured (round trip p50): MuJoCo 2.3–2.5 ms · analytical 0.06 ms · kinematic 0.03 ms · real CAN 11 11.8 ms (5 bus ticks of pendulum inertia; one exchange ≈1.1 ms) · remote unix 1.0 ms · LAN 1.0 ms · Cloudflare tunnel 11 ms. The cloud VM case is blocked on sign-in. Full table: <code>/home/bam/like_keras/reports/hw-backends-latency-2026-11-28.html</code> (like_keras <code>8f51ef2</code>)</td></tr>
 <tr><td>2 MuJoCo, realistic</td><td><code>MujocoConfig(friction="fitted")</code></td><td>will it work on the rig</td></tr>
 <tr><td>3 Analytical</td><td><code>AnalyticalConfig()</code></td><td>fast checks, an independent check on the sim</td></tr>
 <tr><td>4 Kinematic</td><td><code>KinematicConfig()</code></td><td>fastest: sequence logic, viewers</td></tr>
