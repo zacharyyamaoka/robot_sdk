@@ -215,9 +215,113 @@ truth = arm.truth()               # raises / absent on real; an lk Out port only
 <li><strong>P4 is the long road to truth on hardware</strong>, and it's already partly there in camera calibration. It should be a separate component, not part of the Arm.</li>
 </ul>
 
+<h2 id="part2">Part 2 · HardwareInterface from a description (later the same day)</h2>
+<div class="verdict">
+<strong>Renamed: <code>Arm</code> → <code>HardwareInterface</code> (robot_msgs <code>292b832</code>). Pick for the API: a deployment record holds typed backend configs (P4 + P2). Its ad-hoc form is <code>HardwareInterface.from_robot_description(rd, MujocoConfig(gui=False))</code>, mirroring your own <code>RobotTwin.from_robot_description(rd)</code> from Nov 17.</strong>
+<ul>
+<li><strong>"MuJoCo no friction" vs "MuJoCo realistic" isn't two backends.</strong> It's one backend fed two sets of description parameters: nominal values with friction 0, vs the sim2real fitted twin's <code>.parameters</code>. That answers your last question. Configuring how the robot shows up <em>is</em> configuring the description. The backend config only says how the run happens: GUI, realtime factor, timestep, seed.</li>
+<li><strong>There are two kinds of backend, and that decides what "each part implements its own backends" means.</strong> Real drivers and per-actuator models are <em>per part</em>, so the cell composes them. MuJoCo and kinematic are <em>whole-scene</em>: they compile the whole subtree into one model. Both show up as the same <code>HardwareInterface</code>.</li>
+<li><strong>Remote isn't a sixth kind of robot model.</strong> It's a transport. Its config is an address plus the description fingerprint it expects. The far end is any other HardwareInterface, which could itself be 1–5. Local, LAN and cloud differ only in the address scheme.</li>
+</ul>
+</div>
+
+<h3>Already decided: don't re-open these</h3>
+<ul>
+<li><strong>Nov 17, the conversion lives downstream</strong> (<code>sim2real/twin.py</code> docstring): "twin = RobotTwin.from_robot_description(rd)". The description stays bare and only holds information. So <code>rd.generate_hardware_interface()</code> is out, by your own ruling and your "a bit of a smell" today.</li>
+<li><strong>Nov 12/16, the layers:</strong> robot_msgs → robot_models → robot_parts → robot_descriptions, with sim2real on top. The <code>HardwareInterface</code> type and backend protocol sit in robot_msgs. Backends sit with the parts and simulators that implement them. Composition happens at the top.</li>
+<li><strong>Oct 25, the twin uses the real driver's interface and config</strong> (robotparts memory). That's why every backend speaks the same <code>HardwareBackend</code> protocol.</li>
+</ul>
+
+<h3>Three things that get configured, kept apart</h3>
+<table>
+<tr><th>What</th><th>Lives in</th><th>Changes when</th><th>Example</th></tr>
+<tr><td>What the robot is</td><td>RobotDescription (from Cad2Robot) + fitted parameters</td><td>redesign, recalibration</td><td>link masses, friction 0 vs fitted 0.031 N·m</td></tr>
+<tr><td>Where this copy is plugged in</td><td><code>JointTable</code></td><td>rewiring, a new board, re-homing</td><td><code>shoulder → pi3hat:1#12</code>, homed zero</td></tr>
+<tr><td>How this run happens</td><td>backend <code>Config</code> (frozen dataclass)</td><td>every run, freely</td><td><code>MujocoConfig(gui=False, realtime=0)</code></td></tr>
+</table>
+
+<h3>Criteria (weight)</h3>
+<ul>
+<li><strong>One-word switch in a script (5)</strong></li>
+<li><strong>Fits the prior rulings (5):</strong> the description stays bare, and the layers hold.</li>
+<li><strong>Typed, discoverable config (4):</strong> IDE completion, and a typo fails loudly.</li>
+<li><strong>Any level of the tree (4):</strong> cell, arm, one joint.</li>
+<li><strong>Remote is just another backend (4)</strong></li>
+<li><strong>The run records its own config (3):</strong> the config goes into run metadata.</li>
+</ul>
+
+<h3>P1 · Name + keyword options</h3>
+<pre><code>hw = HardwareInterface.from_robot_description(rd, backend="mujoco", gui=False, realtime=1.0)</code></pre>
+<h3>P2 · The config object is the selector</h3>
+<pre><code>hw = HardwareInterface.from_robot_description(rd, MujocoConfig(gui=False, realtime=1.0, timestep=0.001))
+HardwareInterface.backends_for(rd)      # → [MujocoConfig, AnalyticalConfig, KinematicConfig, RealConfig, RemoteConfig]
+                                        #   a backend counts only if EVERY part in rd supports it (your "all sub descriptions")</code></pre>
+<h3>P3 · A method on the description (your first sketch)</h3>
+<pre><code>hw = rd.generate_hardware_interface("mujoco")
+hw = cell_rd.right_arm.generate_hardware_interface("real")</code></pre>
+<h3>P4 · A deployment record holds the named configs <span class="tag ran">the current code's shape</span></h3>
+<pre><code># bam_ws/.../deployments/bam_fb_pilot_2026_11_28.py — Python ground truth, one per deployment
+BAM_FB_PILOT = HardwareDeployment(
+    description=BAM_FB_RD,                       # from Cad2Robot; static
+    parameters=FITTED_2026_11_22,                # sim2real fitted twin values; None = nominal
+    joints=BAM_FB_TABLE,                         # names → CAN ids, homed zero
+    backends={
+        "sim":      MujocoConfig(gui=False, friction="fitted"),
+        "ideal":    MujocoConfig(gui=False, friction=0),
+        "model":    AnalyticalConfig(),
+        "fast":     KinematicConfig(),
+        "real":     RealConfig(transport="fdcanusb:0607623A"),
+        "core":     RemoteConfig("unix:/run/user/1000/like_keras/bam_fb.sock"),
+        "cloud":    RemoteConfig("lk+tcp://&lt;tunnel&gt;:443"),
+    },
+)
+hw = HardwareInterface(BAM_FB_PILOT, "sim")      # the one word
+hw = HardwareInterface(BAM_FB_PILOT["right_arm"], "sim")   # a subtree: its own rows of the table, the same configs</code></pre>
+<h3>P5 · One URL</h3>
+<pre><code>hw = HardwareInterface.open("mujoco://bam_fb_pilot?gui=0")
+hw = HardwareInterface.open("lk+tcp://192.168.1.50:7000/bam_fb_pilot#fp=9c41e2")</code></pre>
+
+<h3>Scores</h3>
+<table>
+<tr><th>Proposal</th><th>switch ×5</th><th>rulings ×5</th><th>typed ×4</th><th>any level ×4</th><th>remote ×4</th><th>records ×3</th><th>total /125</th></tr>
+<tr><td>P1 name + kwargs</td><td class="n">5</td><td class="n">4</td><td class="n">1</td><td class="n">3</td><td class="n">3</td><td class="n">2</td><td class="n">74</td></tr>
+<tr><td>P2 config is the selector</td><td class="n">3</td><td class="n">5</td><td class="n">5</td><td class="n">4</td><td class="n">5</td><td class="n">5</td><td class="n">96</td></tr>
+<tr><td>P3 method on the description</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">72</td></tr>
+<tr class="pick"><td>P4 deployment holds P2 configs</td><td class="n">5</td><td class="n">5</td><td class="n">5</td><td class="n">4</td><td class="n">5</td><td class="n">5</td><td class="n"><strong>111</strong></td></tr>
+<tr><td>P5 one URL</td><td class="n">4</td><td class="n">4</td><td class="n">1</td><td class="n">3</td><td class="n">5</td><td class="n">4</td><td class="n">83</td></tr>
+</table>
+<p><strong>Pick: P4, with P2's typed configs inside and P2's <code>from_robot_description</code> as the ad-hoc door.</strong> Scripts say one word, the deployment file owns the details, and each run records its config. P5 survives only as how a <code>RemoteConfig</code> address is written. P3 loses on your own Nov 17 ruling. Its one strength, addressing any level, P4 gets through <code>deployment["right_arm"]</code>.</p>
+
+<h3>Remote: confirming it's the same robot</h3>
+<pre><code>hw = HardwareInterface(BAM_FB_PILOT, "core")
+# handshake: the client sends fingerprint(description + parameters + joint names); the core compares it with its own
+# mismatch → RemoteMismatch("core serves bam_fb_pilot@3f0a…, you expect bam_fb_pilot@9c41…: description differs in link_3 mass")</code></pre>
+<p>The fingerprint covers what the robot <em>is</em> and its joint names, not its CAN ids. A client never sees the CAN ids, and a rewired core is still the same robot to a script. The attached-backend agent is adding the handshake now.</p>
+
+<h3>"From CAD to the real robot, completely autogenerated": almost</h3>
+<p>Three things are still not in the CAD. Each has a way to stop being hand-typed:</p>
+<ul>
+<li><strong>Which board drives which joint</strong> (the <code>JointTable</code>). Discover it: scan the bus, then wiggle each board a few degrees and see which joint's encoder or the camera moves. That's generated, not typed.</li>
+<li><strong>The homed zero.</strong> That's calibration, not generation: <code>hw.home()</code> writes it into the table.</li>
+<li><strong>The real parameters</strong> (friction, masses). That's sim2real's <code>calibrate()</code>, which writes the fitted values next to the description.</li>
+</ul>
+<p>So the honest phrase is <strong>generated → discovered → calibrated</strong>. All three are automatic, and only the first comes from CAD.</p>
+
+<h3>The six backends, and what each is for</h3>
+<table>
+<tr><th>Backend</th><th>Config</th><th>Use it for</th><th>Latency</th></tr>
+<tr><td>1 MuJoCo, frictionless</td><td><code>MujocoConfig(friction=0)</code></td><td>does the plan make sense at all</td><td rowspan="6">measuring now: like_keras <code>reports/hw-backends-latency-2026-11-28.html</code> when the bench lands</td></tr>
+<tr><td>2 MuJoCo, realistic</td><td><code>MujocoConfig(friction="fitted")</code></td><td>will it work on the rig</td></tr>
+<tr><td>3 Analytical</td><td><code>AnalyticalConfig()</code></td><td>fast checks, an independent check on the sim</td></tr>
+<tr><td>4 Kinematic</td><td><code>KinematicConfig()</code></td><td>fastest: sequence logic, viewers</td></tr>
+<tr><td>5 Real</td><td><code>RealConfig(transport=…)</code></td><td>the robot</td></tr>
+<tr><td>6 Remote</td><td><code>RemoteConfig(address, fingerprint)</code></td><td>scripting an always-on core (here, LAN, cloud)</td></tr>
+</table>
+
 <h2>Decided for you · left · not done</h2>
 <ul>
-<li><strong>Decided:</strong> no new <code>HardwareInterface</code> name. <code>Arm</code> + <code>ArmDeployment</code> are it. Undo: say so and I'll alias it.</li>
+<li><strong>Done at your word (Part 2):</strong> <code>Arm</code> → <code>HardwareInterface</code>, <code>ArmBackend</code> → <code>HardwareBackend</code>, <code>ArmDeployment</code> → <code>HardwareDeployment</code> (robot_msgs <code>ddbacd2</code> + <code>292b832</code>). The old names still import. Undo: <code>git revert 292b832 ddbacd2</code>.</li>
+<li><strong>Decided:</strong> the API pick is P4 + P2 (deployment record holding typed configs). Nothing beyond the rename is built from it yet.</li>
 <li><strong>Decided:</strong> ground truth stays on P2. No info dict is added until a non-joint truth needs one.</li>
 <li><strong>Left, next:</strong> the <code>"attached"</code> backend (example 4), with a test that runs example 1's loop against a twin core over the socket and gets identical states. After that: <code>ServoArm</code> for BAM FB, and the <code>can11</code> → named-joint rename.</li>
 <li><strong>Not done:</strong> nothing was run on the arm, and no bus was opened.</li>
