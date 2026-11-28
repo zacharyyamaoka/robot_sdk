@@ -1,0 +1,18 @@
+no fresh arm state; target skipped
+pick_cell on inproc, bind=SIM, 1.0 s in lockstep
+  pick_cell.targets          python kpi.tasks.arm_cell.targets:TargetFile                bind[Targets]  (role examples.pick_cell.cell:Targets)
+  pick_cell.arm.io           python kpi.tasks.arm_cell.arm_controller_py:MoteusBusPy     bind[Arm]  (role examples.pick_cell.cell:Arm)
+  pick_cell.arm.jtc          python kpi.tasks.arm_cell.arm_controller_py:JtcPy           default
+  pick_cell.arm.guard        python kpi.tasks.arm_cell.arm_controller_py:GuardPy         default
+  pick_cell.planner          python kpi.tasks.arm_cell.planner:PickPlanner               default
+plans sent by the planner: 1
+  sent t= 0.550 s  starts  0.550 s  1000 samples  ends at [ +32.02,   -5.47,  -35.25,  +51.42,  +56.40,  +43.39,  -29.82] deg
+commands to the arm: 100, sha256 22de99f19226ae5e
+  t= 0.000 s  position [  +0.00,   +0.00,   +0.00,   +0.00,   +0.00,   +0.00,   +0.00] deg
+  t= 0.160 s  position [  +0.00,   +0.00,   +0.00,   +0.00,   +0.00,   +0.00,   +0.00] deg
+  t= 0.320 s  position [  +0.00,   +0.00,   +0.00,   +0.00,   +0.00,   +0.00,   +0.00] deg
+  t= 0.480 s  position [  +0.00,   +0.00,   +0.00,   +0.00,   +0.00,   +0.00,   +0.00] deg
+  t= 0.640 s  position [  +2.53,   -0.43,   -2.78,   +4.06,   +4.45,   +3.42,   -2.35] deg
+  t= 0.800 s  position [ +23.21,   -3.96,  -25.55,  +37.27,  +40.88,  +31.45,  -21.61] deg
+  t= 0.990 s  position [ +32.02,   -5.47,  -35.25,  +51.42,  +56.40,  +43.39,  -29.82] deg
+arm state at t=0.990 s: [ +32.02,   -5.47,  -35.25,  +51.42,  +56.40,  +43.39,  -29.82] deg

@@ -1,0 +1,29 @@
+<p><b>Decision (my default, yours to overrule): pull it up.</b> Controllers, the manager and the bus work in <i>servo</i> space. The five-bar mapping
+lives in the kinematics/dynamics model and is applied when a trajectory is made. One rule sorts every case:</p>
+<p style="font-size:18px;text-align:center"><b>mixes two or more servos → up, into the model</b> &nbsp;·&nbsp; <b>touches one servo → down, into the bus</b></p>
+<figure>{{TXDIAG}}<figcaption>The two real options. C (a transmission box between the manager and the bus) is A made visible on the wire.
+D (each rig runner does it, which is today) is B copy-pasted. Mimic joints can't express a nonlinear, branching five-bar.</figcaption></figure>
+<table>
+<tr><th>Criterion (weight)</th><th>A. push down</th><th class="pick">B. pull up</th></tr>
+<tr><td>Controllers layout-blind: your 11-27 ask (3)</td><td>no: JTC gains and limits in virtual joints</td><td class="pick">yes: one joint = one servo</td></tr>
+<tr><td>Honest per-servo gains, caps, thermal, homing (3)</td><td>no: the board's PD loop is per servo, across the coupling</td><td class="pick">yes: matches <code>ServoCommand</code></td></tr>
+<tr><td>Matches what's built (2)</td><td>2025 plan, no surviving code</td><td class="pick">pure functions (Dec 2025, Jul 2026), PEP 0018's board seam, robot_controllers' five-bar bench</td></tr>
+<tr><td>Callers can think "UR" (2)</td><td class="pick">for free</td><td>through one stock <code>to_servo_trajectory</code> / <code>to_virtual</code></td></tr>
+<tr><td>Interpolation space (1)</td><td class="pick">virtual (exact)</td><td>servo, linear between 1-4 ms samples: measure once on the twin</td></tr>
+</table>
+<pre>
+# B, as code
+virtual = planner.plan(goal)                                  # j1, j2v, j3v, w1.. : the "UR" view
+servo   = robot_model.to_servo_trajectory(virtual)            # fb.inverse per sample + Hᵀ effort feed-forward
+manager.send_goal("jtc", servo)                               # JointTrajectory in servo names: j1, j2, c1, w1..
+# readback for viewers / traj_compare
+virtual_now = robot_model.to_virtual(io.state)                # fb.forward
+</pre>
+<table><tr><th>Piece</th><th>Mixes servos?</th><th>Lives</th><th>Today</th></tr>
+<tr><td>five-bar j2v/j3v ↔ J2/C1, Hᵀ</td><td>yes</td><td>robot model</td><td><code>five_bar_kin_dyn/transmission.py</code>, <code>bam_fivebar/kinematics.py:254</code></td></tr>
+<tr><td>claw linkage, Robotiq mimic</td><td>yes</td><td>robot model</td><td>—</td></tr>
+<tr><td>gear ratio</td><td>no</td><td>board / bus</td><td><code>rotor_to_output_ratio</code></td></tr>
+<tr><td>sign, offset, homed zero</td><td>no</td><td>bus box (REAL binding)</td><td><code>ServoMap</code>, <code>bam_fivebar/plant.py:46</code></td></tr></table>
+<p>This reverses what I said earlier today ("below the box"). Your year of notes points the other way: 2025 was "push down like ros2_control", and from
+Dec 2025 you've been pulling it up. Full timeline with your quotes and pseudo code for every option is in the vault MOC
+<b>MOC - Where Transmissions Live (Joint vs Servo Space)</b>.</p>

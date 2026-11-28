@@ -1,0 +1,91 @@
+<!--SECTION The stack in one picture-->
+<figure>{{STACK}}<figcaption>Four layers. Everything above the green bus box is the same code on the real arm, the twin and in tests.
+Callers never see the bus: they send <code>JointTrajectory</code> or <code>JointCommand</code> and read state and a result.</figcaption></figure>
+<ul class="tight">
+<li><b>Parts</b> are done once they exist: a datasheet, a driver, a twin (robot_parts).</li>
+<li><b>Bus box</b>: the one place the robot's I/O lives. ServoCommand in, ServoState out, every tick.</li>
+<li><b>Controllers</b>: boxes that tick constantly. The JTC, the Joint Command Controller (JCC) and the collision detector sit side by side, wired, not nested.</li>
+<li><b>Manager</b>: the only box wired to the bus. It merges per joint by claim and priority, and its stop always wins.</li>
+<li><b>Callers</b>: everything we build from now on. They depend on two message types, not on a robot.</li>
+</ul>
+
+<!--SECTION Composition, not nesting (your correction, adopted)-->
+<p><b>Agreed. And main is already halfway there.</b> A peer session landed two things on robot_msgs today:
+<code>JointCommandController</code> (55ddc46, S011's primitives, ruler v2 0/45) and a <code>ControllerManager</code> (df7fd6b, ros2_control's shape).
+The manager makes the JTC and the JCC <i>peers</i>. It owns the bus, gives each controller the joints its goal claims, refuses a
+lower-priority steal, merges per joint, and its <code>stop()</code> always wins. That's your side-by-side picture, with the merge kept in its own box:</p>
+<figure>{{COMPOSITION}}<figcaption>Proposed wiring. The JCC holds a wire <i>to</i> the JTC (send a trajectory, read its status), and its commands
+and the JTC's go side by side into the manager. You get full access to the JTC from anywhere.</figcaption></figure>
+<p><b>The one nesting left to remove.</b> On main, the JCC's <code>Follow</code> step still builds the JTC <i>inside</i> itself through a follower factory
+(<code>joint_command_controller.py:28</code>, <code>_Follow</code> at :276). In the composed form, Follow becomes two primitives the JCC already has:</p>
+<pre>
+# today (nested): the JTC lives inside the JCC's Follow step
+follow(trajectory)             # -> _Follow(make=JointTrajectoryController) ticked by the JCC
+
+# composed: the JCC asks the JTC box, then waits on its status wire
+[Command(send_to="jtc", trajectory=trajectory),
+ Condition(until=jtc_status_is("done"), fail=jtc_status_is("aborted"), timeout=trajectory.duration + 0.5)]
+</pre>
+<p><b>Why a separate manager, not "the JCC is the mux":</b> if the JCC were also the one writer, it would be a box with two jobs (running
+recipes and arbitrating the bus), and the JTC would always be downstream of it. With the manager as the mux, the JCC and JTC are symmetric peers.
+A cell with no recipes is just <code>JTC → manager → bus</code>, and the manager is ~1 small file with one rule set (claims, priority, stop wins).
+This reverses my earlier "you don't need a manager". You were half right: you don't need a <i>big</i> one, and the one on main is small.</p>
+<p><b>The cost:</b> a wire hop between JCC, JTC and manager. like_keras places a System in one process at one rate
+(<code>dep.place(cell.arm, process="controller", hz=...)</code>), so the boxes tick in order in one step, with no extra lag if those wires aren't lagged.</p>
+<p><b>Precedent already running:</b> like_keras's worked example has the same shape, with a guard in the manager's seat:</p>
+<pre>
+# like_keras/examples/pick_cell/cell.py today
+with lk.System("arm_controller") as s:
+    io, jtc, guard = Arm(), JtcPy(), GuardPy()
+    jtc(state=io.state)
+    guard(state=io.state, proposed=jtc.command)
+    io(command=guard.safe)                       # one writer: the guard
+
+# proposed
+with lk.System("arm_controller") as s:
+    io, hit = Arm(), CollisionDetector()
+    jtc, jcc, mux = JointTrajectoryController(), JointCommandController(), ControllerManager()
+    hit(state=io.state, reference=jtc.command)                      # read-only
+    jtc(state=io.state, trajectory=jcc.follow, contact=hit.contact)
+    jcc(state=io.state, jtc_status=jtc.status, contact=hit.contact)
+    mux(state=io.state, jcc=jcc.command, jtc=jtc.command)           # claims, priority, stop wins
+    io(command=mux.command)                                         # one writer: the manager
+    s.expose(jcc.goal, jcc.result, jtc.status, io.state, hit.contact, stop=mux.stop)
+</pre>
+<p style="color:var(--mut);font-size:14px">Open detail: callers' own trajectories and the JCC's <code>follow</code> both target the JTC's one trajectory input.
+I'd route caller trajectories through the manager's <code>send_goal("jtc", trajectory)</code> (it already does <code>replace_input</code>), so the JTC still has one source.</p>
+
+<!--SECTION Collision detection as a read-only box-->
+<p>Agreed. It's a controller with only outputs: it reads state (and the JTC's reference), writes <code>contact[joint]</code>, and never touches a servo.
+Every box that cares wires to it. Your one open question was "then they break what they're doing… or something". Here's the split I'd make:</p>
+<figure>{{COLLISION}}<figcaption>One detector, many readers. Each reader decides what contact means for <i>its</i> task.</figcaption></figure>
+<table><tr><th>Reader</th><th>On contact it…</th><th>Why there</th></tr>
+<tr><td>JTC</td><td>stops sampling, ends its trajectory with status <code>aborted: contact j2 at t</code></td><td>so the caller learns why its motion ended</td></tr>
+<tr><td>JCC</td><td>holds those joints (or stops/brakes, per the goal's policy) and ends the goal with that result</td><td>the only box allowed to change what the servos do: no two boxes fighting over the reaction</td></tr>
+<tr><td>Home(joint) goal</td><td>contact on <i>this</i> joint = success: define the zero. Contact anywhere else is a fault, never a zero</td><td>during homing, contact is the goal</td></tr>
+</table>
+<p>The detector already exists twice: <a href="file:///home/bam/jtc_diagnostics_agent/PROGRESS.md">JTC Diagnostics</a> S005 (admissible, 0 false alarms, 17 µs a tick)
+and the Collision Detection track. The JCC already has the seam S008 added (<code>contact(state) → {joint: bool}</code>). The step is to make that seam a wire.</p>
+
+<!--SECTION What "bus backend" means (system diagram)-->
+<p>"Bus backend" is just <b>the implementation the bus box is bound to when you deploy</b>. In like_keras the bus box is a <i>role</i>: ports, no code.</p>
+<pre>
+class Arm(lk.Component):          # role: the robot's I/O, no forward()
+    command = lk.In(ServoCommand, lagged=True)
+    state   = lk.Out(ServoState)
+</pre>
+<p>The System above is wired once. At launch, <code>lk.Deployment(cell, bind=...)</code> picks what <code>Arm</code> actually is:</p>
+<figure>{{BINDING}}<figcaption>The same System, three bindings. Only the bottom box changes.</figcaption></figure>
+<p>That's already running. Here's the real output of <code>python -m examples.pick_cell.cell --until 1.0</code> in like_keras today, on the twin binding.
+<code>pick_cell.arm.io</code> is the role <code>Arm</code>, bound to the fake moteus bus:</p>
+<pre>{{CAPTURE}}</pre>
+<p><b>So what's missing?</b> The bound implementations exist only inside like_keras's KPI fixtures (<code>kpi.tasks.arm_cell.MoteusBusPy</code>).
+The real arm's bus is still owned by the bam_ws arm-hold process, and the rig scripts (fivebar_home, bam_fivebar_recovery) write
+ServoCommands themselves. "Build the bus backend" means: turn that arm-hold bus owner into the REAL binding of <code>Arm</code>, and put
+the twin next to it as the SIM binding. Then the callers send to the manager (JTC or JCC goals) instead of writing to the bus.</p>
+
+<!--SECTION Where transmissions live (options and decision)-->
+{{TRANSMISSION}}
+
+<!--SECTION What remains, in order-->
+{{REMAINING}}
