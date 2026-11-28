@@ -1,8 +1,8 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-28T13:54:20+00:00",
+ "generated": "2026-11-28T14:18:02+00:00",
  "sources": {
-  "robot_sdk": "558c651",
+  "robot_sdk": "7e1604d",
   "robot_msgs": "292b832",
   "robot_models": "61b292c",
   "robot_controllers": "04d0d58",
@@ -16,7 +16,7 @@
   "robot_msg_viz": "39f526a",
   "sim2real": "7355462",
   "robot_diagnostics": "441cbb0",
-  "like_keras": "0c4fc41",
+  "like_keras": "a6201f9",
   "robot_sdk_agent": "f0027b9",
   "trajectory_tracking_agent": "a4794e3",
   "robot_collision": "19aa8d0"
@@ -540,13 +540,13 @@
     }
    },
    "declaration": "robot-sdk.toml",
-   "lint": "pass",
+   "lint": "fail",
    "languages": [
     {
      "id": "python",
      "status": "full",
      "where": "src/like_keras",
-     "evidence": "14 modules"
+     "evidence": "15 modules"
     },
     {
      "id": "cpp",
@@ -716,6 +716,14 @@
    "docs_url": "https://robotmsgs.com/types/control/Elapsed/"
   },
   {
+   "id": "robot_msgs.control.HardwareInterface",
+   "name": "HardwareInterface",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "A deployment opened on one backend: `read()` / `write()` joint-named; see the module docstring",
+   "docs_url": null
+  },
+  {
    "id": "robot_msgs.control.JointCommand",
    "name": "JointCommand",
    "package": "robot_msgs",
@@ -748,12 +756,28 @@
    "docs_url": "https://robotmsgs.com/types/control/JointCommandStep/"
   },
   {
+   "id": "robot_msgs.control.JointTable",
+   "name": "JointTable",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "Joint name -> `Servo`, in joint order; the only place a CAN id or transport key lives",
+   "docs_url": "https://robotmsgs.com/types/control/JointTable/"
+  },
+  {
    "id": "robot_msgs.control.Reached",
    "name": "Reached",
    "package": "robot_msgs",
    "module": "robot_msgs.control",
    "what": "Done when every listed joint's setpoint is at its target and the joint is within `tolerance` of it, slower than `speed`, for `dwell` seconds",
    "docs_url": "https://robotmsgs.com/types/control/Reached/"
+  },
+  {
+   "id": "robot_msgs.control.Servo",
+   "name": "Servo",
+   "package": "robot_msgs",
+   "module": "robot_msgs.control",
+   "what": "One joint's servo: where it is on the bus, and ``joint = sign * servo + offset_rad``",
+   "docs_url": "https://robotmsgs.com/types/control/Servo/"
   },
   {
    "id": "robot_msgs.control.ServoCommand",
@@ -5335,6 +5359,86 @@
   },
   {
    "package": "like_keras",
+   "type": "robot_msgs.control.HardwareInterface",
+   "kind": "consumes",
+   "symbol": "like_keras.hardware_interface.serve_hardware_interface",
+   "where": "src/like_keras/hardware_interface.py:150",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.control.HardwareInterface",
+   "kind": "produces",
+   "symbol": "like_keras.hardware_interface.attached_hardware_interface",
+   "where": "src/like_keras/hardware_interface.py:278",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.control.JointTable",
+   "kind": "consumes",
+   "symbol": "like_keras.hardware_interface.AttachedBackend",
+   "where": "src/like_keras/hardware_interface.py:192",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.control.JointTable",
+   "kind": "produces",
+   "symbol": "like_keras.hardware_interface.identity_table",
+   "where": "src/like_keras/hardware_interface.py:178",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.control.Servo",
+   "kind": "imports",
+   "symbol": "like_keras.hardware_interface",
+   "where": "src/like_keras/hardware_interface.py:64",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.control.ServoCommand",
+   "kind": "consumes",
+   "symbol": "like_keras.hardware_interface.AttachedBackend.write",
+   "where": "src/like_keras/hardware_interface.py:237",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.control.ServoState",
+   "kind": "produces",
+   "symbol": "like_keras.hardware_interface.AttachedBackend.read",
+   "where": "src/like_keras/hardware_interface.py:222",
+   "public": true,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.sensor.JointState",
+   "kind": "imports",
+   "symbol": "like_keras.hardware_interface",
+   "where": "src/like_keras/hardware_interface.py:65",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
    "type": "robot_msgs.std.DiagnosticRecord",
    "kind": "imports",
    "symbol": "like_keras.attach",
@@ -5389,6 +5493,16 @@
    "kind": "imports",
    "symbol": "like_keras.component",
    "where": "src/like_keras/component.py:365",
+   "public": false,
+   "declared": false,
+   "verified": true
+  },
+  {
+   "package": "like_keras",
+   "type": "robot_msgs.std.Header",
+   "kind": "imports",
+   "symbol": "like_keras.hardware_interface",
+   "where": "src/like_keras/hardware_interface.py:66",
    "public": false,
    "declared": false,
    "verified": true
