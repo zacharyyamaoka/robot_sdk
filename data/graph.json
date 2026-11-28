@@ -1,9 +1,9 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-28T11:58:39+00:00",
+ "generated": "2026-11-28T13:39:47+00:00",
  "sources": {
-  "robot_sdk": "24613fb",
-  "robot_msgs": "3e3c971",
+  "robot_sdk": "1b1373b",
+  "robot_msgs": "fdee6c7",
   "robot_models": "61b292c",
   "robot_controllers": "04d0d58",
   "robot_reach": "6d1fcba",
@@ -12,11 +12,11 @@
   "robot_autonomy": "0f68b89",
   "robot_metrics": "f953427",
   "robot_activity": "2ebea6e",
-  "traj_compare": "f06b1e1",
+  "traj_compare": "67b2de8",
   "robot_msg_viz": "39f526a",
   "sim2real": "7355462",
   "robot_diagnostics": "441cbb0",
-  "like_keras": "7d942f9",
+  "like_keras": "0c4fc41",
   "robot_sdk_agent": "f0027b9",
   "trajectory_tracking_agent": "a4794e3",
   "robot_collision": "19aa8d0"
@@ -56,7 +56,7 @@
      "id": "python",
      "status": "full",
      "where": "src/robot_msgs",
-     "evidence": "131 modules"
+     "evidence": "135 modules"
     }
    ]
   },
