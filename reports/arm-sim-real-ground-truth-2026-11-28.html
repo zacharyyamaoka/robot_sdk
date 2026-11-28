@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arm, Sim/Real, Ground Truth</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1b;--muted:#6b6a65;--card:#fff;--line:#e3e0d8;--accent:#2f6fb0;--good:#2e7d4f;--code:#f3f1ec;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171715;--fg:#e9e7e1;--muted:#a3a19a;--card:#21211e;--line:#36352f;--accent:#7fb0e6;--good:#6cc191;--code:#2a2925;}}
+:root[data-theme="dark"]{--bg:#171715;--fg:#e9e7e1;--muted:#a3a19a;--card:#21211e;--line:#36352f;--accent:#7fb0e6;--good:#6cc191;--code:#2a2925;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:920px;margin:0 auto;padding:28px 16px 80px}
+h1{font-size:1.7rem;margin:0 0 6px}
+h2{font-size:1.25rem;margin:40px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+h3{font-size:1.05rem;margin:24px 0 6px}
+.verdict{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--good);padding:14px 16px;border-radius:8px}
+.muted{color:var(--muted)}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font:13.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em}
+table{border-collapse:collapse;width:100%;font-size:.93rem;display:block;overflow-x:auto}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{font-weight:600}
+td.n{text-align:center;font-variant-numeric:tabular-nums}
+tr.pick td{background:color-mix(in srgb,var(--good) 12%,transparent)}
+.tag{display:inline-block;font-size:.75rem;padding:1px 7px;border-radius:10px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:middle}
+.tag.ran{border-color:var(--good);color:var(--good)}
+svg text{fill:var(--fg);font:13px system-ui,sans-serif}
+svg .box{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+svg .own{fill:color-mix(in srgb,var(--accent) 14%,var(--card));stroke:var(--accent);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .sm{fill:var(--muted);font-size:11.5px}
+</style>
+</head>
+<body><main>
+
+<h1>Arm, sim/real switch, ground truth</h1>
+<p class="muted">2026-11-28 · answers the "Arm wrapper" reply in Daily Note Nov 28 · robot_msgs <code>main</code> @ <code>fdee6c7</code>, JCC box @ <code>cae3401</code>, like_keras @ <code>0c4fc41</code></p>
+
+<div class="verdict">
+<strong>The "HardwareInterface" you want already exists. It's <code>Arm(deployment, backend="sim")</code> in robot_msgs. Sim → real is the one word <code>backend=</code>. For ground truth, keep the typed <code>state.truth</code> that's already there. Give it a gym-style <code>info</code> slot only once a second kind of truth needs one: object poses for grasp success are next.</strong>
+<ul>
+<li><strong>Your description/table/connect split is what the code has.</strong> <code>ArmDeployment</code> is your "configured, calibrated description" (joint table plus one factory per backend), and <code>Arm(...)</code> is the live handle. I'd add no third name.</li>
+<li><strong>When the arm is already running, you don't build a second Arm.</strong> One process opens the USB. Everything else attaches to it through like_keras with a write lease, the pattern from this morning's pendulum run. The remote handle isn't fragile <em>if it's only a pipe</em>: the joint table and limits are applied once, in the process that owns the bus.</li>
+<li><strong>The missing piece</strong> is an <code>"attached"</code> backend, so a script reads the same whether the arm is in-process or remote. It's sketched below and not built.</li>
+</ul>
+</div>
+
+<h2>Your words → the code</h2>
+<table>
+<tr><th>You said</th><th>In code</th><th>Where</th></tr>
+<tr><td>robot description (static, generic)</td><td>the URDF/model; robot_descriptions</td><td>unchanged</td></tr>
+<tr><td>"configured, and calibrated for the specific arm… would have the table already"</td><td><code>ArmDeployment(name, joints=JointTable, backends={...})</code></td><td><code>robot_msgs/control/arm.py</code></td></tr>
+<tr><td>joints ↔ hardware mapping</td><td><code>JointTable</code>: name ↔ <code>(bus, can_id)</code>, sign, offset, homed zero</td><td><code>robot_msgs/control/joint_table.py</code></td></tr>
+<tr><td><code>generate_io_interface(table, backend="sim") → HardwareInterface</code></td><td><code>Arm(deployment, backend="sim")</code>: sim builds the plant, real opens the bus</td><td><code>robot_msgs/control/arm.py</code></td></tr>
+<tr><td>"what I wire to"</td><td>the Arm as a like_keras component (<code>state</code> out, <code>trajectory</code>/command in)</td><td>like_keras <code>examples/pendulum/core.py</code></td></tr>
+<tr><td>arm in "remote view"</td><td><code>lk.attach(address)</code> today; a proposed <code>"attached"</code> ArmBackend</td><td>like_keras <code>src/like_keras/attach.py</code></td></tr>
+</table>
+<p class="muted">WHY no <code>RobotDescription.generate_…()</code>: you called that a smell yourself. The same description serves the sim, the twin and each physical copy, and each one has its own table. Building from <code>(description + table) → backend</code> downstream keeps the description reusable.</p>
+
+<h2>Who owns the USB</h2>
+<svg viewBox="0 0 860 210" width="100%" role="img" aria-label="One core process owns the bus; scripts attach">
+  <rect class="own" x="300" y="20" width="260" height="110" rx="10"/>
+  <text x="318" y="44" font-weight="600">core process (always on)</text>
+  <text x="318" y="66">Arm(BAM_FB, backend="real")</text>
+  <text x="318" y="86">JointTable applied here, once</text>
+  <text x="318" y="106">controllers · guard · logger</text>
+  <rect class="box" x="640" y="45" width="190" height="60" rx="8"/>
+  <text x="656" y="70">fdcanusb / moteus</text>
+  <text class="sm" x="656" y="90">only the core opens it</text>
+  <path class="ln" d="M560 75 H640"/>
+  <rect class="box" x="20" y="10" width="210" height="44" rx="8"/><text x="34" y="37">homing script</text>
+  <rect class="box" x="20" y="64" width="210" height="44" rx="8"/><text x="34" y="91">rerun viewer</text>
+  <rect class="box" x="20" y="118" width="210" height="44" rx="8"/><text x="34" y="145">bring-up / test script</text>
+  <path class="ln" d="M230 32 C270 32 270 60 300 60"/><path class="ln" d="M230 86 H300"/><path class="ln" d="M230 140 C270 140 270 110 300 110"/>
+  <text class="sm" x="20" y="190">each attaches by unix socket · joint names only · one writer at a time (write lease) · a killed script loses its lease, the core holds</text>
+</svg>
+
+<h2>Worked examples</h2>
+
+<h3>1 · Bring-up script, no middleware, one-word switch <span class="tag ran">ran today</span></h3>
+<p>This is the UR5e bring-up path that landed in the JCC box (<code>bringup/run.py</code>), cut down to the loop. The sequence file is static data.</p>
+<pre><code># bringup/sequences/02_move_elbow.py — one step per line
+SEQUENCE = JointCommandSequence(name="move the elbow", steps=[
+    hold(PAN, CAP[PAN]),
+    hold(LIFT, CAP[LIFT], GRAVITY[LIFT]),
+    move_by(ELBOW, +0.3, max_vel=0.5, max_effort=CAP[ELBOW], feedforward_effort=GRAVITY[ELBOW]),
+    move_by(ELBOW, -0.3, max_vel=0.5, max_effort=CAP[ELBOW], feedforward_effort=GRAVITY[ELBOW]),
+])
+
+# the runner
+arm = Arm(UR5E, backend="sim")            # backend="real" on the rig: the only line that changes
+controller = JointCommandController(arm.joint_names)
+controller.submit(SEQUENCE)
+state = arm.read()
+while controller.status == "executing":
+    tick = controller.tick(state, arm.period_s)
+    arm.write(tick.command, tick.defines)
+    state = arm.read()
+
+state.truth          # GroundTruth on sim, None on real (the Arm strips it on real)</code></pre>
+<p>Real output, <code>python -m bringup.run bringup/sequences/02_move_elbow.py</code>:</p>
+<pre><code>'move the elbow' on sim: done after 1.51 s, 151 reads
+    0.01 s  move elbow_joint by +0.3000
+    0.71 s  move elbow_joint by -0.3000
+  joint                 measured °      true °   meas-true °
+  shoulder_lift_joint     -68.774     -68.780      +0.0054
+  elbow_joint              80.200      80.198      +0.0026
+  truth: on every read (source mujoco); largest |measured - true| 0.0261°</code></pre>
+<p>…and <code>--backend real</code> refuses cleanly in that box (nothing opened):</p>
+<pre><code>backend 'real' refused: UR5E real backend is not wired in this box: nothing was opened (no CAN bus, no RTDE socket).</code></pre>
+
+<h3>2 · Two copies of one arm in a cell: names nest, CAN ids stay inside <span class="tag ran">ran today</span></h3>
+<p><code>/home/bam/robot_sdk/docs/examples/two_arm_cell_paths.py</code>, against robot_msgs <code>fdee6c7</code>:</p>
+<pre><code>ARM = JointTable(joints={"shoulder": Servo(can_id=12), "elbow": Servo(can_id=13)})
+
+left_arm  = JointTable(bus="fdcanusb:LEFT", joints=ARM.joints).mounted("left_arm")
+right_arm = JointTable(bus="pi3hat:1",      joints=ARM.joints).mounted("right_arm")
+cell = JointTable.combine(left_arm, right_arm)      # refuses a duplicate name or (bus, can_id)
+
+command = ServoCommand(name=cell.names, position=np.radians([10, 20, 30, 40]))
+select(command, "right_arm")          # a level
+select(command, "left_arm/elbow")     # one joint</code></pre>
+<pre><code>cell joints: ('left_arm/shoulder', 'left_arm/elbow', 'right_arm/shoulder', 'right_arm/elbow')
+right_arm joints: ('right_arm/shoulder', 'right_arm/elbow')
+right_arm servo keys: ('pi3hat:1#12', 'pi3hat:1#13')
+one joint: ('left_arm/elbow',)</code></pre>
+
+<h3>3 · Arm already running: attach, don't rebuild <span class="tag ran">ran on the rack this morning</span></h3>
+<p>like_keras <code>examples/pendulum</code>, as it is. The core owns CAN 11. A script attaches, sends one trajectory under the lease and leaves.</p>
+<pre><code># core.py — started once (up.sh), never goes down
+s = lk.System("pendulum")
+arm = s.add(Bus(...))                     # the only thing that opens the fdcanusb
+...expose(state=arm.state, trajectory=jtc.trajectory)
+
+# script.py — any number of these, one at a time as writer
+s = lk.System("script_swing")
+arm  = s.add(lk.attach("unix:/run/user/1000/like_keras/pendulum.sock"), "pendulum")
+shot = s.add(OneShot(kind="swing", deg=[30, -30, 0]), "shot", state=arm.state)
+s.wire(arm, trajectory=shot.trajectory)   # written under the write lease
+lk.Deployment(s).run()</code></pre>
+
+<h3>4 · Same script, in-process or attached <span class="tag">proposed · not built</span></h3>
+<p>This is your "you don't know what's behind <code>arm.command()</code>, and that's the design". Add one backend to the deployment. It speaks the <code>ArmBackend</code> protocol (<code>read</code>, <code>write</code>, <code>period_s</code>, <code>simulated</code>) over the lk socket. The script from example 1 then runs unchanged against a core that's already up:</p>
+<pre><code>BAM_FB = ArmDeployment(name="bam_fb", joints=TABLE, backends={
+    "sim":      fivebar_twin,             # MuJoCo / twin plant, truth on
+    "real":     moteus_bus,               # opens the fdcanusb — only the core uses this one
+    "attached": lk_attached,              # a pipe to the core; no table, no limits of its own
+})
+
+arm = Arm(BAM_FB, backend="attached", address="unix:/run/user/1000/like_keras/bam_fb.sock")
+# ...the identical loop from example 1</code></pre>
+<p><strong>What made the ROS remote arm fragile, and the rule that avoids it:</strong> the proxy kept its own copy of things: model, limits, offsets, cached state. Then the two drifted. Here the attached backend is <em>joint-named on both sides</em> and holds nothing. The core applies the table and the guard. Because the core sends joint names, the attached side gets an identity table. Its <code>simulated</code> flag comes from the core, so truth passes through on a sim core and is stripped on a real one.</p>
+
+<h3>5 · BAM FB homing, twin first, then the rig <span class="tag">pseudo · homing agent building it</span></h3>
+<pre><code>arm = Arm(BAM_FB_PILOT_NOV28, backend="sim")     # fast twin run, Sequence Viewer opens it
+result = arm.home()                               # stock recipe from the part; the deployment can override it
+assert all(abs(result.stop_error_deg) &lt; 0.1)     # against state.truth: the twin knows the real stop
+arm.joints = arm.joints.with_zero(result.zero)   # the result of homing lives in the table, not the description
+
+# on the rig: same two lines with backend="attached" against the running core</code></pre>
+
+<h2>Ground truth: 5 proposals</h2>
+<p><strong>The question:</strong> on real you get command and measured. On sim (or with an oracle) you also want the truth, without forking the loop.</p>
+<h3>Criteria (weight)</h3>
+<ul>
+<li><strong>Same loop on sim and real (5).</strong> Switching the backend changes no other line.</li>
+<li><strong>Can't leak onto real (5).</strong> A test that asserts on truth can't pass on hardware by accident.</li>
+<li><strong>Open-ended (4).</strong> Room for object poses, contacts, grasp success, not just joints.</li>
+<li><strong>Typed and logged with the sample (4).</strong> Same stamp, recorded, comparable later.</li>
+<li><strong>Usable online (3).</strong> A gate can check it inside the loop.</li>
+<li><strong>Lightweight (2).</strong> Little new API.</li>
+</ul>
+
+<h3>P1 · Gym-style <code>info</code> dict</h3>
+<pre><code>state, info = arm.read()          # info = {} on real; {"truth": ..., "contacts": ..., "objects": ...} on sim
+info.get("truth")</code></pre>
+<p>It's clean and you can dump anything in it. But it's untyped: keys drift between backends, a typo reads as "no truth", and every <code>read()</code> call site changes shape.</p>
+
+<h3>P2 · Typed <code>state.truth</code> <span class="tag ran">landed c72d664</span></h3>
+<pre><code>state = arm.read()
+state.truth                       # GroundTruth(name, position, velocity, effort, stop_effort, source) | None
+state.truth.of("elbow_joint")</code></pre>
+<p>One loop. Truth rides on the same sample with the same stamp, and the Arm strips it on real (pinned by test). Its limit is joint truth only.</p>
+
+<h3>P3 · Separate truth channel</h3>
+<pre><code>state = arm.read()
+truth = arm.truth()               # raises / absent on real; an lk Out port only the sim component has</code></pre>
+<p>ServoState stays untouched, like Gazebo's <code>/model_states</code> topic. But you align two streams by stamp, and on real the call or the port isn't there, so the wiring differs.</p>
+
+<h3>P4 · The oracle is a sensor in the cell</h3>
+<pre><code>cell.oracle.state()               # sim: MuJoCo; real: ArUco bundle / OBSBOT / mocap — same component, same type</code></pre>
+<p>This is the only option where an oracle test can also run on hardware: approximate truth from a real sensor. That fits your 11-11 rule (encoders gate, ArUco secondary). Truth is only as good as the sensor, and it's heavier to build.</p>
+
+<h3>P5 · Truth only in the recording</h3>
+<pre><code>arm = Arm(UR5E, backend="sim", record="run.mcap")   # sim writes the whole world: every body, contact, joint
+# tests and traj_compare join it to the run by stamp afterwards; read() carries nothing</code></pre>
+<p>No API surface at all, and it holds everything the sim knows. But you can't gate on it inside the loop.</p>
+
+<h3>Scores</h3>
+<table>
+<tr><th>Proposal</th><th>same loop ×5</th><th>no leak ×5</th><th>open ×4</th><th>typed ×4</th><th>online ×3</th><th>light ×2</th><th>total /115</th></tr>
+<tr><td>P1 info dict</td><td class="n">4</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">5</td><td class="n">5</td><td class="n">79</td></tr>
+<tr class="pick"><td>P2 typed <code>state.truth</code></td><td class="n">5</td><td class="n">5</td><td class="n">2</td><td class="n">5</td><td class="n">5</td><td class="n">4</td><td class="n"><strong>101</strong></td></tr>
+<tr><td>P3 separate channel</td><td class="n">3</td><td class="n">4</td><td class="n">3</td><td class="n">4</td><td class="n">4</td><td class="n">3</td><td class="n">81</td></tr>
+<tr><td>P4 oracle sensor</td><td class="n">5</td><td class="n">3</td><td class="n">4</td><td class="n">4</td><td class="n">3</td><td class="n">2</td><td class="n">85</td></tr>
+<tr><td>P5 recording only</td><td class="n">5</td><td class="n">5</td><td class="n">5</td><td class="n">3</td><td class="n">1</td><td class="n">4</td><td class="n">93</td></tr>
+</table>
+
+<h3>Pick: P2, with P1's openness inside it, plus P5 for the rest</h3>
+<ul>
+<li><strong>Keep <code>state.truth</code> as the one place truth lives.</strong> What's good about gym's <code>info</code> is "one bag for everything the sim knows". <code>GroundTruth</code> already is that bag; it just only holds joints today.</li>
+<li><strong>When the first non-joint truth is needed, give <code>GroundTruth</code> a typed <code>objects</code> field</strong> (body name → pose), or an <code>info</code> mapping if it really is grab-bag. That's grasp-success detection, so it's the next one. It's typed where you test on it and free-form only where you only look at it. Not built until then.</li>
+<li><strong>Use P5 for everything you only look at afterwards</strong> (contacts, all bodies). The sim already records to mcap/rrd.</li>
+<li><strong>P4 is the long road to truth on hardware</strong>, and it's already partly there in camera calibration. It should be a separate component, not part of the Arm.</li>
+</ul>
+
+<h2>Decided for you · left · not done</h2>
+<ul>
+<li><strong>Decided:</strong> no new <code>HardwareInterface</code> name. <code>Arm</code> + <code>ArmDeployment</code> are it. Undo: say so and I'll alias it.</li>
+<li><strong>Decided:</strong> ground truth stays on P2. No info dict is added until a non-joint truth needs one.</li>
+<li><strong>Left, next:</strong> the <code>"attached"</code> backend (example 4), with a test that runs example 1's loop against a twin core over the socket and gets identical states. After that: <code>ServoArm</code> for BAM FB, and the <code>can11</code> → named-joint rename.</li>
+<li><strong>Not done:</strong> nothing was run on the arm, and no bus was opened.</li>
+</ul>
+
+</main></body>
+</html>
