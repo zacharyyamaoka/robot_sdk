@@ -1,9 +1,9 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-28T13:39:47+00:00",
+ "generated": "2026-11-28T13:54:20+00:00",
  "sources": {
-  "robot_sdk": "1b1373b",
-  "robot_msgs": "fdee6c7",
+  "robot_sdk": "558c651",
+  "robot_msgs": "292b832",
   "robot_models": "61b292c",
   "robot_controllers": "04d0d58",
   "robot_reach": "6d1fcba",
@@ -56,7 +56,7 @@
      "id": "python",
      "status": "full",
      "where": "src/robot_msgs",
-     "evidence": "135 modules"
+     "evidence": "136 modules"
     }
    ]
   },
