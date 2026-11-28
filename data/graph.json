@@ -1,6 +1,6 @@
 {
  "schema": "robot-sdk-graph/1",
- "generated": "2026-11-28T02:12:28+00:00",
+ "generated": "2026-11-28T11:58:39+00:00",
  "sources": {
   "robot_sdk": "24613fb",
   "robot_msgs": "3e3c971",
@@ -12,7 +12,7 @@
   "robot_autonomy": "0f68b89",
   "robot_metrics": "f953427",
   "robot_activity": "2ebea6e",
-  "traj_compare": "2390d42",
+  "traj_compare": "f06b1e1",
   "robot_msg_viz": "39f526a",
   "sim2real": "7355462",
   "robot_diagnostics": "441cbb0",
@@ -397,7 +397,7 @@
      "id": "python",
      "status": "full",
      "where": "src/traj_compare",
-     "evidence": "34 modules"
+     "evidence": "35 modules"
     }
    ]
   },

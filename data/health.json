@@ -1,7 +1,7 @@
 {
  "schema": "robot-sdk-health/1",
- "generated": "2026-11-28T02:12:39+00:00",
- "graph_generated": "2026-11-28T02:12:28+00:00",
+ "generated": "2026-11-28T11:58:49+00:00",
+ "graph_generated": "2026-11-28T11:58:39+00:00",
  "checks": [
   {
    "id": "tests",
@@ -470,11 +470,11 @@
    "checks": {
     "tests": {
      "state": "fail",
-     "detail": "test.yml failed on main 2390d42",
-     "url": "https://github.com/zacharyyamaoka/trajectory_comparison_viewer/actions/runs/46091782998",
+     "detail": "test.yml failed on main f06b1e1",
+     "url": "https://github.com/zacharyyamaoka/trajectory_comparison_viewer/actions/runs/46101517056",
      "workflow": "test.yml",
-     "sha": "2390d42",
-     "at": "2026-11-28T01:10:52Z"
+     "sha": "f06b1e1",
+     "at": "2026-11-28T03:09:52Z"
     },
     "lint": {
      "state": "pass",
